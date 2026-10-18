@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="600" viewBox="0 0 640 600" role="img" aria-labelledby="title desc">
+<title id="title">What you will build: Otahque</title>
+<desc id="desc">An Otahque event card for a Python workshop with 19 of 20 places taken and a Register button. Sai's registration is confirmed, and the change appears in Sam's attendee list, where Sai and Soni are confirmed and Raj has cancelled. A badge reads: one chapter at a time, understand, build, verify.</desc>
+<defs>
+  <filter id="lift" x="-10%" y="-10%" width="120%" height="130%">
+    <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#142f48" flood-opacity=".14"/>
+  </filter>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10Z" fill="#1b6694"/>
+  </marker>
+</defs>
+<ellipse cx="400" cy="584" rx="220" ry="12" fill="#142f48" opacity=".08"/>
+
+<!-- Event card -->
+<g filter="url(#lift)">
+  <rect x="40" y="30" width="380" height="232" rx="14" fill="#fff" stroke="#c9d4de" stroke-width="1.5"/>
+</g>
+<path d="M54 30H406Q420 30 420 44V100H40V44Q40 30 54 30Z" fill="#142f48"/>
+<text x="64" y="58" fill="#d0ba88" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2">PUBLISHED EVENT</text>
+<text x="64" y="86" fill="#fffdf7" font-family="Georgia,serif" font-size="25">Python workshop</text>
+<g font-family="Arial,sans-serif" fill="#3d4955" font-size="14">
+  <text x="64" y="128">Saturday · 10:00 IST</text>
+  <text x="64" y="150">Community hall · beginners welcome</text>
+</g>
+<text x="64" y="182" fill="#1f3347" font-family="Arial,sans-serif" font-size="13" font-weight="700">19 of 20 places taken</text>
+<rect x="64" y="192" width="220" height="8" rx="4" fill="#e3e9ef"/>
+<rect x="64" y="192" width="209" height="8" rx="4" fill="#1b6694"/>
+<rect x="64" y="212" width="132" height="36" rx="6" fill="#1859b7"/>
+<text x="130" y="235" fill="#fff" font-family="Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">Register</text>
+<text x="212" y="235" fill="#5b6775" font-family="Arial,sans-serif" font-size="12">Closes Friday 18:00 IST</text>
+
+<!-- Member result -->
+<g filter="url(#lift)">
+  <rect x="352" y="246" width="260" height="80" rx="12" fill="#fff" stroke="#c9d4de" stroke-width="1.5"/>
+</g>
+<circle cx="392" cy="286" r="20" fill="#eef3f8" stroke="#4f5f70" stroke-width="2"/>
+<circle cx="392" cy="279" r="6" fill="none" stroke="#4f5f70" stroke-width="2"/>
+<path d="M381 297Q392 285 403 297" fill="none" stroke="#4f5f70" stroke-width="2"/>
+<text x="424" y="279" fill="#1f3347" font-family="Arial,sans-serif" font-size="16" font-weight="700">Sai</text>
+<circle cx="432" cy="299" r="8" fill="#2e7d5b"/>
+<path d="M428 299l3 3 5-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="446" y="304" fill="#17634e" font-family="Arial,sans-serif" font-size="14" font-weight="700">Place confirmed</text>
+
+<!-- One change reaches the organizer's record -->
+<path d="M482 326V362" stroke="#1b6694" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="492" y="334" width="92" height="22" rx="11" fill="#fff" stroke="#dce2e8"/>
+<text x="538" y="350" fill="#4f5f70" font-family="Arial,sans-serif" font-size="13" text-anchor="middle">same record</text>
+
+<!-- Organizer list -->
+<g filter="url(#lift)">
+  <rect x="200" y="370" width="412" height="192" rx="14" fill="#fff" stroke="#c9d4de" stroke-width="1.5"/>
+</g>
+<text x="222" y="402" fill="#1f3347" font-family="Arial,sans-serif" font-size="16" font-weight="700">Sam’s attendee list</text>
+<rect x="518" y="385" width="72" height="26" rx="13" fill="#e6f4ec" stroke="#2e7d5b"/>
+<text x="554" y="403" fill="#17634e" font-family="Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle">20 / 20</text>
+<g font-family="Arial,sans-serif" font-size="14">
+  <line x1="222" y1="420" x2="590" y2="420" stroke="#dce2e8"/>
+  <text x="222" y="446" fill="#1f3347">Sai</text>
+  <text x="590" y="446" fill="#17634e" font-weight="700" text-anchor="end">Confirmed</text>
+  <line x1="222" y1="460" x2="590" y2="460" stroke="#eef1f4"/>
+  <text x="222" y="486" fill="#8a96a3">Raj</text>
+  <text x="590" y="486" fill="#8a96a3" text-anchor="end">Cancelled</text>
+  <line x1="222" y1="500" x2="590" y2="500" stroke="#eef1f4"/>
+  <text x="222" y="526" fill="#1f3347">Soni</text>
+  <text x="590" y="526" fill="#17634e" font-weight="700" text-anchor="end">Confirmed</text>
+  <text x="222" y="550" fill="#5b6775" font-size="12">+ 17 more confirmed</text>
+</g>
+
+<!-- Learning badge -->
+<g filter="url(#lift)">
+  <rect x="20" y="294" width="230" height="62" rx="8" fill="#fff" stroke="#dce2e8"/>
+</g>
+<circle cx="50" cy="325" r="14" fill="#e6f4ec"/>
+<path d="M43 325l5 5 9-10" fill="none" stroke="#17634e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="74" y="320" fill="#142f48" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1">ONE CHAPTER AT A TIME</text>
+<text x="74" y="339" fill="#4f5f70" font-family="Arial,sans-serif" font-size="11">Understand. Build. Verify.</text>
+</svg>

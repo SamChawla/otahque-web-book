@@ -1,0 +1,46 @@
+name: Chapter feedback
+description: An error, something unclear, a problem with an exercise or figure, or a suggestion for a chapter.
+title: "[Chapter feedback] "
+labels: ["chapter feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve the book. Issues are public, so please leave out personal details.
+  - type: input
+    id: chapter
+    attributes:
+      label: Chapter or page
+      description: Filled in for you when you use the link at the end of a chapter.
+      placeholder: "Chapter 2: Business requirements, product scope, and user stories"
+    validations:
+      required: true
+  - type: input
+    id: section
+    attributes:
+      label: Section, figure, or question (optional)
+      placeholder: "2.4, Figure 2.6, or Que. 3"
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of feedback is it?
+      options:
+        - Error or typo
+        - Unclear or confusing explanation
+        - Exercise or answer problem
+        - Figure or table problem
+        - Missing topic or suggestion
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What did you notice?
+      description: Quote the sentence if it helps, and say what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement (optional)

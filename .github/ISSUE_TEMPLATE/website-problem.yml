@@ -1,0 +1,30 @@
+name: Website problem
+description: Something does not display or work properly on the web book.
+title: "[Website] "
+labels: ["website"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page address
+      placeholder: "https://otahque.tech/chapters/chapter02/"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: "Android phone, Chrome 140"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: A screenshot helps a lot — you can paste one here.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
