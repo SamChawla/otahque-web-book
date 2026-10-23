@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Chapter 2, 2.6 Traceability and review, from the Otahque Django web book.">
+<title>2.6 Traceability and review · Chapter 2 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="stylesheet" href="/assets/book.css">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home"><img class="brand-mark" src="/assets/logo.svg" width="42" height="42" alt="">OTAHQUE <span>THE WEB BOOK</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a></nav></header>
+<div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter02/">← Chapter 2 overview</a>
+<details class="chapter-menu" open><summary>In this chapter</summary><nav aria-label="In this chapter"><ol><li><a href="/chapters/chapter02/section-2-1/">2.1 Needs and agreed outcomes</a></li><li><a href="/chapters/chapter02/section-2-2/">2.2 Scope and journeys</a></li><li><a href="/chapters/chapter02/section-2-3/">2.3 Stories and acceptance criteria</a></li><li><a href="/chapters/chapter02/section-2-4/">2.4 Product rules and edge cases</a></li><li><a href="/chapters/chapter02/section-2-5/">2.5 Quality expectations and the product requirements document</a></li><li class="is-current"><a href="#section-2-6" aria-current="location">2.6 Traceability and review</a><ul class="topics"><li><a href="#topic-200">Give requirements short names</a></li><li><a href="#topic-210">Connect controls to evidence</a></li><li><a href="#topic-214">The working register</a></li><li><a href="#topic-217">Review consistency before advancing</a></li><li><a href="#topic-221">A closing workshop exercise</a></li><li><a href="#topic-232">Key terms</a></li><li><a href="#topic-235">What we take into the next chapter</a></li></ul></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 9 figures · 4 tables</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter02:2.6" data-progress-title="Section 2.6"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 2.6" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<p class="section-chapter"><a href="/chapters/chapter02/">Chapter 2 · Business requirements, product scope, and user stories</a> <span>Section 6 of 6</span></p><article><h2 id="section-2-6" data-block="197">2.6 Traceability and review</h2><p class="" data-block="198">We now have a problem statement, scope, journeys, stories, criteria, and product rules. Keeping them in one chapter is helpful, but we also need to find their connections. If cancellation changes, which needs and checks should we revisit?</p><p class="" data-block="199">Traceability means being able to follow a requirement back to its reason and forward to the work and evidence that address it. It prevents a check from becoming an isolated task whose purpose nobody remembers. It also reveals a requirement for which no meaningful check has been planned.</p><h3 class="" id="topic-200" data-block="200">Give requirements short names</h3><p class="" data-block="201">Clear sentences come first. Once we need to refer to them repeatedly, short identifiers help. In this chapter, BR means business requirement and PR means product requirement. The number identifies an entry; it does not indicate priority. These labels belong to this working set, not to an external standard.</p><p class="" data-block="202">BR-1: attendees can establish and manage their current participation. BR-2: organizers can prepare from current registrations. BR-3: people’s information and responsibilities stay within defined access boundaries. These are concise references to the needs already explained, not additional product scope.</p><p class="" data-block="203">PR-1: eligible registration produces one current confirmed place, visible to the member and the assigned organizer. It supports BR-1 and BR-2. Check a successful registration and a repeated request; inspect the member’s status, the organizer’s list, and the active count.</p><p class="" data-block="204">PR-2: an allowed cancellation releases one place and leaves a clear cancelled status, even when the request repeats. It supports BR-1 and BR-2. Check the first cancellation, its repetition, and recovery after a lost response.</p><p class="" data-block="205">PR-3: competing requests cannot push active registrations beyond capacity. It supports BR-1 and BR-2 because confirmation must be dependable. Check two otherwise eligible members seeking the last place; inspect both outcomes and the final active count.</p><p class="" data-block="206">PR-4: members access their own registration information, and organizers manage only assigned events. It supports BR-3. Check forbidden reading and writing attempts as well as allowed actions. Refused attempts must not change records or reveal private details.</p><p class="" data-block="207">Two more labels cover the rest of the release. PR-5: only a complete, valid draft can be published by its assigned organizer, and visitors see only published events. PR-6: organizer access is granted or removed only through the administrator’s workflow. PR-5 supports BR-1 and BR-2; PR-6 supports BR-3.</p><figure data-block="208"><a href="/assets/chapter02/figure-2-9-trace.png" aria-label="Open Figure 2.9 at full size"><img src="/assets/chapter02/figure-2-9-trace.png" alt="A chain of four boxes from left to right: need (Raj can establish his current result), requirement (PR-2, release one place), control (only an active registration releases a place), check (cancel twice and inspect the count). A fifth, dashed box, evidence, is recorded only after the check runs." width="1500" height="470" loading="lazy"></a><figcaption data-block="209">Figure 2.9 — Follow the cancellation need through a product requirement, a planned control, and a check. Evidence is recorded only after the check actually runs.</figcaption></figure><h3 class="" id="topic-210" data-block="210">Connect controls to evidence</h3><p class="" data-block="211">A control is a measure that helps enforce a rule. For PR-4, checking access whenever protected information is read or changed is a planned control. For PR-2, allowing only an active registration to release a place is a planned control. We will choose their implementation later, then test both permitted and refused actions.</p><p class="" data-block="212">A scenario is a concrete situation we use to examine behaviour, such as Raj submitting the same cancellation twice. A test executes a check against an implementation. Evidence records what actually happened: the version examined, the starting data, the action, the observed result, and whether it matched the expectation. A written scenario is not an executed test, and a requirement is not evidence of its own satisfaction.</p><p class="" data-block="213">For the cancellation scenario, a future evidence note might record the event’s capacity, the initial active count, Raj’s initial status, both of his requests, and the final status and count. Until that experiment runs, its status is “planned”. We have written no Django application in this chapter, so we have no application-test results to report.</p><h3 class="" id="topic-214" data-block="214">The working register</h3><p class="" data-block="215">Table 2.3 brings these links together. Every row is planned; none has been executed. Extend the register as requirements become precise, and mark an open decision as open rather than attaching a passing result to an undefined policy.</p><figure class="table-figure" data-block="216"><figcaption>Table 2.3 — Working traceability register (planned checks only)</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 2.3 — Working traceability register (planned checks only)"><table><thead><tr><th scope="col">Requirement</th>
+<th scope="col">Supports</th>
+<th scope="col">Planned control</th>
+<th scope="col">Scenario or check</th>
+<th scope="col">Status</th>
+</tr></thead><tbody><tr><th scope="row"><span class="label">PR-1</span> One confirmed registration</th>
+<td data-label="Supports"><span class="label">BR-1</span>, <span class="label">BR-2</span></td>
+<td data-label="Planned control">Eligibility and uniqueness checks</td>
+<td data-label="Scenario or check">Successful, repeated, full, closed, and signed-out requests</td>
+<td data-label="Status">Planned</td>
+</tr>
+<tr><th scope="row"><span class="label">PR-2</span> Cancellation releases one place</th>
+<td data-label="Supports"><span class="label">BR-1</span>, <span class="label">BR-2</span></td>
+<td data-label="Planned control">Only an active registration releases a place</td>
+<td data-label="Scenario or check">Cancel twice; lost response; after deadline; register again if eligible</td>
+<td data-label="Status">Planned; timing policy proposed</td>
+</tr>
+<tr><th scope="row"><span class="label">PR-3</span> Never exceed capacity</th>
+<td data-label="Supports"><span class="label">BR-1</span>, <span class="label">BR-2</span></td>
+<td data-label="Planned control">Count enforced under overlapping requests</td>
+<td data-label="Scenario or check">Two members seek the last place; cancellation overlaps a request; capacity reduction refused</td>
+<td data-label="Status">Planned; database design later</td>
+</tr>
+<tr><th scope="row"><span class="label">PR-4</span> Own records, assigned events</th>
+<td data-label="Supports"><span class="label">BR-3</span></td>
+<td data-label="Planned control">Access checked on every protected read and change</td>
+<td data-label="Scenario or check">Wrong member or event; allowed action; access revoked</td>
+<td data-label="Status">Planned; appointment policy open</td>
+</tr>
+<tr><th scope="row"><span class="label">PR-5</span> Publication boundary</th>
+<td data-label="Supports"><span class="label">BR-1</span>, <span class="label">BR-2</span></td>
+<td data-label="Planned control">Valid details required before publishing</td>
+<td data-label="Scenario or check">Draft hidden; published readable; invalid publication refused</td>
+<td data-label="Status">Planned; event-change policy open</td>
+</tr>
+<tr><th scope="row"><span class="label">PR-6</span> Access management</th>
+<td data-label="Supports"><span class="label">BR-3</span></td>
+<td data-label="Planned control">Restricted administrator workflow</td>
+<td data-label="Scenario or check">Ordinary member cannot grant organizer access</td>
+<td data-label="Status">Planned; exceptions policy open</td>
+</tr>
+<tr><th scope="row">Quality: time, access, recovery</th>
+<td data-label="Supports"><span class="label">BR-1</span>, <span class="label">BR-2</span></td>
+<td data-label="Planned control">Date and timezone shown; keyboard use; status lookup</td>
+<td data-label="Scenario or check">Another device timezone; keyboard-only journey; lost response</td>
+<td data-label="Status">Planned; not certification</td>
+</tr>
+<tr><th scope="row">Quality: responsiveness</th>
+<td data-label="Supports"><span class="label">BR-1</span>, <span class="label">BR-2</span></td>
+<td data-label="Planned control">Agreed workload and measurement</td>
+<td data-label="Scenario or check">Time viewing, registering, and cancelling under ordinary and busy load</td>
+<td data-label="Status">Targets pending</td>
+</tr>
+</tbody></table></div></figure><h3 class="" id="topic-217" data-block="217">Review consistency before advancing</h3><p class="" data-block="218">Read the attendee and organizer journeys together. Confirmation must agree with the active list. Cancellation must release one place without erasing the ability to explain its result. A full event must refuse a new place. Closing registration must remain effective even if a cancellation later creates spare capacity. Registration history must not be mistaken for attendance evidence.</p><p class="" data-block="219">Then inspect the scope boundary. A scenario that automatically sends reminders, promotes a waiting-list member, or issues a certificate has introduced a deferred capability. Either remove that behaviour from the first-release scenario or explicitly reopen the scope decision. Do not smuggle it in through an expected result.</p><p class="" data-block="220">Finally, review the decision register. The first release cannot be declared ready while its affected event-change policies, required data, or operational targets are undefined. We can still learn how the web works and prepare to implement incrementally. An open product decision is a visible dependency, not a reason to pretend the whole learning path has stopped.</p><h3 class="exercise-heading" id="topic-221" data-block="221">A closing workshop exercise</h3><p class="exercise" data-block="222">Sam’s published workshop has twenty places and nineteen active registrations, including Raj’s. Registration and cancellation are both open. Sai already has a confirmed place and submits again. Raj then cancels twice. Soni and another eligible member then request the two remaining places, and both requests complete successfully.</p><p class="exercise" data-block="223">Before reading the answers, write the final active count, what each person should see, two requirements involved, and one forbidden-action check. Then list one decision from this chapter that still needs review before the affected feature is implemented.</p><p class="question" data-block="224"><strong>Que. 1 </strong>What should the final active count be?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="225"><strong>Answer. </strong>Twenty. Sai’s repeated request leaves nineteen active. Raj’s first cancellation reduces that to eighteen; his repeated cancellation leaves eighteen. The two new successful registrations bring the count to twenty. No place is released or consumed twice.</p></details><p class="question" data-block="226"><strong>Que. 2 </strong>What results should people see?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="227"><strong>Answer. </strong>Sai sees her existing confirmed registration. Raj sees a cancelled status. Soni and the other successful member each see confirmation. Sam’s active list contains twenty registrations, includes the two new members, and excludes Raj’s cancelled registration.</p></details><p class="question" data-block="228"><strong>Que. 3 </strong>Which requirements and forbidden-action check apply?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="229"><strong>Answer. </strong>PR-1 covers Sai’s single active registration; PR-2 covers Raj’s cancellation releasing one place. PR-3 protects the capacity boundary. For PR-4, attempt to cancel Raj’s registration while signed in as another member: the request must be refused without changing the record or disclosing private details.</p></details><p class="question" data-block="230"><strong>Que. 4 </strong>Does completing this exercise establish that Otahque works?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="231"><strong>Answer. </strong>No. It checks our reasoning about the proposed behaviour. We must later implement it, execute meaningful tests, and record evidence. Event-change and cancellation policy, for example, still needs review before that affected workflow is complete.</p></details><h3 class="" id="topic-232" data-block="232">Key terms</h3><p class="" data-block="233">Use Table 2.4 to check your vocabulary before Chapter 3. Each term was explained where it first appeared.</p><figure class="table-figure" data-block="234"><figcaption>Table 2.4 — Key terms from Chapter 2</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 2.4 — Key terms from Chapter 2"><table><thead><tr><th scope="col">Term</th>
+<th scope="col">Meaning in this book</th>
+</tr></thead><tbody><tr><th scope="row">Stakeholder</th>
+<td data-label="Meaning in this book">Someone affected by the product or responsible for it.</td>
+</tr>
+<tr><th scope="row">Member</th>
+<td data-label="Meaning in this book">A person with an Otahque account. An attendee is a member registered for a particular event.</td>
+</tr>
+<tr><th scope="row">Evidence</th>
+<td data-label="Meaning in this book">Information actually gathered, recorded with its source and context.</td>
+</tr>
+<tr><th scope="row">Hypothesis</th>
+<td data-label="Meaning in this book">An idea we intend to investigate; not yet evidence.</td>
+</tr>
+<tr><th scope="row">Baseline</th>
+<td data-label="Meaning in this book">A starting measurement used for a later comparison.</td>
+</tr>
+<tr><th scope="row">Constraint</th>
+<td data-label="Meaning in this book">A boundary the solution must respect.</td>
+</tr>
+<tr><th scope="row">Scope</th>
+<td data-label="Meaning in this book">The work a release includes, and what it deliberately leaves out.</td>
+</tr>
+<tr><th scope="row">MVP</th>
+<td data-label="Meaning in this book">Minimum viable product: a small usable product to learn whether an approach meets a real need.</td>
+</tr>
+<tr><th scope="row">Deferred</th>
+<td data-label="Meaning in this book">Deliberately left for later consideration or a later release.</td>
+</tr>
+<tr><th scope="row">User journey</th>
+<td data-label="Meaning in this book">The sequence of steps a person takes to reach an outcome.</td>
+</tr>
+<tr><th scope="row">User story</th>
+<td data-label="Meaning in this book">A short statement of who needs a capability, what it is, and why it matters.</td>
+</tr>
+<tr><th scope="row">Acceptance criteria</th>
+<td data-label="Meaning in this book">Observable conditions a behaviour must satisfy before we accept it.</td>
+</tr>
+<tr><th scope="row">Given/When/Then</th>
+<td data-label="Meaning in this book">A way to write an example as a starting situation, an action, and an expected result.</td>
+</tr>
+<tr><th scope="row">Abuse case</th>
+<td data-label="Meaning in this book">An attempt to use the product in a harmful or unauthorized way.</td>
+</tr>
+<tr><th scope="row">Product rule</th>
+<td data-label="Meaning in this book">A condition the product must enforce consistently.</td>
+</tr>
+<tr><th scope="row">Edge case</th>
+<td data-label="Meaning in this book">A situation near a boundary, such as the last place or the closing instant.</td>
+</tr>
+<tr><th scope="row">Active registration</th>
+<td data-label="Meaning in this book">A confirmed place that currently consumes capacity.</td>
+</tr>
+<tr><th scope="row">Invariant</th>
+<td data-label="Meaning in this book">A condition that must always remain true, such as never exceeding capacity.</td>
+</tr>
+<tr><th scope="row">Concurrent actions</th>
+<td data-label="Meaning in this book">Actions whose processing overlaps in time.</td>
+</tr>
+<tr><th scope="row">Functional requirement</th>
+<td data-label="Meaning in this book">What the product does.</td>
+</tr>
+<tr><th scope="row">Quality requirement</th>
+<td data-label="Meaning in this book">How well, or under what conditions, the product must do it.</td>
+</tr>
+<tr><th scope="row">BRD</th>
+<td data-label="Meaning in this book">Business requirements document: problem, people, outcomes, and boundaries.</td>
+</tr>
+<tr><th scope="row">PRD</th>
+<td data-label="Meaning in this book">Product requirements document: behaviour, rules, quality, and open decisions.</td>
+</tr>
+<tr><th scope="row">Traceability</th>
+<td data-label="Meaning in this book">Following a requirement back to its reason and forward to its checks and evidence.</td>
+</tr>
+<tr><th scope="row">Control</th>
+<td data-label="Meaning in this book">A measure that helps enforce a rule.</td>
+</tr>
+<tr><th scope="row">Scenario, test, evidence</th>
+<td data-label="Meaning in this book">A situation to examine; a check executed against an implementation; a record of what actually happened.</td>
+</tr>
+</tbody></table></div></figure><h3 class="" id="topic-235" data-block="235">What we take into the next chapter</h3><p class="" data-block="236">We have a working business brief and product requirements draft, a bounded first release, two connected journeys, examples of correct and refused actions, explicit rules, and a way to trace checks to needs. Proposed policies and remaining decisions are visible. The six planned sections of Chapter 2 are complete as a draft for review.</p><p class="checkpoint" data-block="237"><strong>Readiness checkpoint:</strong> without looking back, explain the difference between a BRD and a PRD, write one Given/When/Then example for cancellation, state the capacity invariant, and name one decision that must be made before implementation.</p><p class="transition" data-block="238">Next: Chapter 3 explains how the web works. We will use these same journeys to understand what happens when a person opens an event page or submits a registration request.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%202%2C%202.6%20Traceability%20and%20review" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter02/section-2-5/">← 2.5 Quality expectations and the product requirements document</a><a href="/chapters/chapter03/">Chapter 3: How the web works →</a></nav></main></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

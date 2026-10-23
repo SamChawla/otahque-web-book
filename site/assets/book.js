@@ -1,5 +1,14 @@
 // Progressive enhancement: the complete book and navigation work without JavaScript.
 
+// Chapters were once single pages; forward old links (chapter03.html#section-3-2 or a topic
+// anchor) to the section page that now holds that place.
+const moved = location.hash && document.querySelector('[data-moved-anchors]');
+if (moved) {
+  const id = decodeURIComponent(location.hash.slice(1));
+  const entry = [...moved.querySelectorAll('[data-anchors]')].find(li => li.dataset.anchors.split(' ').includes(id));
+  if (entry) location.replace(entry.querySelector('a').href + (id.startsWith('section-') ? '' : '#' + id));
+}
+
 // Contents filter: match titles or a chapter number; hide stage headings with no matches.
 const search = document.querySelector('#chapter-search');
 if (search) {
@@ -174,13 +183,17 @@ if (reading) {
   render(measure());
 }
 
-// Contents page: show saved progress on each readable chapter.
+// Contents and chapter pages: show saved progress. A chapter's progress is the average of
+// its section pages (data-progress-parts); a section shows its own.
 const tiles = document.querySelectorAll('[data-progress-for]');
 if (tiles.length) {
   const all = loadProgress();
   let any = false;
   tiles.forEach(tile => {
-    const entry = all[tile.dataset.progressFor];
+    const parts = tile.dataset.progressParts ? tile.dataset.progressParts.split(' ') : null;
+    const entry = parts
+      ? { max: parts.reduce((sum, part) => sum + ((all[part] || {}).max || 0), 0) / parts.length }
+      : all[tile.dataset.progressFor];
     if (!entry || !(entry.max > 0.02)) return;
     any = true;
     const percent = Math.round(entry.max * 100);

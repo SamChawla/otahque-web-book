@@ -153,6 +153,16 @@ input { padding: 10px 12px; border: 1px solid #8998a7; border-radius: 3px; min-w
 .section-nav a { text-decoration: none; }
 .chapter-end { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px 24px; border-top: 1px solid var(--line); margin-top: 52px; padding-top: 24px; font-size: 14px; }
 .chapter-end span { color: var(--muted); }
+.chapter-end a:last-child { margin-left: auto; text-align: right; }
+/* Chapter overview: one row per section page, with saved progress when there is any. */
+.overview-sections { list-style: none; padding: 0; margin: 0 0 32px; font: 16px/1.45 Arial, sans-serif; }
+.overview-sections li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.overview-sections a { font-weight: 700; text-decoration: none; }
+.overview-sections .tile-progress { width: auto; flex: 0 1 200px; }
+.section-chapter { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 22px; font: 13px/1.5 Arial, sans-serif; color: var(--muted); }
+.section-chapter a { font-weight: 700; text-decoration: none; }
+/* On a section page the section heading opens the article; no divider above it. */
+.reading article > h2:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
 
 /* 5. Learning cues: colour supplements the visible text labels. */
 .reading .question, .reading .answer, .reading .exercise, .reading .transition, .reading .checkpoint { padding: 14px 18px; border-left: 3px solid; border-radius: 0 5px 5px 0; color: var(--ink); text-align: left; }
@@ -265,7 +275,7 @@ input { padding: 10px 12px; border: 1px solid #8998a7; border-radius: 3px; min-w
 /* 9. Print */
 @media print {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .site-header, .site-footer, .chapter-sidebar, .reader-tools, .chapter-end, .section-nav, .skip { display: none; }
+  .site-header, .site-footer, .chapter-sidebar, .reader-tools, .chapter-end, .section-nav, .section-chapter, .skip { display: none; }
   .reader-layout { display: block; padding: 0; max-width: none; }
   .reading { max-width: none; font-size: 11pt; }
   .reading article { font-size: 11pt; line-height: 1.5; color: #000; }
