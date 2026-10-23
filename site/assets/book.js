@@ -36,6 +36,14 @@ document.querySelectorAll('[data-print]').forEach(button => {
   button.addEventListener('click', () => window.print());
 });
 
+// Printing shows every answer; folded answers are closed again afterwards.
+let foldedAnswers = [];
+addEventListener('beforeprint', () => {
+  foldedAnswers = [...document.querySelectorAll('details.answer-reveal:not([open])')];
+  foldedAnswers.forEach(d => { d.open = true; });
+});
+addEventListener('afterprint', () => { foldedAnswers.forEach(d => { d.open = false; }); foldedAnswers = []; });
+
 // Reading text size: three steps, remembered per browser when storage is available.
 const sizes = ['small', 'normal', 'large'];
 document.querySelectorAll('.text-size').forEach(group => {

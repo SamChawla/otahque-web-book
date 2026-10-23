@@ -336,3 +336,14 @@ html { scroll-padding-top: 2.5rem; }
 /* Hosting badges (e.g. Embarko's) are fixed at the bottom-left; keep the footer clear of them. */
 .site-footer { padding-bottom: 72px; }
 @media print { .site-footer { padding-bottom: 0; } }
+
+/* 13. Answer reveal: answers start folded (native <details>); printing shows them all. */
+.answer-reveal { margin: 0 0 26px; }
+.answer-reveal > summary { display: inline-flex; align-items: center; gap: 8px; list-style: none; cursor: pointer; padding: 7px 14px; border: 1px solid var(--answer-ink); border-radius: 5px; color: var(--answer-ink); background: var(--answer-fill); font: bold 13px/1.4 Arial, sans-serif; }
+.answer-reveal > summary::-webkit-details-marker { display: none; }
+.answer-reveal > summary::before { content: '▸'; }
+.answer-reveal[open] > summary::before { content: '▾'; }
+.answer-reveal .reveal-hide, .answer-reveal[open] .reveal-show { display: none; }
+.answer-reveal[open] .reveal-hide { display: inline; }
+.reading .answer-reveal .answer { margin: 8px 0 0; }
+@media print { .answer-reveal > summary { display: none; } .reading .answer-reveal .answer { margin-top: 0; } }
