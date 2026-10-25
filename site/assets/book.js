@@ -40,6 +40,33 @@ if (search) {
   });
 }
 
+// Copy buttons on code listings, so long commands need not be selected by hand on a phone.
+if (navigator.clipboard) {
+  document.querySelectorAll('.reading pre.code-listing').forEach(pre => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.before(wrap);
+    wrap.append(pre);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'copy-code';
+    button.textContent = 'Copy';
+    button.setAttribute('aria-label', 'Copy this listing');
+    let reset = null;
+    button.addEventListener('click', () => {
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        button.textContent = 'Copied';
+      }, () => {
+        button.textContent = 'Select and copy';
+      }).finally(() => {
+        clearTimeout(reset);
+        reset = setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+      });
+    });
+    wrap.append(button);
+  });
+}
+
 document.querySelectorAll('[data-print]').forEach(button => {
   button.hidden = false;
   button.addEventListener('click', () => window.print());

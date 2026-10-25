@@ -23,6 +23,34 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-padding-top: 1.5rem; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 Arial, Helvetica, sans-serif; }
+.code-listing {
+  max-width: 100%; overflow-x: auto; white-space: pre;
+  text-align: left; font: 15px/1.6 Consolas, monospace;
+  margin: 20px 0 24px; padding: 16px 18px;
+  background: var(--soft); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px;
+  tab-size: 4;
+}
+.code-listing > code { font: inherit; }
+.code-listing:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+/* Inline code in prose: names, values, filenames, and commands the reader types. */
+.reading :is(p, li, h3, figcaption) code {
+  font: 0.86em/1 Consolas, monospace; padding: 0.1em 0.3em;
+  background: var(--soft); border: 1px solid var(--line); border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+/* Copy button for listings (added by script; listings stay selectable without it). */
+.code-block { position: relative; margin: 20px 0 24px; }
+.code-block > .code-listing { margin: 0; }
+.copy-code {
+  position: absolute; top: 6px; right: 6px; padding: 4px 10px;
+  border: 1px solid var(--line); border-radius: 4px;
+  background: var(--panel); color: var(--blue); font: 13px/1.4 Arial, sans-serif;
+}
+.copy-code:hover { border-color: var(--blue); }
+/* The button sits in its own strip above the first line, so scrolled code never hides under it. */
+.code-block:has(.copy-code) > .code-listing { padding-top: 42px; }
+@media print { .copy-code { display: none; } .reading :is(p, li) code { border: 0; background: none; padding: 0; } }
 a { color: var(--blue); text-underline-offset: 4px; }
 a:hover { text-decoration: underline; }
 button, input { font: inherit; }
