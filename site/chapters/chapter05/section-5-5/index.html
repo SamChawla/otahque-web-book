@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Chapter 5, 5.5 Recording the first architecture decision, from the Otahque Django web book.">
+<title>5.5 Recording the first architecture decision · Chapter 5 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="stylesheet" href="/assets/book.css">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home"><img class="brand-mark" src="/assets/logo.svg" width="42" height="42" alt="">OTAHQUE <span>THE WEB BOOK</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></nav></header>
+<div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter05/">← Chapter 5 overview</a>
+<details class="chapter-menu" open><summary>In this chapter</summary><nav aria-label="In this chapter"><ol><li><a href="/chapters/chapter05/section-5-1/">5.1 What Django contributes</a></li><li><a href="/chapters/chapter05/section-5-2/">5.2 Following a request through Django</a></li><li><a href="/chapters/chapter05/section-5-3/">5.3 Sketching the application boundaries</a></li><li><a href="/chapters/chapter05/section-5-4/">5.4 Comparing architecture choices</a></li><li class="is-current"><a href="#section-5-5" aria-current="location">5.5 Recording the first architecture decision</a><ul class="topics"><li><a href="#topic-152">What an architecture decision record is</a></li><li><a href="#topic-155">A decision has a status</a></li><li><a href="#topic-161">Our first decision record</a></li><li><a href="#topic-166">What this decision means for you</a></li><li><a href="#topic-168">In practice: making a disagreement reviewable</a></li><li><a href="#topic-172">Try it yourself</a></li><li><a href="#topic-176">Bringing the chapter together</a></li><li><a href="#topic-178">Key terms</a></li></ul></li></ol></nav></details>
+<p class="sidebar-note">5 sections · 4 figures · 5 tables<br>Milestone reached here: Plan ready</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter05:5.5" data-progress-title="Section 5.5"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 5.5" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<p class="section-chapter"><a href="/chapters/chapter05/">Chapter 5 · Django’s role and our first architecture decision</a> <span>Section 5 of 5</span></p><p class="last-updated">Updated <time datetime="2026-10-26">26 October 2026</time>: Corrected and clarified the request trace, template escaping, the design sketch, and the option comparison; enlarged labels in Figures 5.2 to 5.4. <a href="/chapters/chapter05/#history">What changed</a></p><article><h2 id="section-5-5" data-block="149">5.5 Recording the first architecture decision</h2><p class="" data-block="150">In a year, someone will ask why Otahque renders its pages on the server. The volunteers who compared the options may have moved on, and the discussion will be half-remembered. A short written record keeps the reasoning available to whoever asks.</p><p class="" data-block="151">Starting point: the comparison in Section 5.4. Your output is a draft architecture decision record, a practice record of your own, and the chapter’s glossary and readiness check.</p><h3 class="" id="topic-152" data-block="152">What an architecture decision record is</h3><p class="" data-block="153">An architecture decision record, or ADR, is a short document that captures one significant decision, the situation that led to it, and its consequences. Michael Nygard proposed the form in 2011 so that teams would stop losing the reasons behind their designs. A record is usually a page or two, numbered in sequence, and kept with the project’s code so that it changes alongside the system it describes.</p><p class="" data-block="154">A useful ADR states a title that names the decision; its status; the context, meaning the requirements, constraints, and pressures at the time; the options considered; the decision; its consequences, both helpful and costly; and the changes that would justify revisiting it. It does not repeat the whole comparison; it summarizes it and points to where the detail lives.</p><h3 class="" id="topic-155" data-block="155">A decision has a status</h3><p class="" data-block="156">The status tells a reader whether to rely on the record. A proposed record is written for review and not yet agreed. An accepted record has been agreed by the people responsible for the project. A rejected record was considered and not adopted; keeping it saves repeating the same discussion. A superseded record has been replaced by a later one that links back to it. Once a record is accepted, it is not rewritten to match a later choice. A new record supersedes it, so the history of the design stays visible.</p><figure data-block="157"><a href="/assets/chapter05/figure-5-4-status.png" aria-label="Open Figure 5.4 at full size"><img src="/assets/chapter05/figure-5-4-status.png" alt="A proposed record leads, after review, either to accepted or to rejected. An accepted record leads, when a later decision replaces it, to superseded. A note says the new record links back and the old one is not rewritten." width="1500" height="440" loading="lazy"></a><figcaption data-block="158">Figure 5.4 — A decision record moves from proposed to accepted or rejected. A later decision supersedes it rather than rewriting it.</figcaption></figure><p class="question" data-block="159"><strong>Que. 15 </strong>The team later adds an API so that a partner’s app can list Otahque events. Should they edit the accepted record for the first release so that it seems to have included an API all along?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="160"><strong>Answer. </strong>No. Write a new record for the API decision and link it to the earlier one. If the new decision replaces the old one, mark the old record superseded. If it adds to it, as the planned API in Chapters 47 to 54 would, both records remain valid. Editing the old record would erase the reasoning a future reader needs.</p></details><h3 class="" id="topic-161" data-block="161">Our first decision record</h3><p class="" data-block="162">Table 5.4 is our draft. As the project’s first decision record, it is numbered ADR-001; later records continue the sequence. Its status is proposed, because no one responsible for a real Otahque project has reviewed it, and this book does not invent an approval. The following chapters build on this proposal as the working design; if review changes it, a new record will say so.</p><figure class="table-figure" data-block="163"><figcaption>Table 5.4 — ADR-001: Build the first release as a server-rendered Django application (draft)</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 5.4 — ADR-001: Build the first release as a server-rendered Django application (draft)"><table><thead><tr><th scope="col">Part</th>
+<th scope="col">Content</th>
+</tr></thead><tbody><tr><th scope="row">Status</th>
+<td data-label="Content">Proposed, October 2026. Not yet reviewed or accepted.</td>
+</tr>
+<tr><th scope="row">Context</th>
+<td data-label="Content">Organizers and attendees need one current registration record. Ownership and capacity rules must hold whatever a browser sends. Main journeys must work with a keyboard and on narrow screens. A small volunteer team must be able to build and maintain the application, and the book’s readers are learning Django.</td>
+</tr>
+<tr><th scope="row">Options</th>
+<td data-label="Content">A: connected form and spreadsheet. B: a server-rendered Django application with a database. C: a Django API with a separate JavaScript client. Compared in Section 5.4 (Table 5.3).</td>
+</tr>
+<tr><th scope="row">Decision</th>
+<td data-label="Content">Build the first release as one Django application that renders HTML pages on the server, stores records in a relational database, and applies Otahque’s rules in its views and models.</td>
+</tr>
+<tr><th scope="row">Consequences</th>
+<td data-label="Content">One application to build, test, and host. Rules run in one place. Pages work with links and forms before any JavaScript. Highly interactive screens need extra work, and other software has no API until one is added.</td>
+</tr>
+<tr><th scope="row">Revisit if</th>
+<td data-label="Content">A mobile or partner application needs Otahque’s data; check-in or other work must continue offline; measurement shows that server rendering cannot meet an agreed performance target.</td>
+</tr>
+<tr><th scope="row">Related</th>
+<td data-label="Content"><span class="label">BR-1</span> to <span class="label">BR-3</span> and <span class="label">PR-1</span> to <span class="label">PR-6</span> (Chapter 2); the high-level sketch in Figure 5.3.</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="164">Notice what the record does not decide: which database runs in production, how the application is hosted, or how pages are styled. Each is a separate decision with its own context, recorded when its chapter needs it. One decision per record keeps each record short, reviewable, and easy to supersede.</p><p class="" data-block="165">Once the project exists, keep decision records as numbered Markdown files in a folder such as <code>docs/adr/</code> inside the repository, so that they are versioned with the code. Chapter 8 introduces Git for that purpose. For now, your paper copy is enough.</p><h3 class="" id="topic-166" data-block="166">What this decision means for you</h3><p class="" data-block="167">You will begin with one Django project and follow an event request through Python code to a complete HTML page. You can learn routing, views, templates, and stored records one step at a time, without first building a separate JavaScript application. Chapter 6 creates the project and opens its development page; Chapter 7 introduces Django apps, and Chapter 9 begins our own Otahque pages. The proposed design guides those exercises while its review remains open.</p><h3 class="" id="topic-168" data-block="168">In practice: making a disagreement reviewable</h3><p class="" data-block="169"><strong>Situation. </strong>Two contributors disagree about rebuilding the event list with client-side rendering.</p><p class="" data-block="170"><strong>Application. </strong>Ask the proposer to write a short decision record: context, options, and consequences. The disagreement becomes specific: which requirement does the change serve, and what does it cost?</p><p class="" data-block="171"><strong>Consideration. </strong>Writing the record does not settle the question. Someone responsible for the project still has to accept or reject it, and the status should say which.</p><h3 class="exercise-heading" id="topic-172" data-block="172">Try it yourself</h3><p class="exercise" data-block="173">On paper, write a second, smaller record: should Otahque show event dates and times in the event’s own timezone or in each visitor’s device timezone? Use the parts of Table 5.4. Base the context on Chapter 2’s expectation that times are clear wherever a person acts on them, give at least two options, and choose an honest status.</p><p class="question" data-block="174"><strong>Que. 16 </strong>What would a useful practice record contain?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="175"><strong>Answer. </strong>Title: show event times in the event’s stated timezone. Status: proposed, because nobody responsible has accepted it. Context: Chapter 2 requires a date and timezone wherever a person acts on a time; members may view from devices set to other timezones; a deadline must refer to one instant. Options: the event’s timezone, always labelled; the visitor’s device timezone, converted; or both together. Decision: show the event’s timezone, labelled, everywhere, and consider adding the visitor’s local time later. Consequences: organizers and attendees share one unambiguous time; a remote attendee must convert it until a local equivalent is added. Revisit if: online events with attendees in many timezones become common. Another decision is acceptable if its context and consequences support it.</p></details><h3 class="" id="topic-176" data-block="176">Bringing the chapter together</h3><p class="" data-block="177">This chapter separated Django’s mechanisms from Otahque’s rules, traced a request through the URL configuration, a view, a model, and a template, sketched the parts of the system and its trust boundary, compared three options against the requirements, and recorded the proposal as ADR-001. None of it is code yet, and none of it is approved. It is the reasoning Chapter 6 builds on.</p><h3 class="" id="topic-178" data-block="178">Key terms</h3><p class="" data-block="179">Use Table 5.5 to check the vocabulary from this chapter before Chapter 6.</p><figure class="table-figure" data-block="180"><figcaption>Table 5.5 — Key terms from Chapter 5</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 5.5 — Key terms from Chapter 5"><table><thead><tr><th scope="col">Term</th>
+<th scope="col">Meaning in this book</th>
+</tr></thead><tbody><tr><th scope="row">Web framework</th>
+<td data-label="Meaning in this book">Reusable software that supplies structure and tools for building web applications.</td>
+</tr>
+<tr><th scope="row">Convention</th>
+<td data-label="Meaning in this book">An agreed way of arranging or naming things so that parts work together predictably.</td>
+</tr>
+<tr><th scope="row">URL configuration (URLconf)</th>
+<td data-label="Meaning in this book">Django’s ordered list of address patterns, each connected to a view.</td>
+</tr>
+<tr><th scope="row">View</th>
+<td data-label="Meaning in this book">A Python function or class that receives a request and returns a response.</td>
+</tr>
+<tr><th scope="row">Model</th>
+<td data-label="Meaning in this book">A Python class that describes one kind of stored record and how to query it.</td>
+</tr>
+<tr><th scope="row">Template</th>
+<td data-label="Meaning in this book">A text file, usually HTML, with places where supplied values are inserted.</td>
+</tr>
+<tr><th scope="row">Middleware</th>
+<td data-label="Meaning in this book">Shared steps that process requests on the way in and responses on the way out; a step may return a response before the view runs.</td>
+</tr>
+<tr><th scope="row">High-level design (HLD)</th>
+<td data-label="Meaning in this book">A system’s main parts, their connections, and where responsibility and trust change.</td>
+</tr>
+<tr><th scope="row">Container (C4 model)</th>
+<td data-label="Meaning in this book">An application or data store that must be running for the system to work.</td>
+</tr>
+<tr><th scope="row">Trust boundary</th>
+<td data-label="Meaning in this book">A line where data passes between parts under different control.</td>
+</tr>
+<tr><th scope="row">Server-side rendering</th>
+<td data-label="Meaning in this book">Producing complete HTML pages on the server.</td>
+</tr>
+<tr><th scope="row">Client-side rendering</th>
+<td data-label="Meaning in this book">Building pages in the browser with JavaScript, usually from API data.</td>
+</tr>
+<tr><th scope="row">API</th>
+<td data-label="Meaning in this book">Application programming interface: a way for other software to use an application.</td>
+</tr>
+<tr><th scope="row">Architecture decision record (ADR)</th>
+<td data-label="Meaning in this book">A short record of one significant decision, its context, options, consequences, and status.</td>
+</tr>
+<tr><th scope="row">Proposed, accepted, rejected, superseded</th>
+<td data-label="Meaning in this book">The statuses that tell a reader whether to rely on a decision record.</td>
+</tr>
+</tbody></table></div></figure><p class="checkpoint" data-block="181"><strong>Readiness checkpoint:</strong> without looking back, trace a request for an event page through Django’s components and name each one’s job; draw the three-part sketch with its trust boundary; explain why Option B was proposed over Options A and C; and list the parts of a decision record and its four statuses. If one of these is difficult, return to that section’s exercise and model answer.</p><p class="transition" data-block="182">Next: Chapter 6 creates the Otahque project and opens Django’s development page in your browser, your first running result.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%205%2C%205.5%20Recording%20the%20first%20architecture%20decision" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter05/section-5-4/">← 5.4 Comparing architecture choices</a><a href="/chapters/chapter06/">Chapter 6: Creating the project and understanding its files →</a></nav></main></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

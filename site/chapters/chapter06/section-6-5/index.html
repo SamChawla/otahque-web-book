@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Chapter 6, 6.5 Diagnose and check readiness, from the Otahque Django web book.">
+<title>6.5 Diagnose and check readiness · Chapter 6 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="stylesheet" href="/assets/book.css">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home"><img class="brand-mark" src="/assets/logo.svg" width="42" height="42" alt="">OTAHQUE <span>THE WEB BOOK</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></nav></header>
+<div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter06/">← Chapter 6 overview</a>
+<details class="chapter-menu" open><summary>In this chapter</summary><nav aria-label="In this chapter"><ol><li><a href="/chapters/chapter06/section-6-1/">6.1 Prepare an isolated Django environment</a></li><li><a href="/chapters/chapter06/section-6-2/">6.2 Create the project</a></li><li><a href="/chapters/chapter06/section-6-3/">6.3 Read the generated files</a></li><li><a href="/chapters/chapter06/section-6-4/">6.4 Open the development page</a></li><li class="is-current"><a href="#section-6-5" aria-current="location">6.5 Diagnose and check readiness</a><ul class="topics"><li><a href="#topic-157">Diagnose in the order the work happens</a></li><li><a href="#topic-166">Keep a small startup record</a></li><li><a href="#topic-170">Compare with a fresh copy when needed</a></li><li><a href="#topic-177">In practice: asking for help with evidence</a></li><li><a href="#topic-181">Try it yourself</a></li><li><a href="#topic-185">Bringing the chapter together</a></li><li><a href="#topic-187">Key terms</a></li></ul></li></ol></nav></details>
+<p class="sidebar-note">5 sections · 3 figures · 5 tables<br>Milestone reached here: First Django page</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter06:6.5" data-progress-title="Section 6.5"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 6.5" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<p class="section-chapter"><a href="/chapters/chapter06/">Chapter 6 · Creating the project and understanding its files</a> <span>Section 5 of 5</span></p><p class="last-updated">Updated <time datetime="2026-10-26">26 October 2026</time>: Added a fresh comparison copy for recovery (6.5), a note on the Windows stop message (6.4), and clearer setup notes (6.1); enlarged Figure 6.2. <a href="/chapters/chapter06/#history">What changed</a></p><article><h2 id="section-6-5" data-block="154">6.5 Diagnose and check readiness</h2><p class="" data-block="155">Raj follows the startup instructions but his browser cannot connect. Reinstalling everything would discard useful clues. We can instead ask which step last worked: finding the files, importing Django, loading the configuration, listening on a port, or making the browser request.</p><p class="" data-block="156">Starting point: the project from 6.2–6.4, with the server stopped. Work in otahque/. No source files change in this section. Your output is a short startup record and a successful repeat of the local page check, with a recovery route for the common failures below.</p><h3 class="" id="topic-157" data-block="157">Diagnose in the order the work happens</h3><figure class="table-figure" data-block="158"><figcaption>Table 6.4 — Local startup problems and non-destructive recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 6.4 — Local startup problems and non-destructive recovery"><table><thead><tr><th scope="col">Observed problem</th>
+<th scope="col">Check and recovery</th>
+</tr></thead><tbody><tr><th scope="row">Python cannot open manage.py</th>
+<td data-label="Check and recovery">Inspect the current directory in the editor or terminal. Return to the folder containing manage.py and .venv/; do not generate another project to hide the path mistake.</td>
+</tr>
+<tr><th scope="row">Django cannot be imported</th>
+<td data-label="Check and recovery">Run the 6.1 helper with the explicit .venv selection. Check Python and Django versions before retrying installation into that environment.</td>
+</tr>
+<tr><th scope="row">A syntax or import error names a project file</th>
+<td data-label="Check and recovery">Read the final error and named file/line. If the cause is unclear, compare it with a freshly generated copy, as shown below; correct an accidental edit without replacing your settings wholesale.</td>
+</tr>
+<tr><th scope="row">The system check reports a problem</th>
+<td data-label="Check and recovery">Read and resolve the actual check message. A failed check is not the expected unapplied-migration warning. Keep checks enabled.</td>
+</tr>
+<tr><th scope="row">The port is already in use</th>
+<td data-label="Check and recovery">Check whether your own earlier server still runs in another terminal. Stop it there with Ctrl+C, or deliberately choose another free port and change the browser address too.</td>
+</tr>
+<tr><th scope="row">The browser cannot connect</th>
+<td data-label="Check and recovery">Keep the server terminal open; check startup errors, http, loopback address, and port. A stopped process or HTTPS mismatch is not fixed by changing event code.</td>
+</tr>
+<tr><th scope="row">A different page appears</th>
+<td data-label="Check and recovery">Confirm the address and the server’s working folder. An older server may answer on the port you visited; the current terminal should record your new request.</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="159">If you cannot identify an existing listener, leave it alone. Do not end an unknown process or relax security settings to clear the error. For a controlled alternative, start our project on port 8001 after ensuring your own earlier server is stopped. Choose the block for your shell, still in otahque/. PowerShell:</p><pre class="code-listing" data-block="160" tabindex="0"><code>uv run --no-project --python .venv python manage.py `
+  runserver 8001</code></pre><p class="" data-block="161">macOS shell or Linux/WSL Bash:</p><pre class="code-listing" data-block="162" tabindex="0"><code>uv run --no-project --python .venv python manage.py \
+  runserver 8001</code></pre><p class="" data-block="163">Visit http://127.0.0.1:8001/ and expect the same Django welcome page. If 8001 is also occupied, do not keep starting processes blindly: inspect your open terminals and choose a known free port. Stop the server you started when the check is complete. The port argument does not change project files or apply database migrations.</p><p class="question" data-block="164"><strong>Que. 11 </strong>You start on 8001 but refresh the page on 8000. What have you tested?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="165"><strong>Answer. </strong>You have not tested the new listener. The request goes to port 8000, which might have no server or a different one. Change the browser address to the exact URL in the new startup message and confirm that this terminal records the request.</p></details><h3 class="" id="topic-166" data-block="166">Keep a small startup record</h3><p class="" data-block="167">From otahque/, with the server stopped, rerun these commands in PowerShell, a macOS shell, or Linux/WSL Bash:</p><pre class="code-listing" data-block="168" tabindex="0"><code>uv run --no-project --python .venv check_environment.py
+uv pip check --python .venv
+uv run --no-project --python .venv python manage.py check</code></pre><p class="" data-block="169">Record the current directory, Python version, executable path, isolation result, Django version, and system-check result. Then start the server, record its exact address, visit the welcome page, and stop it. These observations make a support question specific. Exclude your secret key and unrelated private paths or data when sharing the record with someone else.</p><h3 class="" id="topic-170" data-block="170">Compare with a fresh copy when needed</h3><p class="" data-block="171">If you think a generated file was changed by accident and the error alone does not show what changed, generate a fresh copy of the project and compare that one file. You need this only when something has gone wrong. From Chapter 8, Git will show such changes directly. The commands run startproject in a new, empty sibling folder, so they do not touch your project. If you named your work folder otahque-learning in 6.1, use that name in place of otahque.</p><p class="" data-block="172">PowerShell, starting in otahque/:</p><pre class="code-listing" data-block="173" tabindex="0"><code>cd ..
+mkdir otahque-compare
+cd otahque-compare
+uv run --no-project --python ../otahque/.venv `
+  python -m django startproject config .
+cd ../otahque</code></pre><p class="" data-block="174">macOS shell or Linux/WSL Bash, starting in otahque/:</p><pre class="code-listing" data-block="175" tabindex="0"><code>cd ..
+mkdir otahque-compare
+cd otahque-compare
+uv run --no-project --python ../otahque/.venv \
+  python -m django startproject config .
+cd ../otahque</code></pre><p class="" data-block="176">The last command returns you to otahque/. The fresh copy has the same manage.py and five config/ files for this Django version, but no .venv/ of its own. Its SECRET_KEY differs from yours; every other generated line should match. Open the file named in the error in both folders, correct only the unintended change in your own file, and keep your own key. Do not edit the copy, run its server, or copy it over your project. Delete otahque-compare/ when you have finished.</p><h3 class="" id="topic-177" data-block="177">In practice: asking for help with evidence</h3><p class="" data-block="178"><strong>Situation. </strong>Raj reports that the project works in one terminal but not another.</p><p class="" data-block="179"><strong>Application. </strong>Compare the startup records from both: working directory, interpreter, Django version, check result, and listening URL. The earliest difference is a concrete lead.</p><p class="" data-block="180"><strong>Consideration. </strong>A successful system check does not prove all future features. From Chapter 9, each new page behaviour also gains an automated test of its result.</p><h3 class="exercise-heading" id="topic-181" data-block="181">Try it yourself</h3><p class="exercise" data-block="182">On paper, diagnose this report: “The helper prints Python 3.14.9, an interpreter in this project’s .venv, True, and Django 6.1.2. The system check passes. runserver says the port is already in use.” Name what already works, what failed, and a recovery that preserves another process. Then complete your own startup record using the project you built.</p><p class="question" data-block="183"><strong>Que. 12 </strong>What should the diagnosis and readiness evidence say?</p><details class="answer-reveal"><summary><span class="reveal-show">Show answer</span><span class="reveal-hide">Hide answer</span></summary><p class="answer" data-block="184"><strong>Answer. </strong>The selected Python and Django import work, and the configuration check passes. Binding the server to its port failed. Leave an unidentified listener alone; stop your own known earlier server or choose a known free port such as 8001, then visit the matching address. Your record should show the expected environment values, a passing system check, the welcome page and GET / with 200, and the server stopped afterward. No migration or reinstall is needed for a port conflict.</p></details><h3 class="" id="topic-185" data-block="185">Bringing the chapter together</h3><p class="" data-block="186">We moved from an installed framework to a generated project and a response in the browser. The working folder holds the environment and source; config/ collects configuration; manage.py lets us run project-aware commands; and runserver supplies a temporary local listener. We can now explain the starting structure before adding Otahque behaviour.</p><h3 class="" id="topic-187" data-block="187">Key terms</h3><p class="" data-block="188">Use Table 6.5 to explain the setup without relying on memorized command sequences.</p><figure class="table-figure" data-block="189"><figcaption>Table 6.5 — Key terms from Chapter 6</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 6.5 — Key terms from Chapter 6"><table><thead><tr><th scope="col">Term</th>
+<th scope="col">Meaning in this chapter</th>
+</tr></thead><tbody><tr><th scope="row">Dependency</th>
+<td data-label="Meaning in this chapter">A supporting package another package needs.</td>
+</tr>
+<tr><th scope="row">Version pin</th>
+<td data-label="Meaning in this chapter">A requirement for an exact version; pinning Django alone is not a complete dependency lock.</td>
+</tr>
+<tr><th scope="row">Django project</th>
+<td data-label="Meaning in this chapter">The configuration and apps brought together for a website.</td>
+</tr>
+<tr><th scope="row">Django app</th>
+<td data-label="Meaning in this chapter">A Python package supplying a capability used by a project.</td>
+</tr>
+<tr><th scope="row">Python package</th>
+<td data-label="Meaning in this chapter">A group of importable modules; config is a regular package marked by __init__.py.</td>
+</tr>
+<tr><th scope="row">startproject</th>
+<td data-label="Meaning in this chapter">The management command that generates the initial project structure.</td>
+</tr>
+<tr><th scope="row">manage.py</th>
+<td data-label="Meaning in this chapter">A project-aware helper for Django management commands.</td>
+</tr>
+<tr><th scope="row">Settings module</th>
+<td data-label="Meaning in this chapter">The Python module containing project configuration values.</td>
+</tr>
+<tr><th scope="row">System check</th>
+<td data-label="Meaning in this chapter">A check for common configuration problems, not proof of complete product behaviour.</td>
+</tr>
+<tr><th scope="row">WSGI / ASGI</th>
+<td data-label="Meaning in this chapter">Interfaces between a compatible server and a Python web application.</td>
+</tr>
+<tr><th scope="row">Loopback</th>
+<td data-label="Meaning in this chapter">An address, such as 127.0.0.1, referring to the local computer.</td>
+</tr>
+<tr><th scope="row">Port</th>
+<td data-label="Meaning in this chapter">A number distinguishing a listening service at an address.</td>
+</tr>
+<tr><th scope="row">runserver</th>
+<td data-label="Meaning in this chapter">Django’s local development server command.</td>
+</tr>
+<tr><th scope="row">Migration</th>
+<td data-label="Meaning in this chapter">A recorded database change, left unapplied in this chapter.</td>
+</tr>
+</tbody></table></div></figure><p class="checkpoint" data-block="190"><strong>Readiness checkpoint:</strong> identify the work folder and config package; explain each generated file; show Python 3.14.9 and Django 6.1.2 in the intended .venv; run the system check; open the development page at the exact listening address; stop and restart it; and explain why migrations remain unapplied. Return to the relevant section if any result is missing. This is the first local browser result, not completion of the broader first-pages milestone or a working registration system.</p><p class="transition" data-block="191">Next: Chapter 7 introduces Django apps and their boundaries, using this project as the starting point.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%206%2C%206.5%20Diagnose%20and%20check%20readiness" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter06/section-6-4/">← 6.4 Open the development page</a><a href="/chapters/chapter07/">Chapter 7: Django apps and application boundaries →</a></nav></main></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

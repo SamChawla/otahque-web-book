@@ -385,3 +385,21 @@ html { scroll-padding-top: 2.5rem; }
 .answer-reveal[open] .reveal-hide { display: inline; }
 .reading .answer-reveal .answer { margin: 8px 0 0; }
 @media print { .answer-reveal > summary { display: none; } .reading .answer-reveal .answer { margin-top: 0; } }
+
+/* 14. Milestones and update history (data from Table F.2 and the chapter manifest). */
+.milestone-tag, .optional-tag { display: inline-block; font: 700 12px/1.4 Arial, sans-serif; padding: 3px 9px; border-radius: 4px; border: 1px solid currentColor; }
+.milestone-tag { color: var(--next-ink); background: var(--next-fill); }
+.optional-tag { color: var(--muted); border-color: var(--line); }
+.chapter-milestone { font: 14px/1.55 Arial, sans-serif; color: var(--ink); background: var(--next-fill); border-left: 3px solid var(--next-ink); border-radius: 0 6px 6px 0; padding: 12px 16px; margin: 0 0 18px; }
+.chapter-milestone strong { color: var(--next-ink); }
+.last-updated { font: 13px/1.5 Arial, sans-serif; color: var(--muted); margin: 0 0 22px; }
+.page-history { margin: 8px 0 28px; }
+.page-history h2 { font: 700 18px/1.4 Arial, sans-serif; margin: 0 0 10px; }
+.update-list { list-style: none; padding: 0; margin: 0 0 28px; font: 15px/1.55 Arial, sans-serif; }
+.update-list li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.update-list time { font-weight: 700; margin-right: 6px; }
+.update-scope { display: inline-block; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; margin-right: 4px; }
+.updates-page { max-width: 820px; margin-inline: auto; padding: 40px var(--gutter) 60px; }
+.updates-page h2 { font: 700 18px/1.4 Arial, sans-serif; margin: 28px 0 6px; }
+.updates-page .update-list a { font-weight: 700; text-decoration: none; margin-right: 4px; }
+@media print { .last-updated, .page-history { display: none; } }
