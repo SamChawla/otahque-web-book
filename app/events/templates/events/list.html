@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load tz %}
+
+{% block title %}Events | Otahque{% endblock %}
+
+{% block content %}
+  <h1>Events</h1>
+  <ul class="event-list space-y-3">
+    {% for event in upcoming %}
+      {% partialdef event-row inline %}
+        <li class="event-row card border border-base-300
+                   bg-base-100 p-4">
+          <a class="font-semibold"
+             href="{% url 'events:detail' event.id %}">
+            {{ event.title }}
+          </a>
+          {% timezone event.timezone %}
+            <span class="text-sm">
+              {{ event.starts_at|date:"D j M Y, H:i T" }}
+            </span>
+          {% endtimezone %}
+          {% if event.starts_at <= now %}
+            {% if now < event.ends_at %}
+              <span class="badge badge-primary">
+                Happening now
+              </span>
+            {% endif %}
+          {% endif %}
+          {% if now < event.ends_at %}
+            {% include "events/places.html" %}
+          {% endif %}
+        </li>
+      {% endpartialdef %}
+    {% empty %}
+      <li class="event-empty card border border-base-300
+                 bg-base-100 p-4">No upcoming events.</li>
+    {% endfor %}
+  </ul>
+  {% if past %}
+    <h2 class="mt-8">Past events</h2>
+    <ul class="event-list event-past space-y-3 opacity-60">
+      {% for event in past %}
+        {% partial event-row %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

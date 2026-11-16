@@ -1,0 +1,8 @@
+[project]
+name = "otahque"
+version = "0.1.0"
+requires-python = ">=3.14.9"
+dependencies = [
+    "django==6.1.2",
+    "python-decouple==3.8",
+]

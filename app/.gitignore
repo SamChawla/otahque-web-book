@@ -1,0 +1,15 @@
+# Local values, including this computer's secret key
+.env
+
+# The environment, rebuilt from uv.lock on each computer
+.venv/
+
+# Files Python regenerates automatically
+__pycache__/
+*.pyc
+
+# This computer's local development database
+db.sqlite3
+
+# Node packages, rebuilt from package-lock.json by npm ci
+node_modules/

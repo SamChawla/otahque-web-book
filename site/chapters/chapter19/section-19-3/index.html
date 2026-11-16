@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 19: ORM fundamentals: saving and finding events. Save, find, change, and delete events with Django&#x27;s ORM in the shell, then make...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter19/section-19-3/">
+<title>How We Build It · Chapter 19 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter19/">← Chapter 19 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-19-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-86">The Custom Way</a></li><li><a href="#topic-93">The Django Way</a></li><li><a href="#topic-218">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 6 figures · 6 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter19:19.3" data-progress-title="Section 19.3" data-reader-prev="section-19-2.html" data-reader-next="section-19-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 19.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter19/">Chapter 19 · ORM fundamentals: saving and finding events</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter19/section-19-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter19/section-19-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter19/section-19-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter19/section-19-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter19/section-19-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-19-3" data-block="84">How We Build It</h2><p class="" data-block="85">Start from Chapter 18, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 29 passing tests, every migration applied, and a local superuser. The <code>events_event</code> table is empty. Steps 1 to 4 work in the Django shell and change only rows in <code>db.sqlite3</code>: you save three events and leave two of them published and one a draft. Steps 5 and 6 change files: the event tests, the views, and the two event templates in the <code>events</code> app, and the stylesheet source in <code>static/otahque</code>. They also delete the app’s <code>templatetags</code> folder and rebuild the stylesheet. At the end of Step 7, 30 tests pass, <code>/events/</code> lists the two published events soonest first, the workshop’s page shows its start time in India, the draft’s address returns 404, and the work is committed.</p><h3 class="" id="topic-86" data-block="86">The Custom Way</h3><p class="" data-block="87">This illustration asks SQLite for published events by building the SQL out of a string, as hand-written database code often did; do not add it to the project. It uses a small table in memory, so it runs anywhere:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/string_sql.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="88" tabindex="0"><code>import sqlite3
+
+db = sqlite3.connect(&#x27;:memory:&#x27;)
+db.execute(&#x27;CREATE TABLE event (title TEXT, status TEXT)&#x27;)
+db.executemany(&#x27;INSERT INTO event VALUES (?, ?)&#x27;, [
+    (&#x27;Python meetup&#x27;, &#x27;published&#x27;),
+    (&#x27;Spring planning&#x27;, &#x27;draft&#x27;),
+])
+
+
+def titles(sql, params=()):
+    return [t for (t,) in db.execute(sql, params)]
+
+
+status = &quot;published&#x27; OR &#x27;1&#x27;=&#x27;1&quot;
+built = f&quot;SELECT title FROM event WHERE status = &#x27;{status}&#x27;&quot;
+print(&#x27;built:&#x27;, titles(built))
+safe = &#x27;SELECT title FROM event WHERE status = ?&#x27;
+print(&#x27;placeholder:&#x27;, titles(safe, (status,)))
+print(&#x27;normal:&#x27;, titles(safe, (&#x27;published&#x27;,)))</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="89" tabindex="0"><code>built: [&#x27;Python meetup&#x27;, &#x27;Spring planning&#x27;]
+placeholder: []
+normal: [&#x27;Python meetup&#x27;]</code></pre><p class="" data-block="90">The <code>status</code> value stands for text that came from outside the program, such as part of a web address. Built into the SQL with an f-string, its quote mark ends the string early, and <code>OR &#x27;1&#x27;=&#x27;1&#x27;</code> becomes part of the condition, which is true for every row: the draft leaks. This is <strong>SQL injection</strong>. The second query uses a <code>?</code> placeholder and passes the value separately, so SQLite compares the status with the whole text, quote marks and all, and finds nothing; with a real status it works normally. Now list what the hand-written version still lacks even when it uses placeholders: each query names its columns by hand, each row comes back as a tuple to unpack by position, nothing checks that <code>status</code> is a real column, and the SQL would need rewriting for another database.</p><div class="callout callout--hood"><p class="callout__title" data-block="91">Under the Hood: how the ORM sends values</p><p class="" data-block="92">When the ORM turns <code>filter(status=...)</code> into SQL, the SQL holds a placeholder, and the value travels beside it as a parameter, exactly like the illustration’s <code>?</code>. The database never reads the value as SQL. This is why ORM queries are protected from SQL injection by default. The protection ends where you build SQL text yourself: an f-string passed to a cursor, <code>raw()</code> with values joined into its text, or the old <code>extra()</code> method. Injection is category A05 in the OWASP Top 10 2025, a widely used list of the most serious web application risks, and SQL injection is one of its main forms. Chapter 55 uses <code>raw()</code> safely, with parameters, and Chapter 59 reviews injection across the whole application.</p></div><h3 class="" id="topic-93" data-block="93">The Django Way</h3><p class="" data-block="94">Seven steps follow. Steps 1 to 4 use the shell; Steps 5 to 7 change files, tests first.</p><h4 data-block="95">Step 1: Check the starting point</h4><p class="" data-block="96">Run every test, beside <code>manage.py</code>, in PowerShell, Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="97" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="98">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="99" tabindex="0"><code>Found 29 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+.............................
+...
+Ran 29 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="100">Check that the event table’s migration is applied to your database:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="101" tabindex="0"><code>uv run python manage.py showmigrations events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="102" tabindex="0"><code>events
+ [X] 0001_initial</code></pre><p class="" data-block="103">Now start the shell, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="104" tabindex="0"><code>uv run python manage.py shell</code></pre><p class="" data-block="105">Python greets you, then waits at <code>&gt;&gt;&gt;</code>. Ask how many events there are, then for all of them:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="106" tabindex="0"><code>13 objects imported automatically (use -v 2 for details).
+
+Python 3.14.9 ...
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for ...
+(InteractiveConsole)
+&gt;&gt;&gt; Event.objects.count()
+0
+&gt;&gt;&gt; Event.objects.all()
+&lt;QuerySet []&gt;
+&gt;&gt;&gt; exit()
+now exiting InteractiveConsole...</code></pre><p class="" data-block="107">The first line counts what the shell imported for you; <code>Event</code> is one of the 13. The line after <code>Python 3.14.9</code> describes your system, so it differs on macOS and Linux. <code>count()</code> asks the database how many rows match, and <code>all()</code> returns a QuerySet of every row; printed, an empty one is <code>&lt;QuerySet []&gt;</code>. <code>exit()</code> leaves the shell and returns you to your terminal. Run <code>uv run python manage.py shell -v 2</code> once if you are curious: it lists each automatic import, then starts the shell as usual.</p><p class="" data-block="108">If <code>count()</code> fails with <code>no such table: events_event</code>, <code>migrate</code> has not run on this database; run <code>uv run python manage.py migrate</code>, which applies only what is missing. If the shell says <code>name &#x27;Event&#x27; is not defined</code>, you started plain <code>python</code>, or <code>shell</code> with <code>--no-imports</code>; leave with <code>exit()</code> and start it as shown. If <code>count()</code> prints a number above zero, rows are left from an experiment of your own. Keep them: the pages will list them too, and the rest of the chapter works the same.</p><h4 data-block="109">Step 2: Create events and fetch them</h4><p class="" data-block="110">Start the shell again with <code>uv run python manage.py shell</code>, and import Python’s <code>datetime</code> and <code>UTC</code>, which the shell does not import for you. Then build Sam’s meetup as an object and look at it before saving:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="111" tabindex="0"><code>&gt;&gt;&gt; from datetime import UTC, datetime
+&gt;&gt;&gt; meetup = Event(
+...     title=&#x27;Python meetup&#x27;,
+...     starts_at=datetime(2026, 11, 19, 18, 30, tzinfo=UTC),
+...     ends_at=datetime(2026, 11, 19, 20, 30, tzinfo=UTC),
+...     timezone=&#x27;Europe/London&#x27;,
+...     location=&#x27;Leeds Central Library&#x27;,
+...     capacity=40,
+... )
+&gt;&gt;&gt; print(meetup.pk, meetup.status)
+None draft
+&gt;&gt;&gt; meetup.save()
+&gt;&gt;&gt; print(meetup.pk, meetup.status)
+1 draft</code></pre><p class="" data-block="112">Calling the class, <code>Event(...)</code>, creates an object in Python only. Its <strong>primary key</strong>, <code>pk</code>, the id column, is <code>None</code>, because the database has not seen it, and its status is the model’s default, <code>draft</code>. <code>save()</code> sends an <code>INSERT</code>, and the database chooses the id. <code>starts_at</code> is an <strong>aware</strong> datetime: <code>tzinfo=UTC</code> says which zone the 18:30 belongs to, and so is <code>ends_at</code>. Otahque stores every start and end time in UTC and the event’s own zone, here <code>Europe/London</code>, beside it.</p><div class="callout callout--error"><p class="callout__title" data-block="113">Common Error: a naive datetime</p><p class="" data-block="114">Leave out <code>tzinfo=UTC</code>, and <code>save()</code> still works but prints <code>RuntimeWarning: DateTimeField Event.starts_at received a naive datetime (2026-11-19 18:30:00) while time zone support is active.</code> A <strong>naive</strong> datetime has no zone, so Django guesses that it means the default zone in <code>settings.py</code>, UTC. The guess happens to be right here and would be wrong for an event entered in Kolkata time. Delete the row with <code>delete()</code>, shown in Step 4, and create it again with <code>tzinfo=UTC</code>.</p></div><p class="" data-block="115"><code>create()</code> does both steps at once: it builds the object, saves it, and returns it. Create the online workshop, which Soni wants to attend, already published, and the spring plan as a draft:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="116" tabindex="0"><code>&gt;&gt;&gt; workshop = Event.objects.create(
+...     title=&#x27;Django workshop&#x27;,
+...     starts_at=datetime(2026, 12, 3, 9, 0, tzinfo=UTC),
+...     ends_at=datetime(2026, 12, 3, 12, 0, tzinfo=UTC),
+...     timezone=&#x27;Asia/Kolkata&#x27;,
+...     location=&#x27;Virtual&#x27;,
+...     capacity=60,
+...     status=Event.Status.PUBLISHED,
+... )
+&gt;&gt;&gt; planning = Event.objects.create(
+...     title=&#x27;Spring planning&#x27;,
+...     starts_at=datetime(2027, 3, 10, 18, 0, tzinfo=UTC),
+...     ends_at=datetime(2027, 3, 10, 20, 0, tzinfo=UTC),
+...     timezone=&#x27;Europe/London&#x27;,
+...     location=&#x27;Leeds Central Library&#x27;,
+...     capacity=12,
+... )</code></pre><p class="" data-block="117"><code>Event.Status.PUBLISHED</code> is Chapter 16’s choice, which stores <code>&#x27;published&#x27;</code>. The workshop runs from 09:00 to 12:00 UTC, which is 14:30 to 17:30 in India. Loop over every event to see what the table holds. Type the <code>for</code> line, then the indented <code>print</code> line, then press Enter on the empty <code>...</code> line:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="118" tabindex="0"><code>&gt;&gt;&gt; for event in Event.objects.all():
+...     print(event.pk, event.title, event.status)
+...
+1 Python meetup draft
+2 Django workshop published
+3 Spring planning draft</code></pre><p class="" data-block="119">The events come back soonest first without asking, because Chapter 16’s model sets <code>ordering = [&#x27;starts_at&#x27;]</code>. Your ids should match these. If you created and deleted events along the way, yours are higher: SQLite does not reuse an id once it has been used. That is why the steps below refer to <code>meetup.pk</code>, never to a number you type.</p><div class="callout callout--error"><p class="callout__title" data-block="120">Common Error: a misspelled field name</p><p class="" data-block="121"><code>Event(titel=&#x27;Python meetup&#x27;)</code> fails at once with <code>TypeError: Event() got unexpected keyword arguments: &#x27;titel&#x27;</code>, and nothing is saved. Check the spelling against <code>events/models.py</code>.</p></div><p class="" data-block="122">Now fetch one event with <code>get()</code>, then ask for one that does not exist, then for one that is not unique:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="123" tabindex="0"><code>&gt;&gt;&gt; Event.objects.get(pk=meetup.pk)
+&lt;Event: Python meetup&gt;
+&gt;&gt;&gt; Event.objects.get(title=&#x27;Python Meetup&#x27;)
+Traceback (most recent call last):
+...
+events.models.Event.DoesNotExist: Event matching query ...
+&gt;&gt;&gt; Event.objects.get(status=Event.Status.DRAFT)
+Traceback (most recent call last):
+...
+events.models.Event.MultipleObjectsReturned: get() ...</code></pre><p class="" data-block="124">The shell prints an event using Chapter 16’s <code>__str__()</code>, its title. The second call asks for <code>Python Meetup</code> with a capital M; an equals condition compares letter case too, so no row matches, and the message ends <code>does not exist.</code> The third matches the two drafts, and the full message is <code>get() returned more than one Event -- it returned 2!</code>. Both errors stop the line, not the shell, which waits at the next <code>&gt;&gt;&gt;</code>. Their full tracebacks name files inside Django; read the last line first. Leave the shell with <code>exit()</code>.</p><h4 data-block="125">Step 3: Ask questions with QuerySets</h4><p class="" data-block="126">Start the shell again and import <code>datetime</code> and <code>UTC</code>. Build a QuerySet of the published events, print it, and then exclude the online events:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="127" tabindex="0"><code>&gt;&gt;&gt; from datetime import UTC, datetime
+&gt;&gt;&gt; published = Event.objects.filter(
+...     status=Event.Status.PUBLISHED
+... )
+&gt;&gt;&gt; published
+&lt;QuerySet [&lt;Event: Django workshop&gt;]&gt;
+&gt;&gt;&gt; Event.objects.exclude(location=&#x27;Virtual&#x27;)
+&lt;QuerySet [&lt;Event: Python meetup&gt;, &lt;Event: Spring planning&gt;]&gt;
+&gt;&gt;&gt; Event.objects.filter(status=&quot;published&#x27; OR &#x27;1&#x27;=&#x27;1&quot;)
+&lt;QuerySet []&gt;</code></pre><p class="" data-block="128">Only the workshop is published so far; the meetup is still a draft until Step 4. <code>exclude()</code> is the opposite of <code>filter()</code>: every row that does not match. The third line is the Custom Way’s attack, given to the ORM. No event has that text as its status, so nothing matches, and the draft stays hidden: the value was sent as a parameter, never as SQL.</p><p class="" data-block="129">Now try the lookups from Table 19.1:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="130" tabindex="0"><code>&gt;&gt;&gt; Event.objects.filter(title__iexact=&#x27;python MEETUP&#x27;)
+&lt;QuerySet [&lt;Event: Python meetup&gt;]&gt;
+&gt;&gt;&gt; Event.objects.filter(title__icontains=&#x27;plan&#x27;).count()
+1
+&gt;&gt;&gt; december = datetime(2026, 12, 1, tzinfo=UTC)
+&gt;&gt;&gt; Event.objects.filter(starts_at__lt=december)
+&lt;QuerySet [&lt;Event: Python meetup&gt;]&gt;
+&gt;&gt;&gt; Event.objects.filter(starts_at__gte=december).count()
+2
+&gt;&gt;&gt; Event.objects.filter(starts_at__year=2027)
+&lt;QuerySet [&lt;Event: Spring planning&gt;]&gt;
+&gt;&gt;&gt; hidden = [Event.Status.DRAFT, Event.Status.CANCELLED]
+&gt;&gt;&gt; Event.objects.filter(status__in=hidden).count()
+2</code></pre><p class="" data-block="131"><code>iexact</code> finds the meetup that Step 2’s exact <code>get()</code> missed. <code>count()</code> on a QuerySet that has not run asks the database for a number, not for rows, so it is the cheap way to ask “how many”. A datetime you compare with must be aware too, so <code>december</code> has <code>tzinfo=UTC</code>.</p><p class="" data-block="132">Order, slice, and pick one:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="133" tabindex="0"><code>&gt;&gt;&gt; latest = Event.objects.order_by(&#x27;-starts_at&#x27;)
+&gt;&gt;&gt; [event.title for event in latest[:2]]
+[&#x27;Spring planning&#x27;, &#x27;Django workshop&#x27;]
+&gt;&gt;&gt; latest.first()
+&lt;Event: Spring planning&gt;
+&gt;&gt;&gt; Event.objects.filter(location=&#x27;Leeds&#x27;).exists()
+False
+&gt;&gt;&gt; Event.objects.filter(location=&#x27;Leeds&#x27;).first()
+&gt;&gt;&gt; Event.objects.filter(location=&#x27;Leeds&#x27;)[0]
+Traceback (most recent call last):
+...
+IndexError: list index out of range</code></pre><p class="" data-block="134"><code>order_by(&#x27;-starts_at&#x27;)</code> replaces the model’s order; the minus sign means latest first. <code>[:2]</code> becomes SQL’s <code>LIMIT 2</code>, and the list comprehension prints just the titles, which keeps the output short. <code>first()</code> returns the first object, or <code>None</code> when there is none, which is why the shell prints nothing for the empty <code>Leeds</code> search: no location equals <code>Leeds</code> exactly, because the library’s location is <code>Leeds Central Library</code>. <code>exists()</code> answers “is there at least one?” without loading rows. Indexing an empty QuerySet with <code>[0]</code> raises <code>IndexError</code>; use <code>first()</code> when nothing may match.</p><p class="" data-block="135">Two mistakes come up often. Try them both:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="136" tabindex="0"><code>&gt;&gt;&gt; Event.objects.filter(name=&#x27;Python meetup&#x27;)
+Traceback (most recent call last):
+...
+django.core.exceptions.FieldError: Cannot resolve ...
+&gt;&gt;&gt; published.title
+Traceback (most recent call last):
+  File &quot;&lt;console&gt;&quot;, line 1, in &lt;module&gt;
+AttributeError: &#x27;QuerySet&#x27; object has no attribute &#x27;title&#x27;</code></pre><p class="" data-block="137">The full first message goes on to list every valid field name after <code>Choices are:</code>. There is no <code>name</code> field; the event’s field is <code>title</code>. The second treats a QuerySet as one event. A QuerySet holds events but has no title of its own; loop over it, or use <code>get()</code> or <code>first()</code> to get one object.</p><p class="" data-block="138">To see roughly what SQL a QuerySet will run, print its <code>query</code> attribute:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="139" tabindex="0"><code>&gt;&gt;&gt; print(published.query)
+SELECT ... WHERE &quot;events_event&quot;.&quot;status&quot; = published ...</code></pre><p class="" data-block="140">The full line lists every column in the <code>SELECT</code>, then the <code>WHERE</code> condition, then <code>ORDER BY</code> the start time, from the model’s ordering. Read it as an approximation for people, not as the SQL that runs: <code>published</code> appears without quote marks because the real query sends it separately as a parameter. Django’s documentation does not treat <code>query</code> as part of its public interface, so use it for looking only.</p><p class="" data-block="141">Finally, count queries. <code>CaptureQueriesContext</code>, from Django’s test utilities, records every query run inside a <code>with</code> block; <code>connection</code> is one of the shell’s automatic imports. Type each block, then press Enter on the empty <code>...</code> line:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="142" tabindex="0"><code>&gt;&gt;&gt; from django.test.utils import CaptureQueriesContext
+&gt;&gt;&gt; with CaptureQueriesContext(connection) as queries:
+...     in_person = Event.objects.exclude(location=&#x27;Virtual&#x27;)
+...     print(&#x27;built:&#x27;, len(queries))
+...     titles = [event.title for event in in_person]
+...     print(&#x27;listed:&#x27;, len(queries))
+...     print(in_person.count(), in_person.exists())
+...     print(&#x27;reused:&#x27;, len(queries))
+...
+built: 0
+listed: 1
+2 True
+reused: 1
+&gt;&gt;&gt; with CaptureQueriesContext(connection) as queries:
+...     print(Event.objects.count(), Event.objects.count())
+...     print(&#x27;queries:&#x27;, len(queries))
+...
+3 3
+queries: 2</code></pre><p class="" data-block="143">These are Figure 19.1’s numbers. Building <code>in_person</code> ran nothing. The list comprehension evaluated it: one query. After that, <code>count()</code> and <code>exists()</code> used its cache: still one. In the second block, <code>Event.objects.count()</code> builds a new QuerySet each time it is written, so writing it twice runs two queries. Leave the shell with <code>exit()</code>.</p><h4 data-block="144">Step 4: Change and remove rows</h4><p class="" data-block="145">Sam has two changes. The meetup has moved to Room 2 of the library, and it is ready to publish. Start the shell again and import <code>datetime</code> and <code>UTC</code>. Fetch the meetup by its title, which is unique among your events, change one field, and save only that field:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="146" tabindex="0"><code>&gt;&gt;&gt; from datetime import UTC, datetime
+&gt;&gt;&gt; meetup = Event.objects.get(title=&#x27;Python meetup&#x27;)
+&gt;&gt;&gt; meetup.location = &#x27;Leeds Central Library, Room 2&#x27;
+&gt;&gt;&gt; meetup.save(update_fields=[&#x27;location&#x27;])
+&gt;&gt;&gt; Event.objects.get(pk=meetup.pk).location
+&#x27;Leeds Central Library, Room 2&#x27;</code></pre><p class="" data-block="147">Changing the attribute changes the object in Python only; <code>save()</code> writes it. With <code>update_fields</code>, the <code>UPDATE</code> sets that one column, so it cannot overwrite a change someone else made to another column in the meantime. Fetching the row again shows what the database holds.</p><p class="" data-block="148">Publish it with <code>update()</code>. Before any <code>update()</code> or <code>delete()</code>, count what the QuerySet matches, so that you know how many rows will change:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="149" tabindex="0"><code>&gt;&gt;&gt; to_publish = Event.objects.filter(pk=meetup.pk)
+&gt;&gt;&gt; to_publish.count()
+1
+&gt;&gt;&gt; to_publish.update(status=Event.Status.PUBLISHED)
+1
+&gt;&gt;&gt; meetup.status
+&#x27;draft&#x27;
+&gt;&gt;&gt; meetup.refresh_from_db()
+&gt;&gt;&gt; meetup.status
+&#x27;published&#x27;</code></pre><p class="" data-block="150"><code>update()</code> returned 1, the number of rows it matched. The <code>meetup</code> object still said <code>draft</code>, because <code>update()</code> changed the database, not objects already in Python. <code>refresh_from_db()</code> reloads an object’s fields from its row.</p><div class="callout callout--error"><p class="callout__title" data-block="151">Common Error: update() or delete() on every row</p><p class="" data-block="152">Calling <code>update()</code> on <code>Event.objects</code> itself, or <code>delete()</code> on <code>Event.objects.all()</code>, changes or deletes every event, and the shell has no undo. Build the QuerySet first, check its <code>count()</code>, then call <code>update()</code> or <code>delete()</code> on it, as in this step. If it happens to your practice rows, recreate them with Step 2’s <code>create()</code> calls; never delete <code>db.sqlite3</code> or a migration to recover.</p></div><p class="" data-block="153">Now see that <code>save()</code> checks nothing. Save an event that breaks every rule the model describes, then find and delete it:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>&gt;&gt;&gt; broken = Event(
+...     title=&#x27;&#x27;,
+...     starts_at=datetime(2026, 1, 1, tzinfo=UTC),
+...     ends_at=datetime(2025, 12, 31, tzinfo=UTC),
+...     timezone=&#x27;Nowhere/Special&#x27;,
+...     location=&#x27;&#x27;,
+...     capacity=0,
+...     status=&#x27;archived&#x27;,
+... )
+&gt;&gt;&gt; broken.save()
+&gt;&gt;&gt; print(broken.pk, repr(broken.title), broken.status)
+4 &#x27;&#x27; archived
+&gt;&gt;&gt; invalid = Event.objects.filter(status=&#x27;archived&#x27;)
+&gt;&gt;&gt; invalid.count()
+1
+&gt;&gt;&gt; invalid.delete()
+(1, {&#x27;events.Event&#x27;: 1})</code></pre><p class="" data-block="155">An empty title, an unknown time zone, no places, and a status that is not one of the three choices: the database stored all of it, because the table’s only rule about these columns is that capacity is not negative. Chapter 16’s <code>full_clean()</code> would have refused the title, the location, and the status, but nothing called it. <code>delete()</code> returned the total number of rows deleted and the count for each model: here one <code>Event</code>. Its id, 4, will not be used again. Check what the table holds now:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="156" tabindex="0"><code>&gt;&gt;&gt; for event in Event.objects.all():
+...     print(event.pk, event.title, event.status)
+...
+1 Python meetup published
+2 Django workshop published
+3 Spring planning draft</code></pre><p class="" data-block="157">Two published events and one draft: the data the pages will show. Leave the shell with <code>exit()</code>. These rows live in <code>db.sqlite3</code>, which Git ignores, so they are yours alone; a teammate’s copy of Otahque has its own.</p><h4 data-block="158">Step 5: Write the page tests first</h4><p class="" data-block="159">The pages still read the dictionary. Before changing them, change the tests to describe the pages you want. Tests that use the database must be <code>TestCase</code> classes, from Chapter 18, and each class creates its events once in <code>setUpTestData()</code>, a class method that <code>TestCase</code> runs before the class’s tests. Each test then sees those rows, and any change a test makes is rolled back before the next one.</p><p class="" data-block="160">Open <code>events/tests.py</code>. This step replaces everything above <code>class DesignSystemTests</code> with the seven listings below, in order; <code>DesignSystemTests</code> and <code>EventModelTests</code> stay as they are. Start with the imports and two helpers. <code>patch</code>, <code>Context</code>, and <code>Template</code> are no longer needed, and <code>TestCase</code> joins <code>SimpleTestCase</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (1 of 7: imports and helpers)</p><pre class="code-listing code-listing--file" data-block="161" tabindex="0"><code>from datetime import UTC, datetime, timedelta
+from pathlib import Path
+
+from django.contrib.staticfiles import finders
+from django.core.exceptions import ValidationError
+from django.template.loader import render_to_string
+from django.test import SimpleTestCase, TestCase
+from django.urls import resolve, reverse
+
+from . import views
+from .models import Event
+
+
+def save_event(**changes):
+    &quot;&quot;&quot;Save a published event; keywords replace defaults.&quot;&quot;&quot;
+    fields = {
+        &#x27;title&#x27;: &#x27;Python meetup&#x27;,
+        &#x27;starts_at&#x27;: datetime(2026, 11, 19, 18, 30,
+                              tzinfo=UTC),
+        &#x27;timezone&#x27;: &#x27;Europe/London&#x27;,
+        &#x27;location&#x27;: &#x27;Leeds Central Library&#x27;,
+        &#x27;capacity&#x27;: 40,
+        &#x27;status&#x27;: Event.Status.PUBLISHED,
+    }
+    fields.update(changes)
+    fields.setdefault(
+        &#x27;ends_at&#x27;, fields[&#x27;starts_at&#x27;] + timedelta(hours=2)
+    )
+    return Event.objects.create(**fields)
+
+
+def layout_pages(event):
+    return [
+        (&#x27;/&#x27;, &#x27;events/home.html&#x27;, &#x27;Otahque&#x27;),
+        (&#x27;/events/&#x27;, &#x27;events/list.html&#x27;,
+         &#x27;Events | Otahque&#x27;),
+        (f&#x27;/events/{event.pk}/&#x27;, &#x27;events/detail.html&#x27;,
+         &#x27;Python meetup | Otahque&#x27;),
+    ]</code></pre><p class="" data-block="162"><code>save_event()</code> saves a published event with sensible values, and any keyword argument replaces one of them, so a test states only what matters to it, such as <code>status=Event.Status.DRAFT</code>. When a test gives no end time, <code>setdefault()</code> sets one two hours after the start, so a test that moves the start never leaves the end before it. <code>layout_pages()</code> lists the three pages with their templates and titles; the detail page’s address depends on the saved event’s id, so it is built from the event. Next, the routing tests:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (2 of 7: routing)</p><pre class="code-listing code-listing--file" data-block="163" tabindex="0"><code>class RoutingTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = save_event(title=&#x27;Django workshop&#x27;)
+
+    def test_home(self):
+        response = self.client.get(&#x27;/&#x27;)
+        self.assertContains(
+            response, &#x27;Welcome to Otahque.&#x27;
+        )
+        self.assertEqual(reverse(&#x27;events:home&#x27;), &#x27;/&#x27;)
+        self.assertIs(resolve(&#x27;/&#x27;).func, views.home)
+
+    def test_event_list(self):
+        response = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(response, &#x27;Django workshop&#x27;)
+        self.assertTemplateUsed(
+            response, &#x27;events/list.html&#x27;
+        )
+        self.assertContains(
+            response, f&#x27;href=&quot;/events/{self.event.pk}/&quot;&#x27;
+        )
+        self.assertEqual(
+            reverse(&#x27;events:list&#x27;), &#x27;/events/&#x27;
+        )
+        self.assertIs(
+            resolve(&#x27;/events/&#x27;).func, views.event_list
+        )
+
+    def test_unknown_path(self):
+        response = self.client.get(&#x27;/does-not-exist/&#x27;)
+        self.assertEqual(response.status_code, 404)</code></pre><p class="" data-block="164">The list test now needs an event in the database. Its title is <code>Django workshop</code>, not <code>Python meetup</code>, on purpose: the old dictionary’s one sample is a <code>Python meetup</code> with id 1, so a test looking for that title at <code>/events/1/</code> could pass against the old code for the wrong reason. Next, a new class for the list page:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (3 of 7: list page)</p><pre class="code-listing code-listing--file" data-block="165" tabindex="0"><code>class EventListTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        save_event(
+            title=&#x27;Django workshop&#x27;,
+            starts_at=datetime(2026, 12, 3, 9,
+                               tzinfo=UTC),
+        )
+        save_event(title=&#x27;Python meetup&#x27;)
+        save_event(title=&#x27;Spring planning&#x27;,
+                   status=Event.Status.DRAFT)
+        save_event(title=&#x27;Autumn social&#x27;,
+                   status=Event.Status.CANCELLED)
+
+    def test_published_events_soonest_first(self):
+        with self.assertNumQueries(1):
+            response = self.client.get(&#x27;/events/&#x27;)
+        html = response.content.decode()
+        self.assertLess(html.index(&#x27;Python meetup&#x27;),
+                        html.index(&#x27;Django workshop&#x27;))
+        self.assertNotContains(response, &#x27;Spring planning&#x27;)
+        self.assertNotContains(response, &#x27;Autumn social&#x27;)
+
+    def test_empty_list(self):
+        Event.objects.all().delete()
+        response = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(response, &#x27;No events yet.&#x27;)</code></pre><p class="" data-block="166"><code>setUpTestData()</code> saves four events: two published, the later one first, one draft, and one cancelled. The first test is the published rule and the order: inside <code>assertNumQueries(1)</code>, the page must run exactly one query, whatever it shows. <code>index()</code> finds where each title appears in the page’s HTML, so <code>assertLess</code> proves that the meetup, which starts first, is listed first. <code>assertNotContains</code> proves that the draft and the cancelled event are absent. The second test deletes every event, which is rolled back afterwards, and checks the new empty message. Next, the detail page:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (4 of 7: detail page)</p><pre class="code-listing code-listing--file" data-block="167" tabindex="0"><code>class EventDetailTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = save_event()
+
+    def test_published_event(self):
+        response = self.client.get(
+            f&#x27;/events/{self.event.pk}/&#x27;
+        )
+        self.assertContains(
+            response, &#x27;&lt;h1&gt;Python meetup&lt;/h1&gt;&#x27;, html=True
+        )
+        self.assertContains(
+            response, &#x27;Thursday 19 November 2026, 18:30 GMT&#x27;
+        )
+        self.assertContains(
+            response, &#x27;Thursday 19 November 2026, 20:30 GMT&#x27;
+        )
+        self.assertContains(
+            response, &#x27;Leeds Central Library&#x27;
+        )
+        self.assertTemplateUsed(
+            response, &#x27;events/detail.html&#x27;
+        )
+
+    def test_time_in_event_time_zone(self):
+        event = save_event(
+            starts_at=datetime(2026, 12, 3, 9,
+                               tzinfo=UTC),
+            timezone=&#x27;Asia/Kolkata&#x27;,
+        )
+        response = self.client.get(f&#x27;/events/{event.pk}/&#x27;)
+        self.assertContains(
+            response, &#x27;Thursday 3 December 2026, 14:30 IST&#x27;
+        )
+
+    def test_unpublished_events_are_hidden(self):
+        response = self.client.get(
+            f&#x27;/events/{self.event.pk}/&#x27;
+        )
+        self.assertContains(
+            response, &#x27;Leeds Central Library&#x27;
+        )
+        for status in (Event.Status.DRAFT,
+                       Event.Status.CANCELLED):
+            with self.subTest(status=status):
+                event = save_event(status=status)
+                response = self.client.get(
+                    f&#x27;/events/{event.pk}/&#x27;
+                )
+                self.assertEqual(response.status_code, 404)
+
+    def test_missing_event(self):
+        self.assertIs(
+            resolve(&#x27;/events/999/&#x27;).func,
+            views.event_detail,
+        )
+        response = self.client.get(&#x27;/events/999/&#x27;)
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_id(self):
+        response = self.client.get(&#x27;/events/abc/&#x27;)
+        self.assertEqual(response.status_code, 404)</code></pre><p class="" data-block="168"><code>test_published_event</code> checks the heading, the start and end times, and the location. The meetup starts at 18:30 UTC, and London is on UTC in November, so its time does not change. The second test is the real check of the time zone: the workshop starts at 09:00 UTC, and the page must say <code>14:30 IST</code>, India Standard Time. The third test is the published rule for the detail page, and it starts by fetching the published event and checking its location, which the old page never shows. Without that first check, the 404s would prove nothing: the old code also returns 404 for both, because neither id is in its dictionary. <code>subTest()</code> reports the draft and the cancelled event separately if either fails. The last two tests are Chapter 10’s, unchanged. Next, escaping, now with saved titles instead of a patched dictionary:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (5 of 7: escaping)</p><pre class="code-listing code-listing--file" data-block="169" tabindex="0"><code>class TemplateSafetyTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = save_event(
+            title=&#x27;&lt;strong&gt;Not a tag&lt;/strong&gt;&#x27;
+        )
+
+    def test_list_escapes_title(self):
+        response = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(
+            response, &#x27;&amp;lt;strong&amp;gt;&#x27;
+        )
+        self.assertNotContains(
+            response, &#x27;&lt;strong&gt;Not a tag&#x27;
+        )
+
+    def test_detail_escapes_title(self):
+        response = self.client.get(
+            f&#x27;/events/{self.event.pk}/&#x27;
+        )
+        self.assertContains(
+            response, &#x27;&amp;lt;strong&amp;gt;&#x27;
+        )
+        self.assertNotContains(
+            response, &#x27;&lt;strong&gt;Not a tag&#x27;
+        )</code></pre><p class="" data-block="170">Next, the layout tests, whose page list now comes from <code>layout_pages()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (6 of 7: layout)</p><pre class="code-listing code-listing--file" data-block="171" tabindex="0"><code>class LayoutTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.pages = layout_pages(save_event())
+
+    def test_pages_extend_layout(self):
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertTemplateUsed(response, template)
+                self.assertTemplateUsed(
+                    response, &#x27;base.html&#x27;
+                )
+                self.assertContains(
+                    response, f&#x27;&lt;title&gt;{title}&lt;/title&gt;&#x27;,
+                    html=True,
+                )
+
+    def test_pages_include_navigation(self):
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertTemplateUsed(
+                    response, &#x27;includes/site_nav.html&#x27;
+                )
+                self.assertContains(
+                    response,
+                    &#x27;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&#x27;,
+                    html=True,
+                )
+                self.assertContains(
+                    response,
+                    &#x27;&lt;a href=&quot;/events/&quot;&gt;Events&lt;/a&gt;&#x27;,
+                    html=True,
+                )</code></pre><p class="" data-block="172">Finally, the partial test, which renders one row by itself, and the stylesheet tests. The partial test needs an event with an id, but no database: an unsaved <code>Event(pk=7, ...)</code> has one, so this class stays a <code>SimpleTestCase</code>. The <code>SampleLabelFilterTests</code> class is gone, because Step 6 deletes the filter it tested:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (7 of 7: partial and stylesheet)</p><pre class="code-listing code-listing--file" data-block="173" tabindex="0"><code>class EventRowPartialTests(SimpleTestCase):
+    def test_row_renders_alone(self):
+        event = Event(pk=7, title=&#x27;&lt;b&gt;Not a tag&lt;/b&gt;&#x27;)
+        html = render_to_string(
+            &#x27;events/list.html#event-row&#x27;, {&#x27;event&#x27;: event}
+        )
+        self.assertIn(&#x27;href=&quot;/events/7/&quot;&#x27;, html)
+        self.assertIn(&#x27;&amp;lt;b&amp;gt;Not a tag&#x27;, html)
+        self.assertNotIn(&#x27;&lt;nav&#x27;, html)
+
+
+class StylesheetTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.pages = layout_pages(save_event())
+
+    def test_pages_link_stylesheet(self):
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertContains(
+                    response,
+                    &#x27;&lt;link rel=&quot;stylesheet&quot;&#x27;
+                    &#x27; href=&quot;/static/otahque/site.css&quot;&gt;&#x27;,
+                    html=True,
+                )
+
+    def test_finder_locates_stylesheet(self):
+        self.assertIsNotNone(
+            finders.find(&#x27;otahque/site.css&#x27;)
+        )</code></pre><p class="" data-block="174">Run every test, with the new tests against the old pages:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="175" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="176">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="177" tabindex="0"><code>Found 30 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+...
+FAIL: test_published_event (events.tests.EventDetailTes...
+...
+FAIL: test_published_events_soonest_first (events.tests...
+...
+AssertionError: 0 != 1 : 0 queries executed, 1 expected
+...
+FAILED (failures=10)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="178">Thirty tests, ten failures, and every failure is for a reason you expect. The list page ran no query, because it reads the dictionary. The heading still has the “Sample” label. The workshop’s page is a 404, and the location, the local time, the new titles, and the empty message are missing. The two escaping tests fail because the old pages never show the saved titles. Chapter 18’s nine tests, and the events tests that do not depend on the data, still pass.</p><div class="callout callout--error"><p class="callout__title" data-block="179">Common Error: DatabaseOperationForbidden</p><p class="" data-block="180">If a test fails with <code>DatabaseOperationForbidden</code> and a message that database queries are not allowed in <code>SimpleTestCase</code>, its class still inherits from <code>SimpleTestCase</code> but saves an event. Change the base class to <code>TestCase</code>, as in the listings. Only <code>EventRowPartialTests</code>, <code>DesignSystemTests</code>, and <code>EventModelTests</code> stay <code>SimpleTestCase</code>.</p></div><h4 data-block="181">Step 6: Read events from the database</h4><p class="" data-block="182">Replace <code>events/views.py</code> with this:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py</p><pre class="code-listing code-listing--file" data-block="183" tabindex="0"><code>from django.shortcuts import get_object_or_404, render
+
+from .models import Event
+
+
+def home(request):
+    return render(request, &#x27;events/home.html&#x27;)
+
+
+def event_list(request):
+    events = Event.objects.filter(
+        status=Event.Status.PUBLISHED
+    )
+    return render(
+        request, &#x27;events/list.html&#x27;, {&#x27;events&#x27;: events}
+    )
+
+
+def event_detail(request, event_id):
+    event = get_object_or_404(
+        Event, pk=event_id, status=Event.Status.PUBLISHED
+    )
+    return render(
+        request, &#x27;events/detail.html&#x27;, {&#x27;event&#x27;: event}
+    )</code></pre><p class="" data-block="184"><code>SAMPLE_EVENTS</code> and the <code>Http404</code> import are gone. <code>event_list</code> passes a QuerySet to the template without running it; the template’s <code>{% for %}</code> loop evaluates it, with one query, in the model’s order, soonest first. <code>event_detail</code> asks for the event with this id <strong>and</strong> the published status: a draft or a cancelled event matches nothing, so <code>get_object_or_404()</code> raises <code>Http404</code>, exactly as for an id that does not exist. A visitor cannot tell a hidden event from a missing one, which is what the rule intends. The address pattern from Chapter 10 accepts whole numbers only, so <code>/events/abc/</code> never reaches the view.</p><p class="" data-block="185">Replace <code>events/templates/events/list.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/list.html</p><pre class="code-listing code-listing--file" data-block="186" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Events | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Events&lt;/h1&gt;
+  &lt;ul class=&quot;event-list space-y-3&quot;&gt;
+    {% for event in events %}
+      {% partialdef event-row inline %}
+        &lt;li class=&quot;event-row card border border-base-300
+                   bg-base-100 p-4 font-semibold&quot;&gt;
+          &lt;a href=&quot;{% url &#x27;events:detail&#x27; event.id %}&quot;&gt;
+            {{ event.title }}
+          &lt;/a&gt;
+        &lt;/li&gt;
+      {% endpartialdef %}
+    {% empty %}
+      &lt;li class=&quot;event-empty card border border-base-300
+                 bg-base-100 p-4&quot;&gt;No events yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre><p class="" data-block="187">The heading, the page title, and the empty message lose the word “sample”, the sentence about fictional events goes, and <code>{{ event.title }}</code> no longer passes through the <code>sample_label</code> filter, so the <code>{% load event_labels %}</code> line goes too. <code>event.id</code> and <code>event.title</code> were dictionary keys; now they are the model’s fields, and the template does not need to know the difference. Replace <code>events/templates/events/detail.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html</p><pre class="code-listing code-listing--file" data-block="188" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+{% load tz %}
+
+{% block title %}{{ event.title }} | Otahque{% endblock %}
+
+{% block content %}
+  &lt;article class=&quot;card space-y-4 border border-base-300
+                  bg-base-100 p-6&quot;&gt;
+    &lt;h1&gt;{{ event.title }}&lt;/h1&gt;
+    {% timezone event.timezone %}
+      &lt;p&gt;From {{ event.starts_at|date:&quot;l j F Y, H:i T&quot; }}&lt;/p&gt;
+      &lt;p&gt;Until {{ event.ends_at|date:&quot;l j F Y, H:i T&quot; }}&lt;/p&gt;
+    {% endtimezone %}
+    &lt;p&gt;{{ event.location }}&lt;/p&gt;
+  &lt;/article&gt;
+  &lt;p&gt;
+    &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;All events&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="189"><code>{% load tz %}</code> loads Django’s time zone tags. Inside <code>{% timezone event.timezone %}</code>, every datetime, the start and the end alike, is shown in the zone the event names, such as <code>Asia/Kolkata</code>, instead of the project’s <code>TIME_ZONE</code>, UTC. The <code>date</code> filter formats it: <code>l</code> is the weekday, <code>j</code> the day without a leading zero, <code>F</code> the month’s name, <code>Y</code> the year, <code>H:i</code> the 24-hour time, and <code>T</code> the zone’s abbreviation. The end shows its full date too, so an event that ends on another day still reads correctly. One fixed format is enough for now; Chapter 61 decides how Otahque formats dates and times for different languages and regions. The title in the <code>title</code> block is escaped like any other variable, which the escaping test proves.</p><p class="" data-block="190">Nothing loads <code>event_labels</code> any more. Delete the <code>events/templatetags</code> folder, which holds only the filter and an empty <code>__init__.py</code>. In PowerShell, beside <code>manage.py</code>:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="191" tabindex="0"><code>Remove-Item -Recurse events\templatetags</code></pre><p class="" data-block="192">In Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="193" tabindex="0"><code>rm -r events/templatetags</code></pre><p class="" data-block="194">The filter did its job in Chapter 12, which still teaches how to write one. Code whose purpose has ended is deleted, not left behind for the next reader to wonder about; Git keeps the old version if you ever need it.</p><p class="" data-block="195">Two parts of the stylesheet source belonged to the filter. Open <code>static/otahque/source.css</code>. Near the top, delete the line that tells Tailwind to scan the deleted folder:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (delete this line)</p><pre class="code-listing code-listing--file" data-block="196" tabindex="0"><code>@source &quot;../../events/templatetags&quot;;</code></pre><p class="" data-block="197">Near the end, inside <code>@layer components</code>, delete the rule for the label, keeping the two <code>.site-nav</code> rules above it and the closing brace of the layer:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (delete this rule)</p><pre class="code-listing code-listing--file" data-block="198" tabindex="0"><code>  .sample-label {
+    color: #9d480c;
+    font-size: 0.85em;
+    font-weight: 700;
+  }</code></pre><p class="" data-block="199">Then rebuild the stylesheet with Chapter 14’s command, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="200" tabindex="0"><code>npm run build</code></pre><p class="" data-block="201">The build ends with <code>Done in</code>, then a time. <code>site.css</code> loses the <code>.sample-label</code> rule. It also loses daisyUI’s <code>.filter</code> rules: Tailwind adds a rule for any class name it finds in the files it scans, and the word <code>filter</code> in <code>@register.filter</code> matched a daisyUI component that Otahque never used. Removing the folder removed the match. Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="202" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="203">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="204" tabindex="0"><code>Found 30 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+..............................
+...
+Ran 30 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="205">Common Error: an old template tag library</p><p class="" data-block="206">If a page fails with <code>TemplateSyntaxError</code> and the message says that <code>&#x27;event_labels&#x27; is not a registered tag library</code>, a template still has <code>{% load event_labels %}</code>. Remove the line; the listings in this step have none.</p></div><p class="" data-block="207">Now look at the pages. Start the development server:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="208" tabindex="0"><code>uv run python manage.py runserver</code></pre><p class="" data-block="209">Open <a href="http://127.0.0.1:8000/events/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/events/ (opens in a new tab)"><code>http://127.0.0.1:8000/events/</code></a>. The heading says “Events”, and the list shows <code>Python meetup</code>, then <code>Django workshop</code>; <code>Spring planning</code> is not there. Select <code>Django workshop</code>: its page shows <code>From Thursday 3 December 2026, 14:30 IST</code>, <code>Until Thursday 3 December 2026, 17:30 IST</code>, and <code>Virtual</code>. Go back and select <code>Python meetup</code>: <code>Thursday 19 November 2026, 18:30 GMT</code> and <code>Leeds Central Library, Room 2</code>. Now type the draft’s address, <a href="http://127.0.0.1:8000/events/3/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/events/3/ (opens in a new tab)"><code>http://127.0.0.1:8000/events/3/</code></a>, using your draft’s id if it is not 3. The page says “Page not found (404)”, and because <code>DEBUG</code> is on, Django’s explanation includes <code>No Event matches the given query.</code> With <code>DEBUG</code> off, as on a real server, visitors see only a plain “Not Found” page. Stop the server with Ctrl+C.</p><p class="" data-block="210">If a draft appears on a page, one view is missing the status condition, and the failing test names which page. If the time shows 09:00 and <code>UTC</code>, the <code>{% load tz %}</code> line or the <code>{% timezone %}</code> block is missing from <code>detail.html</code>.</p><h4 data-block="211">Step 7: Review and commit</h4><p class="" data-block="212">Look at what changed:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="213" tabindex="0"><code>git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="214" tabindex="0"><code> M events/templates/events/detail.html
+ M events/templates/events/list.html
+ D events/templatetags/__init__.py
+ D events/templatetags/event_labels.py
+ M events/tests.py
+ M events/views.py
+ M static/otahque/site.css
+ M static/otahque/source.css</code></pre><p class="" data-block="215">Eight files: two templates, two deleted files, the tests, the views, and both stylesheet files. <code>D</code> marks a deleted file. There is no <code>db.sqlite3</code>, because Git ignores it, so your three events stay on your computer. If <code>db.sqlite3</code> appears, <code>.gitignore</code> has lost Chapter 8’s line; restore it rather than committing the database. Commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="216" tabindex="0"><code>git add events static
+git commit -m &quot;Read published events from the database&quot;</code></pre><p class="" data-block="217"><code>git add events</code> stages the deletions as well as the changes. <code>git status --short</code> then prints nothing.</p><h3 class="" id="topic-218" data-block="218">When something goes wrong</h3><figure class="table-figure" data-block="219"><figcaption>Table 19.3 — ORM and page problems and safe recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 19.3 — ORM and page problems and safe recovery"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Safe recovery</th>
+</tr></thead><tbody><tr><th scope="row">no such table: events_event</th>
+<td data-label="Likely cause">migrate has not run on this database</td>
+<td data-label="Safe recovery">Run migrate; it applies only what is missing</td>
+</tr>
+<tr><th scope="row">name &#x27;Event&#x27; is not defined</th>
+<td data-label="Likely cause">Plain python, or shell --no-imports</td>
+<td data-label="Safe recovery">Start manage.py shell as shown</td>
+</tr>
+<tr><th scope="row">RuntimeWarning: ... received a naive datetime</th>
+<td data-label="Likely cause">tzinfo=UTC left out</td>
+<td data-label="Safe recovery">Delete the row; create it again with tzinfo=UTC</td>
+</tr>
+<tr><th scope="row">TypeError: unexpected keyword, or FieldError: Cannot resolve keyword</th>
+<td data-label="Likely cause">A name that is not a field</td>
+<td data-label="Safe recovery">Use a name from models.py; nothing was saved</td>
+</tr>
+<tr><th scope="row">DoesNotExist, or MultipleObjectsReturned</th>
+<td data-label="Likely cause">get() matched no row, or several</td>
+<td data-label="Safe recovery">Check the condition; use filter() or first()</td>
+</tr>
+<tr><th scope="row">IndexError: list index out of range</th>
+<td data-label="Likely cause">[0] on an empty QuerySet</td>
+<td data-label="Safe recovery">Use first(), which returns None</td>
+</tr>
+<tr><th scope="row">&#x27;QuerySet&#x27; object has no attribute</th>
+<td data-label="Likely cause">A QuerySet used as one object</td>
+<td data-label="Safe recovery">Loop over it, or use get() or first()</td>
+</tr>
+<tr><th scope="row">update() or delete() changed too many rows</th>
+<td data-label="Likely cause">The QuerySet was not filtered</td>
+<td data-label="Safe recovery">Recreate the practice rows; count before changing</td>
+</tr>
+<tr><th scope="row">DatabaseOperationForbidden</th>
+<td data-label="Likely cause">A database test inherits SimpleTestCase</td>
+<td data-label="Safe recovery">Change the base class to TestCase</td>
+</tr>
+<tr><th scope="row">&#x27;event_labels&#x27; is not a registered tag library</th>
+<td data-label="Likely cause">A template still loads the filter</td>
+<td data-label="Safe recovery">Remove the load line</td>
+</tr>
+<tr><th scope="row">A draft appears on a page</th>
+<td data-label="Likely cause">A view lacks the status condition</td>
+<td data-label="Safe recovery">Add it; the failing test names the page</td>
+</tr>
+<tr><th scope="row">Time shown in UTC</th>
+<td data-label="Likely cause">tz not loaded, or no timezone block</td>
+<td data-label="Safe recovery">Compare detail.html with Step 6</td>
+</tr>
+<tr><th scope="row">db.sqlite3 in git status</th>
+<td data-label="Likely cause">.gitignore line removed</td>
+<td data-label="Safe recovery">Restore the Chapter 8 line; never commit it</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2019%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter19/section-19-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter19/section-19-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter19/section-19-2/">← What You Need to Know</a><a href="/chapters/chapter19/section-19-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

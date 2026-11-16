@@ -1,5 +1,35 @@
 // Progressive enhancement: the complete book and navigation work without JavaScript.
 
+const bookDrawer = document.querySelector('#book-drawer');
+if (bookDrawer) {
+  const narrow = matchMedia('(max-width: 960px)');
+  const syncDrawer = () => {
+    try {
+      const saved = localStorage.getItem('otahque-sidebar-v3');
+      bookDrawer.open = saved === 'open';
+    } catch (e) { bookDrawer.open = false; }
+  };
+  syncDrawer();
+  narrow.addEventListener('change', syncDrawer);
+  bookDrawer.addEventListener('toggle', () => {
+    if (!narrow.matches) {
+      try { localStorage.setItem('otahque-sidebar-v3', bookDrawer.open ? 'open' : 'closed'); } catch (e) {}
+    }
+  });
+  bookDrawer.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && bookDrawer.open) {
+      bookDrawer.open = false;
+      bookDrawer.querySelector(':scope > summary').focus();
+    }
+  });
+}
+
+const fullContents = document.querySelector('details#contents');
+if (fullContents && location.hash === '#contents') fullContents.open = true;
+addEventListener('hashchange', () => {
+  if (fullContents && location.hash === '#contents') fullContents.open = true;
+});
+
 // Chapters were once single pages; forward old links (chapter03.html#section-3-2 or a topic
 // anchor) to the section page that now holds that place.
 const moved = location.hash && document.querySelector('[data-moved-anchors]');
@@ -7,6 +37,63 @@ if (moved) {
   const id = decodeURIComponent(location.hash.slice(1));
   const entry = [...moved.querySelectorAll('[data-anchors]')].find(li => li.dataset.anchors.split(' ').includes(id));
   if (entry) location.replace(entry.querySelector('a').href + (id.startsWith('section-') ? '' : '#' + id));
+}
+
+// Notebook page turns use links as the fallback, with a short slide for pointer,
+// touch, and keyboard navigation when JavaScript is available.
+const readerPage = document.querySelector('.reading[data-reader-prev]');
+if (readerPage) {
+  const previous = readerPage.querySelector('.page-thumb-prev');
+  const next = readerPage.querySelector('.page-thumb-next');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let navigating = false;
+  const turnPage = direction => {
+    if (navigating) return;
+    const target = direction < 0 ? previous : next;
+    if (!target || !target.href) return;
+    navigating = true;
+    if (reducedMotion.matches) {
+      location.assign(target.href);
+      return;
+    }
+    readerPage.classList.add(direction < 0
+      ? 'reader-page-shift-prev' : 'reader-page-shift-next');
+    setTimeout(() => location.assign(target.href), 170);
+  };
+  [previous, next].filter(Boolean).forEach(link => {
+    link.addEventListener('click', event => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey ||
+          event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      turnPage(link === previous ? -1 : 1);
+    });
+  });
+  document.addEventListener('keydown', event => {
+    const tag = event.target?.tagName;
+    if (event.defaultPrevented || event.altKey || event.ctrlKey ||
+        event.metaKey || event.shiftKey ||
+        ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(tag) ||
+        event.target?.isContentEditable ||
+        document.querySelector('dialog[open]')) return;
+    if (event.key === 'ArrowLeft') turnPage(-1);
+    if (event.key === 'ArrowRight') turnPage(1);
+  });
+  let touchStart = null;
+  readerPage.addEventListener('touchstart', event => {
+    if (event.touches.length === 1) {
+      touchStart = {x: event.touches[0].clientX,
+        y: event.touches[0].clientY};
+    }
+  }, {passive: true});
+  readerPage.addEventListener('touchend', event => {
+    if (!touchStart || event.changedTouches.length !== 1) return;
+    const dx = event.changedTouches[0].clientX - touchStart.x;
+    const dy = event.changedTouches[0].clientY - touchStart.y;
+    touchStart = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      turnPage(dx < 0 ? 1 : -1);
+    }
+  }, {passive: true});
 }
 
 // Contents filter: match titles or a chapter number; hide stage headings with no matches.
@@ -98,10 +185,6 @@ document.querySelectorAll('.text-size').forEach(group => {
 // Sidebar: open on wide screens, mark the section being read, and show only its topics.
 const menu = document.querySelector('.chapter-menu');
 if (menu) {
-  const compact = window.matchMedia('(max-width: 960px)');
-  const syncMenu = () => { menu.open = !compact.matches; };
-  syncMenu();
-  compact.addEventListener('change', syncMenu);
   const sectionLinks = [...menu.querySelectorAll('nav > ol > li > a')];
   const headings = sectionLinks.map(link => document.getElementById(link.hash.slice(1))).filter(Boolean);
   const mark = id => {
@@ -133,12 +216,30 @@ if (menu) {
 // Storage holds { key: { max, position, section, updated } }; every access tolerates
 // private browsing or blocked storage, in which case the bar still works for this visit.
 const PROGRESS_KEY = 'otahque-progress';
+// Keep earlier section progress intact, but do not apply it to different content.
+const PROGRESS_EDITION = 'six-part-v1';
 const loadProgress = () => {
-  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch (e) { return {}; }
+  try { return (JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {})[PROGRESS_EDITION] || {}; } catch (e) { return {}; }
 };
 const saveProgress = all => {
-  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(all)); } catch (e) { /* storage unavailable */ }
+  try {
+    const saved = JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+    saved[PROGRESS_EDITION] = all;
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(saved));
+  } catch (e) { /* storage unavailable */ }
 };
+
+const bookResume = document.querySelector('[data-book-resume]');
+if (bookResume) {
+  const recent = Object.entries(loadProgress())
+    .filter(([key, value]) => /^chapter\d+:\d+\.\d+$/.test(key) && value.updated)
+    .sort((a, b) => b[1].updated - a[1].updated)[0];
+  if (recent) {
+    const [chapter, section] = recent[0].split(':');
+    bookResume.href = `${bookResume.dataset.prefix}chapters/${chapter}/section-${section.replace('.', '-')}.html`;
+    bookResume.textContent = 'Resume reading →';
+  }
+}
 
 const reading = document.querySelector('[data-progress-key]');
 if (reading) {
@@ -154,10 +255,14 @@ if (reading) {
   const saved = all[key] || { max: 0, position: 0 };
 
   // 0% with the article's start at the top of the screen; 100% when its end comes into view.
-  const scrollable = box => Math.max(1, box.height - window.innerHeight);
   const measure = () => {
     const box = article.getBoundingClientRect();
-    return Math.max(0, Math.min(1, -box.top / scrollable(box)));
+    const articleScroll = box.height - window.innerHeight;
+    if (articleScroll <= 1) {
+      const pageScroll = document.documentElement.scrollHeight - window.innerHeight;
+      return pageScroll <= 0 ? 1 : window.scrollY / pageScroll;
+    }
+    return Math.max(0, Math.min(1, -box.top / articleScroll));
   };
   const currentSection = () => {
     let current = sections[0];
@@ -191,10 +296,16 @@ if (reading) {
     banner.hidden = false;
     const close = () => { banner.hidden = true; };
     banner.querySelector('[data-resume]').addEventListener('click', () => {
-      const box = article.getBoundingClientRect();
-      const target = window.scrollY + box.top + saved.position * scrollable(box);
-      window.scrollTo({ top: Math.max(0, target) });
       close();
+      requestAnimationFrame(() => {
+        const box = article.getBoundingClientRect();
+        const articleScroll = box.height - window.innerHeight;
+        const pageScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const target = articleScroll <= 1
+          ? saved.position * pageScroll
+          : window.scrollY + box.top + saved.position * articleScroll;
+        window.scrollTo({ top: Math.max(0, target) });
+      });
     });
     banner.querySelector('[data-restart]').addEventListener('click', close);
   }
@@ -233,7 +344,7 @@ if (tiles.length) {
   if (note && any) {
     note.hidden = false;
     note.querySelector('[data-reset-progress]').addEventListener('click', () => {
-      try { localStorage.removeItem(PROGRESS_KEY); } catch (e) { /* storage unavailable */ }
+      saveProgress({});
       tiles.forEach(tile => { tile.hidden = true; });
       note.hidden = true;
     });

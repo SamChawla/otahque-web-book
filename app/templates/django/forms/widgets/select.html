@@ -1,0 +1,12 @@
+<select name="{{ widget.name }}" class="select w-full"
+        {% include "django/forms/widgets/attrs.html" %}>
+{% spaceless %}
+{% for group, choices, index in widget.optgroups %}
+  {% if group %}<optgroup label="{{ group }}">{% endif %}
+  {% for option in choices %}
+    {% include option.template_name with widget=option %}
+  {% endfor %}
+  {% if group %}</optgroup>{% endif %}
+{% endfor %}
+{% endspaceless %}
+</select>

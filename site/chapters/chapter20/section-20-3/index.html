@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 20: Relationships between models: registrations and organizers. Connect models with foreign keys: a new registrations app...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter20/section-20-3/">
+<title>How We Build It · Chapter 20 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter20/">← Chapter 20 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-20-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-81">The Custom Way</a></li><li><a href="#topic-86">The Django Way</a></li><li><a href="#topic-240">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 7 figures · 6 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter20:20.3" data-progress-title="Section 20.3" data-reader-prev="section-20-2.html" data-reader-next="section-20-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 20.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter20/">Chapter 20 · Relationships between models: registrations and organizers</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter20/section-20-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter20/section-20-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter20/section-20-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter20/section-20-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter20/section-20-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-20-3" data-block="79">How We Build It</h2><p class="" data-block="80">Start from Chapter 19, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 30 passing tests, every migration applied, the local superuser from Chapter 18, and three events: two published and one draft. Step 2 creates a new app, <code>registrations</code>, and installs it in <code>config/settings.py</code>. Steps 3 to 5 write the tests first, then <code>registrations/models.py</code>, add a model to <code>events/models.py</code>, and create two migrations. Steps 6 and 7 work in the Django shell and add rows: two members, one organizer assignment, and three registrations. At the end of Step 8, 36 tests pass, every migration is applied, the public pages are unchanged, and the work is committed. The optional lab in Step 9 then adds event topics, a many-to-many field, in a disposable copy.</p><h3 class="" id="topic-81" data-block="81">The Custom Way</h3><p class="" data-block="82">This illustration reads related rows by hand from two small tables in memory, the way hand-written database code often did; do not add it to the project. <code>set_trace_callback()</code> is a <code>sqlite3</code> feature that calls a function with each SQL statement the connection runs, so the list <code>sent</code> counts the queries:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/related_rows.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="83" tabindex="0"><code>import sqlite3
+
+db = sqlite3.connect(&#x27;:memory:&#x27;)
+db.executescript(&#x27;&#x27;&#x27;
+    CREATE TABLE event (id INTEGER PRIMARY KEY, title TEXT);
+    CREATE TABLE registration (
+        id INTEGER PRIMARY KEY,
+        event_id INTEGER NOT NULL REFERENCES event (id),
+        member TEXT NOT NULL
+    );
+    INSERT INTO event VALUES (1, &#x27;Python meetup&#x27;),
+                             (2, &#x27;Django workshop&#x27;);
+    INSERT INTO registration (event_id, member)
+    VALUES (1, &#x27;Sai&#x27;), (1, &#x27;Raj&#x27;), (2, &#x27;Sai&#x27;);
+&#x27;&#x27;&#x27;)
+sent = []
+db.set_trace_callback(sent.append)
+
+listed = &#x27;SELECT event_id, member FROM registration&#x27;
+for event_id, member in db.execute(listed).fetchall():
+    (title,) = db.execute(
+        &#x27;SELECT title FROM event WHERE id = ?&#x27;, (event_id,)
+    ).fetchone()
+    print(member, title)
+print(&#x27;queries:&#x27;, len(sent))
+
+sent.clear()
+joined = &#x27;&#x27;&#x27;
+    SELECT registration.member, event.title
+    FROM registration
+    JOIN event ON event.id = registration.event_id
+&#x27;&#x27;&#x27;
+for member, title in db.execute(joined):
+    print(member, title)
+print(&#x27;queries:&#x27;, len(sent))</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="84" tabindex="0"><code>Sai Python meetup
+Raj Python meetup
+Sai Django workshop
+queries: 4
+Sai Python meetup
+Raj Python meetup
+Sai Django workshop
+queries: 1</code></pre><p class="" data-block="85">The first loop is the N+1 pattern, written out: one query for the registrations, then one for each row’s event. The <code>JOIN</code> asks once, and the database matches every registration to its event. Both print the same lines. Now list what the hand-written version still lacks: each row is a tuple to unpack by position, nothing turns <code>event_id</code> into an event object, the reverse question, “which registrations does this event have?”, needs another query written by hand, and nothing decides what happens when an event is deleted. Relationship fields give you all four.</p><h3 class="" id="topic-86" data-block="86">The Django Way</h3><p class="" data-block="87">Eight steps follow, and an optional ninth. Step 1 checks the start, Step 2 creates the app, Steps 3 to 5 write tests, models, and migrations, Steps 6 and 7 use the shell, and Step 8 commits. Step 9 is an optional lab, in a copy of the project, that builds a many-to-many field.</p><h4 data-block="88">Step 1: Check the starting point</h4><p class="" data-block="89">Run every test, beside <code>manage.py</code>, in PowerShell, Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="90" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="91">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="92" tabindex="0"><code>Found 30 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+..............................
+...
+Ran 30 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="93">Then start the shell, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="94" tabindex="0"><code>uv run python manage.py shell</code></pre><p class="" data-block="95">Count the events and the members:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="96" tabindex="0"><code>13 objects imported automatically (use -v 2 for details).
+
+Python 3.14.9 ...
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for ...
+(InteractiveConsole)
+&gt;&gt;&gt; Event.objects.count()
+3
+&gt;&gt;&gt; User.objects.count()
+1
+&gt;&gt;&gt; User.objects.get().display_name
+&#x27;Sam&#x27;
+&gt;&gt;&gt; exit()
+now exiting InteractiveConsole...</code></pre><p class="" data-block="97">Three events from Chapter 19, and one member: the superuser you created in Chapter 18, <code>sam@example.org</code>, whose display name is <code>Sam</code>. <code>get()</code> with no conditions returns the only row, and would raise an error if there were none or several. Sam becomes the meetup’s organizer in Step 6.</p><p class="" data-block="98">If your counts differ, rows are left from experiments of your own. Keep them; the chapter works with any events. If <code>User.objects.get()</code> raises <code>MultipleObjectsReturned</code>, you have more than one member: Step 6 fetches Sam by his email address, so that is fine too. If it raises <code>DoesNotExist</code>, Chapter 18’s superuser is missing; create it with Chapter 18’s <code>createsuperuser</code> step, using <code>sam@example.org</code> and the display name <code>Sam</code>.</p><h4 data-block="99">Step 2: Create the registrations app</h4><p class="" data-block="100">Create the app with Chapter 7’s command, beside <code>manage.py</code>, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="101" tabindex="0"><code>uv run python manage.py startapp registrations</code></pre><p class="" data-block="102">The command prints nothing when it succeeds. It creates a folder beside <code>events</code>:</p><p class="code-label code-label--tree" aria-hidden="true">Folder structure</p><pre class="code-listing code-listing--tree" data-block="103" tabindex="0"><code>registrations/
+    __init__.py
+    admin.py
+    apps.py
+    migrations/
+        __init__.py
+    models.py
+    tests.py
+    views.py</code></pre><p class="" data-block="104">These are the files Chapter 7’s Table 7.4 described for <code>events</code>. <code>apps.py</code> holds the app’s configuration class, <code>RegistrationsConfig</code>, with <code>name = &#x27;registrations&#x27;</code>. <code>admin.py</code> and <code>views.py</code> stay as they are until Chapters 23 and 31.</p><div class="callout callout--error"><p class="callout__title" data-block="105">Common Error: the name is already taken</p><p class="" data-block="106">If <code>startapp</code> stops with <code>CommandError</code> saying that the name conflicts with an existing Python module, a folder or package called <code>registrations</code> already exists, perhaps from an earlier attempt. Nothing new was created. Look inside the existing folder rather than running the command again.</p></div><p class="" data-block="107">An app is part of the project only when <code>INSTALLED_APPS</code> names it. Open <code>config/settings.py</code> and add one line at the end of the list, after the <code>events</code> entry:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (INSTALLED_APPS)</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>INSTALLED_APPS = [
+    &#x27;django.contrib.admin&#x27;,
+    &#x27;django.contrib.auth&#x27;,
+    &#x27;django.contrib.contenttypes&#x27;,
+    &#x27;django.contrib.sessions&#x27;,
+    &#x27;django.contrib.messages&#x27;,
+    &#x27;django.contrib.staticfiles&#x27;,
+    &#x27;accounts.apps.AccountsConfig&#x27;,
+    &#x27;events.apps.EventsConfig&#x27;,
+    &#x27;registrations.apps.RegistrationsConfig&#x27;,
+]</code></pre><p class="" data-block="109">Check the project:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="110" tabindex="0"><code>uv run python manage.py check</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="111" tabindex="0"><code>System check identified no issues (0 silenced).</code></pre><h4 data-block="112">Step 3: Write the tests first</h4><p class="" data-block="113">The tests describe what both models must do before either exists. Replace the contents of <code>registrations/tests.py</code>, which holds only an import and a comment, with this:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py</p><pre class="code-listing code-listing--file" data-block="114" tabindex="0"><code>from datetime import UTC, datetime
+
+from django.contrib.auth import get_user_model
+from django.db.models import ProtectedError
+from django.test import TestCase
+
+from events.models import Event
+from .models import Registration
+
+User = get_user_model()
+
+
+class RegistrationTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = Event.objects.create(
+            title=&#x27;Python meetup&#x27;,
+            starts_at=datetime(2026, 11, 19, 18, 30,
+                               tzinfo=UTC),
+            ends_at=datetime(2026, 11, 19, 20, 30,
+                             tzinfo=UTC),
+            timezone=&#x27;Europe/London&#x27;,
+            location=&#x27;Leeds Central Library&#x27;,
+            capacity=40,
+        )
+        cls.member = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        cls.registration = Registration.objects.create(
+            event=cls.event, member=cls.member
+        )
+
+    def test_registration_links_event_and_member(self):
+        registration = self.registration
+        self.assertEqual(registration.event, self.event)
+        self.assertEqual(registration.member, self.member)
+        self.assertEqual(
+            registration.status, Registration.Status.ACTIVE
+        )
+        self.assertQuerySetEqual(
+            self.event.registrations.all(), [registration]
+        )
+        self.assertQuerySetEqual(
+            self.member.registrations.all(), [registration]
+        )
+
+    def test_event_with_registration_is_kept(self):
+        with self.assertRaises(ProtectedError):
+            self.event.delete()
+        self.assertTrue(
+            Event.objects.filter(pk=self.event.pk).exists()
+        )
+
+    def test_member_with_registration_is_kept(self):
+        with self.assertRaises(ProtectedError):
+            self.member.delete()
+        self.assertTrue(
+            User.objects.filter(pk=self.member.pk).exists()
+        )</code></pre><p class="" data-block="115"><code>get_user_model()</code> returns the user class, as the Prefer callout advised for code like this. <code>create_user()</code> without a password gives Sai an account that cannot sign in yet, which is all a test needs. The first test checks both directions: the registration’s <code>event</code> and <code>member</code>, its default status, and the two reverse managers, <code>event.registrations</code> and <code>member.registrations</code>. <code>assertQuerySetEqual()</code> compares a QuerySet with a list, in order. The other two tests try to delete the event and the member, expect <code>ProtectedError</code>, and then check that each row is still there, so that a refused delete cannot pass by deleting something anyway.</p><p class="" data-block="116">Now the organizer assignment’s tests, in <code>events/tests.py</code>. At the top of the file, three lines change: two imports are added, and the models import names <code>OrganizerAssignment</code> too. The import block becomes:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (1 of 2: imports)</p><pre class="code-listing code-listing--file" data-block="117" tabindex="0"><code>from datetime import UTC, datetime, timedelta
+from pathlib import Path
+
+from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
+from django.core.exceptions import ValidationError
+from django.db.models import ProtectedError
+from django.template.loader import render_to_string
+from django.test import SimpleTestCase, TestCase
+from django.urls import resolve, reverse
+
+from . import views
+from .models import Event, OrganizerAssignment
+
+User = get_user_model()</code></pre><p class="" data-block="118">Then add a class at the end of the file, after <code>EventModelTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (2 of 2: add at the end)</p><pre class="code-listing code-listing--file" data-block="119" tabindex="0"><code>class OrganizerAssignmentTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = save_event()
+        cls.member = User.objects.create_user(
+            &#x27;sam@example.org&#x27;, display_name=&#x27;Sam&#x27;
+        )
+        cls.assignment = OrganizerAssignment.objects.create(
+            event=cls.event, member=cls.member
+        )
+
+    def test_assignment_links_event_and_member(self):
+        assignment = self.assignment
+        self.assertEqual(assignment.event, self.event)
+        self.assertEqual(assignment.member, self.member)
+        self.assertIsNone(assignment.revoked_at)
+        self.assertQuerySetEqual(
+            self.event.organizer_assignments.all(),
+            [assignment],
+        )
+        self.assertQuerySetEqual(
+            self.member.organizer_assignments.all(),
+            [assignment],
+        )
+
+    def test_assigned_event_and_member_are_kept(self):
+        for row in (self.event, self.member):
+            model = type(row)
+            with self.subTest(model=model.__name__):
+                with self.assertRaises(ProtectedError):
+                    row.delete()
+                kept = model.objects.filter(pk=row.pk)
+                self.assertTrue(kept.exists())
+
+    def test_unlinked_event_can_be_deleted(self):
+        spare = save_event(title=&#x27;Spare event&#x27;)
+        self.assertEqual(
+            spare.delete(), (1, {&#x27;events.Event&#x27;: 1})
+        )</code></pre><p class="" data-block="120"><code>save_event()</code> is Chapter 19’s helper, near the top of the same file. The test database is separate from yours, so <code>sam@example.org</code> here is a new, test-only member. In this class, the event and the member are linked only by the assignment, with no registration. That matters: if the event also had a registration, the registration’s <code>PROTECT</code> would refuse the delete on its own, and a wrong rule on the assignment would go unnoticed. <code>type(row)</code> is the row’s model, <code>Event</code> or <code>User</code>, so one loop checks both. The last test proves that the rule is “keep what history needs”, not “never delete”: an event that nothing points at can still be deleted, and <code>delete()</code> reports one <code>Event</code>.</p><p class="" data-block="121">Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="122" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="123">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="124" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+EE.........
+...
+ERROR: events.tests (unittest.loader._FailedTest.events...
+...
+ImportError: cannot import name &#x27;OrganizerAssignment&#x27; fr...
+...
+ERROR: registrations.tests (unittest.loader._FailedTest...
+...
+ImportError: cannot import name &#x27;Registration&#x27; from &#x27;reg...
+...
+FAILED (errors=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="125">Only 11 tests were found, not 36. When a test module cannot be imported, Python’s test loader replaces the whole module with one failing placeholder, so each of the two modules counts as one error, and none of the events tests ran. The nine tests that did run are Chapter 17’s and Chapter 18’s, in <code>accounts</code> and <code>config</code>. This red stage is expected: both models are missing.</p><h4 data-block="126">Step 4: Write the two models</h4><p class="" data-block="127">Replace the contents of <code>registrations/models.py</code> with this:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py</p><pre class="code-listing code-listing--file" data-block="128" tabindex="0"><code>from django.conf import settings
+from django.db import models
+from django.utils import timezone
+
+
+class Registration(models.Model):
+    &quot;&quot;&quot;A member&#x27;s place in an event, from the ERD.&quot;&quot;&quot;
+
+    class Status(models.TextChoices):
+        ACTIVE = &#x27;active&#x27;, &#x27;Active&#x27;
+        CANCELLED = &#x27;cancelled&#x27;, &#x27;Cancelled&#x27;
+
+    event = models.ForeignKey(
+        &#x27;events.Event&#x27;,
+        on_delete=models.PROTECT,
+        related_name=&#x27;registrations&#x27;,
+    )
+    member = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name=&#x27;registrations&#x27;,
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status,
+        default=Status.ACTIVE,
+    )
+    registered_at = models.DateTimeField(
+        default=timezone.now
+    )
+    cancelled_at = models.DateTimeField(
+        null=True, blank=True
+    )
+
+    class Meta:
+        ordering = [&#x27;registered_at&#x27;]
+
+    def __str__(self):
+        return f&#x27;{self.member} at {self.event}&#x27;</code></pre><p class="" data-block="129">Each part comes from the ERD or from an earlier chapter. The two foreign keys name their targets three ways you now know: <code>&#x27;events.Event&#x27;</code> as a string, and the user model through the setting. <code>related_name=&#x27;registrations&#x27;</code> on both is not a clash, because the names live on different models: <code>Event</code> gets <code>registrations</code>, and so does <code>User</code>. <code>Status</code> is a <code>TextChoices</code> class like the event’s, with <code>active</code> as the default. <code>registered_at</code> uses <code>default=timezone.now</code>, as Chapter 17’s <code>date_joined</code> does: the function itself, without brackets, so Django calls it for each new row. <code>auto_now_add=True</code> would also fill it, but would make the field impossible to set, which Chapter 41 needs when it imports registrations with their original times. <code>cancelled_at</code> may be empty, in Python as <code>None</code> and in the database as <code>NULL</code>, because a registration that has not been cancelled has no cancellation time; <code>blank=True</code> tells forms, from Chapter 24, that it is optional. Registrations are listed in the order they were made, and <code>__str__()</code> describes one for the shell and error messages.</p><p class="" data-block="130">Now open <code>events/models.py</code>. Replace its first line, <code>from django.db import models</code>, with three imports:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (1 of 2: imports)</p><pre class="code-listing code-listing--file" data-block="131" tabindex="0"><code>from django.conf import settings
+from django.db import models
+from django.utils import timezone</code></pre><p class="" data-block="132">Then add a class at the end of the file, after <code>Event</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (2 of 2: add at the end)</p><pre class="code-listing code-listing--file" data-block="133" tabindex="0"><code>class OrganizerAssignment(models.Model):
+    &quot;&quot;&quot;Which member organizes which event, from the ERD.&quot;&quot;&quot;
+
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.PROTECT,
+        related_name=&#x27;organizer_assignments&#x27;,
+    )
+    member = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name=&#x27;organizer_assignments&#x27;,
+    )
+    assigned_at = models.DateTimeField(
+        default=timezone.now
+    )
+    revoked_at = models.DateTimeField(
+        null=True, blank=True
+    )
+
+    class Meta:
+        ordering = [&#x27;assigned_at&#x27;]
+
+    def __str__(self):
+        return f&#x27;{self.member} organizes {self.event}&#x27;</code></pre><p class="" data-block="134"><code>Event</code> is named directly, because it is defined above in the same file. An assignment is current while <code>revoked_at</code> is empty; revoking one fills it in and keeps the row, the same idea as a cancelled registration. Who may assign and revoke organizers is Chapter 30’s question. Check the project:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="135" tabindex="0"><code>uv run python manage.py check</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="136" tabindex="0"><code>System check identified no issues (0 silenced).</code></pre><div class="callout callout--error"><p class="callout__title" data-block="137">Common Error: two reverse names that clash</p><p class="" data-block="138">If <code>OrganizerAssignment.member</code> also had <code>related_name=&#x27;registrations&#x27;</code>, <code>User</code> would be given two attributes with one name. <code>check</code> refuses with four messages, two for each field. The first begins <code>events.OrganizerAssignment.member: (fields.E304) Reverse accessor &#x27;User.registrations&#x27; for &#x27;events.OrganizerAssignment.member&#x27; clashes with reverse accessor for &#x27;registrations.Registration.member&#x27;.</code> The others, <code>fields.E305</code>, say the same of the names used in lookups. Give each relationship to the same model its own <code>related_name</code>, as in the listings.</p></div><p class="" data-block="139">Two smaller mistakes stop the project before <code>check</code> can report anything. A foreign key without <code>on_delete</code> fails with <code>TypeError: ForeignKey.__init__() missing 1 required positional argument: &#x27;on_delete&#x27;</code>. A model file that uses <code>settings</code> without importing it fails with <code>NameError: name &#x27;settings&#x27; is not defined</code>. A misspelled string, such as <code>&#x27;event.Event&#x27;</code>, gives two check errors, <code>fields.E300</code> and <code>fields.E307</code>, the second saying that <code>app &#x27;event&#x27; isn&#x27;t installed</code>. In each case, compare the file with the listing.</p><p class="" data-block="140">Run the tests now, before creating any migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="141" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="142">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="143" tabindex="0"><code>Found 36 test(s).
+...
+FAIL: test_every_model_change_has_a_migration ...
+...
+AssertionError: Missing migrations:
+...
+FAILED (failures=1, errors=3)
+...</code></pre><p class="" data-block="144">All 36 tests are found now, because both modules import. Most pass, but the test database is built from migrations, and no migration creates the two new tables yet, so the tests that touch them stop with errors. Chapter 18’s <code>test_every_model_change_has_a_migration</code> names the cause: models have changed without a migration. That test exists for exactly this moment.</p><h4 data-block="145">Step 5: Create and apply the migrations</h4><p class="" data-block="146">Ask Django for the migrations, for every app at once:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="147" tabindex="0"><code>uv run python manage.py makemigrations</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="148" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0002_organizerassignment.py
+    + Create model OrganizerAssignment
+Migrations for &#x27;registrations&#x27;:
+  registrations\migrations\0001_initial.py
+    + Create model Registration</code></pre><p class="" data-block="149">On macOS and Linux, the paths use <code>/</code> instead of <code>\</code>. Each app gets its own migration: the events app’s second, and the registrations app’s first. Open <code>registrations/migrations/0001_initial.py</code>. Near the top, it lists what must be applied before it:</p><p class="code-label code-label--file" aria-hidden="true">registrations/migrations/0001_initial.py (excerpt)</p><pre class="code-listing code-listing--file" data-block="150" tabindex="0"><code>    dependencies = [
+        (&#x27;events&#x27;, &#x27;0002_organizerassignment&#x27;),
+        migrations.swappable_dependency(settings...
+    ]</code></pre><p class="" data-block="151">The last line is shortened here; in the file it ends <code>settings.AUTH_USER_MODEL),</code>. A registration points at an event and a member, so their tables must exist first. Django wrote the dependency on the events app’s newest migration, which exists because both were made in one run, and a <strong>swappable dependency</strong> on whichever app holds <code>AUTH_USER_MODEL</code>. Like every migration in this book, the file stays exactly as <code>makemigrations</code> wrote it.</p><div class="callout callout--error"><p class="callout__title" data-block="152">Common Error: an app that is not installed</p><p class="" data-block="153">If Step 2’s settings line is missing, <code>makemigrations</code> creates only the events migration, and <code>makemigrations registrations</code> stops with <code>No installed app with label &#x27;registrations&#x27;.</code> The tests stop too, with <code>RuntimeError: Model class registrations.models.Registration doesn&#x27;t declare an explicit app_label and isn&#x27;t in an application in INSTALLED_APPS.</code> Add the line to <code>INSTALLED_APPS</code> and run the command again; nothing needs deleting.</p></div><p class="" data-block="154">Read the SQL the registrations migration will run:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="155" tabindex="0"><code>uv run python manage.py sqlmigrate registrations 0001</code></pre><p class="" data-block="156">Expected result, with long lines shortened:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="157" tabindex="0"><code>BEGIN;
+--
+-- Create model Registration
+--
+CREATE TABLE &quot;registrations_registration&quot; (&quot;id&quot; integer...
+CREATE INDEX &quot;registrations_registration_event_id_3b9749...
+CREATE INDEX &quot;registrations_registration_member_id_fd206...
+COMMIT;</code></pre><p class="" data-block="158">On your screen, the <code>CREATE TABLE</code> line ends with the two foreign keys: <code>&quot;event_id&quot; bigint NOT NULL REFERENCES &quot;events_event&quot; (&quot;id&quot;) DEFERRABLE INITIALLY DEFERRED</code>, and the same for <code>&quot;member_id&quot;</code> and <code>&quot;accounts_user&quot;</code>. The two <code>CREATE INDEX</code> lines are the indexes Django adds to every foreign key. There is no <code>ON DELETE</code> clause: <code>PROTECT</code> lives in Python, in the deletion collector. Run <code>sqlmigrate events 0002</code> too, and you see the same shape for <code>events_organizerassignment</code>.</p><p class="" data-block="159">Apply both migrations:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="160" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="161" tabindex="0"><code>Operations to perform:
+  Apply all migrations: accounts, admin, auth, ...
+Running migrations:
+  Applying events.0002_organizerassignment... OK
+  Applying registrations.0001_initial... OK</code></pre><p class="" data-block="162">The events migration runs first, because the registrations migration depends on it. Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="163" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="164">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="165" tabindex="0"><code>Found 36 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+....................................
+...
+Ran 36 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="166">Thirty tests from before, three for registrations, and three for organizer assignments, all passing.</p><h4 data-block="167">Step 6: Connect rows in the shell</h4><p class="" data-block="168">Start the shell with <code>uv run python manage.py shell</code>. Its first line now says <code>15 objects imported automatically</code>: <code>Registration</code> and <code>OrganizerAssignment</code> are imported for you too. Fetch Sam, and create Sai and Raj as members:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="169" tabindex="0"><code>&gt;&gt;&gt; sam = User.objects.get(email=&#x27;sam@example.org&#x27;)
+&gt;&gt;&gt; sai = User.objects.create_user(
+...     &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+... )
+&gt;&gt;&gt; raj = User.objects.create_user(
+...     &#x27;raj@example.org&#x27;, display_name=&#x27;Raj&#x27;
+... )
+&gt;&gt;&gt; User.objects.count()
+3
+&gt;&gt;&gt; sai.has_usable_password()
+False</code></pre><p class="" data-block="170">Sam already exists, so he is fetched, never created again; making him an organizer needs an assignment row, not a second account. Sai and Raj are created without passwords. <code>create_user()</code> then marks the password as unusable, so neither can sign in until Chapter 27 builds sign-up, and no password is typed into the shell. The addresses use <code>example.org</code>, a domain reserved for examples, like Sam’s.</p><p class="" data-block="171">Now make Sam the meetup’s organizer, and register Sai:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="172" tabindex="0"><code>&gt;&gt;&gt; meetup = Event.objects.get(title=&#x27;Python meetup&#x27;)
+&gt;&gt;&gt; workshop = Event.objects.get(title=&#x27;Django workshop&#x27;)
+&gt;&gt;&gt; assignment = OrganizerAssignment.objects.create(
+...     event=meetup, member=sam
+... )
+&gt;&gt;&gt; print(assignment)
+sam@example.org organizes Python meetup
+&gt;&gt;&gt; booking = Registration.objects.create(
+...     event=meetup, member=sai
+... )
+&gt;&gt;&gt; booking
+&lt;Registration: sai@example.org at Python meetup&gt;
+&gt;&gt;&gt; booking.event_id, booking.member_id
+(1, 2)
+&gt;&gt;&gt; print(booking.status)
+active
+&gt;&gt;&gt; booking.event.location
+&#x27;Leeds Central Library, Room 2&#x27;</code></pre><p class="" data-block="173"><code>create()</code> accepts objects for the foreign keys, and Django stores their ids. <code>booking.event_id</code> and <code>booking.member_id</code> are those ids, read without a query; your numbers may differ if your event or Sam has a different id. <code>booking.event</code> is the event itself, so <code>booking.event.location</code> reads its location. Sam is staff, but that is not what makes him an organizer: the assignment row is, as Chapter 17 argued.</p><p class="" data-block="174">Register Raj for the meetup and Sai for the workshop, then look from the other side:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="175" tabindex="0"><code>&gt;&gt;&gt; Registration.objects.create(event=meetup, member=raj)
+&lt;Registration: raj@example.org at Python meetup&gt;
+&gt;&gt;&gt; Registration.objects.create(event=workshop, member=sai)
+&lt;Registration: sai@example.org at Django workshop&gt;
+&gt;&gt;&gt; for booking in meetup.registrations.all():
+...     print(booking.member.display_name, booking.status)
+...
+Sai active
+Raj active
+&gt;&gt;&gt; sai.registrations.count()
+2
+&gt;&gt;&gt; for assignment in sam.organizer_assignments.all():
+...     print(assignment.event)
+...
+Python meetup</code></pre><p class="" data-block="176"><code>meetup.registrations</code> is the related manager from What You Need to Know: <code>all()</code> returns the meetup’s registrations, in the model’s order, and <code>count()</code> asks the database how many Sai has. Two mistakes with it are common. Try both:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="177" tabindex="0"><code>&gt;&gt;&gt; meetup.registration_set
+Traceback (most recent call last):
+  File &quot;&lt;console&gt;&quot;, line 1, in &lt;module&gt;
+AttributeError: &#x27;Event&#x27; object has no attribute ...
+&gt;&gt;&gt; for booking in meetup.registrations:
+...     print(booking)
+...
+Traceback (most recent call last):
+  File &quot;&lt;console&gt;&quot;, line 1, in &lt;module&gt;
+TypeError: &#x27;RelatedManager&#x27; object is not iterable</code></pre><p class="" data-block="178">The first is the default name, which <code>related_name</code> replaced; the full message ends <code>Did you mean: &#x27;registrations&#x27;?</code>. The second loops over the manager itself. A manager is where queries start, not a list of rows, so add <code>.all()</code>, as in the earlier loop.</p><p class="" data-block="179">Filter across relationships with the double underscore, in both directions:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="180" tabindex="0"><code>&gt;&gt;&gt; Event.objects.filter(registrations__member=sai)
+&lt;QuerySet [&lt;Event: Python meetup&gt;, &lt;Event: Django workshop&gt;]&gt;
+&gt;&gt;&gt; online = Registration.objects.filter(
+...     event__location=&#x27;Virtual&#x27;
+... )
+&gt;&gt;&gt; [booking.member.display_name for booking in online]
+[&#x27;Sai&#x27;]
+&gt;&gt;&gt; User.objects.filter(organizer_assignments__event=meetup)
+&lt;QuerySet [&lt;User: sam@example.org&gt;]&gt;</code></pre><p class="" data-block="181">The first goes backwards, from events to their registrations, and finds both of Sai’s events. The second goes forwards, from registrations to their event’s location. The third asks which members organize the meetup. Now the repeated-row surprise:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="182" tabindex="0"><code>&gt;&gt;&gt; active = Event.objects.filter(
+...     registrations__status=Registration.Status.ACTIVE
+... )
+&gt;&gt;&gt; [event.title for event in active]
+[&#x27;Python meetup&#x27;, &#x27;Python meetup&#x27;, &#x27;Django workshop&#x27;]
+&gt;&gt;&gt; [event.title for event in active.distinct()]
+[&#x27;Python meetup&#x27;, &#x27;Django workshop&#x27;]</code></pre><p class="" data-block="183">The meetup has two active registrations, so the join produces two meetup rows. <code>distinct()</code> asks the database for each event once. Use it whenever a filter across a reverse relationship could match several rows for one result.</p><p class="" data-block="184">Finally, try to delete the meetup:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="185" tabindex="0"><code>&gt;&gt;&gt; meetup.delete()
+Traceback (most recent call last):
+...
+django.db.models.deletion.ProtectedError: (&quot;Cannot delete ...
+&gt;&gt;&gt; Event.objects.filter(pk=meetup.pk).exists()
+True</code></pre><p class="" data-block="186">The full message is long: <code>Cannot delete some instances of model &#x27;Event&#x27; because they are referenced through protected foreign keys: &#x27;OrganizerAssignment.event&#x27;, &#x27;Registration.event&#x27;.</code>, followed by the rows that refer to the meetup. The traceback passes through Django’s <code>deletion.py</code>, the collector from Figure 20.1. The meetup is still there, and so is everything that points at it. Leave the shell with <code>exit()</code>.</p><h4 data-block="187">Step 7: Count the queries</h4><p class="" data-block="188">Start the shell again. Loop over every registration, print each member’s name and event, and count the queries:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="189" tabindex="0"><code>&gt;&gt;&gt; from django.test.utils import CaptureQueriesContext
+&gt;&gt;&gt; with CaptureQueriesContext(connection) as queries:
+...     for booking in Registration.objects.all():
+...         print(booking.member.display_name, booking.event)
+...     print(&#x27;queries:&#x27;, len(queries))
+...
+Sai Python meetup
+Raj Python meetup
+Sai Django workshop
+queries: 7</code></pre><p class="" data-block="190">Seven: one for the registrations, then a member and an event for each of the three, the left side of Figure 20.3. Now ask for the related rows in the same query:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="191" tabindex="0"><code>&gt;&gt;&gt; joined = Registration.objects.select_related(
+...     &#x27;event&#x27;, &#x27;member&#x27;
+... )
+&gt;&gt;&gt; with CaptureQueriesContext(connection) as queries:
+...     for booking in joined:
+...         print(booking.member.display_name, booking.event)
+...     print(&#x27;queries:&#x27;, len(queries))
+...
+Sai Python meetup
+Raj Python meetup
+Sai Django workshop
+queries: 1
+&gt;&gt;&gt; str(joined.query).count(&#x27;INNER JOIN&#x27;)
+2</code></pre><p class="" data-block="192">The same lines, from one query. <code>str(joined.query)</code> is the approximate SQL from Chapter 19, and it holds two <code>INNER JOIN</code>s, one for each related table. From the other direction, events with their registrations, use <code>prefetch_related()</code>:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="193" tabindex="0"><code>&gt;&gt;&gt; with_bookings = Event.objects.prefetch_related(
+...     &#x27;registrations&#x27;
+... )
+&gt;&gt;&gt; with CaptureQueriesContext(connection) as queries:
+...     for event in with_bookings:
+...         print(event, len(event.registrations.all()))
+...     print(&#x27;queries:&#x27;, len(queries))
+...
+Python meetup 2
+Django workshop 1
+Spring planning 0
+queries: 2</code></pre><p class="" data-block="194">Two queries: one for the events, and one for all their registrations together, which Django shares out among the events. Without <code>prefetch_related()</code>, the loop would run one more query for each event. Leave the shell with <code>exit()</code>. Nothing in this step changed a row.</p><h4 data-block="195">Step 8: Review and commit</h4><p class="" data-block="196">Look at what changed:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="197" tabindex="0"><code>git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="198" tabindex="0"><code> M config/settings.py
+ M events/models.py
+ M events/tests.py
+?? events/migrations/0002_organizerassignment.py
+?? registrations/</code></pre><p class="" data-block="199">Three changed files and two new paths: the events migration, and the whole <code>registrations</code> folder, which Git lists as one line until it is added. <code>db.sqlite3</code> is not listed, because Git ignores it, so Sai, Raj, and their registrations stay on your computer. Commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="200" tabindex="0"><code>git add config events registrations
+git commit -m &quot;Add registrations and organizer assignments&quot;</code></pre><p class="" data-block="201"><code>git status --short</code> then prints nothing.</p><h4 data-block="202">Step 9: Optional lab: event topics, a many-to-many field</h4><p class="" data-block="203">This step is an experiment, like Chapter 18’s slug lab. Otahque’s first release has no topics, as Chapter 15’s ERD records, so you build them in a copy of the project and discard the copy afterwards. The lab exists for one reason: it is the place where you write a <code>ManyToManyField</code> yourself and watch the link table Django creates for it. Run every command in this step inside the lab folder, never in your project. If you skip it, nothing later in the main path depends on it; Chapters 55 and 56 return to topics in an optional lab of their own.</p><p class="" data-block="204">From the folder that holds <code>manage.py</code>, clone the project you committed in Step 8 into the practice folder, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="205" tabindex="0"><code>git clone . ../practice/relations-lab</code></pre><p class="" data-block="206">Copy your <code>.env</code> into the lab. In PowerShell:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="207" tabindex="0"><code>Copy-Item .env ..\practice\relations-lab\.env</code></pre><p class="" data-block="208">In Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="209" tabindex="0"><code>cp .env ../practice/relations-lab/.env</code></pre><p class="" data-block="210">Then move into the lab, build its environment, create its tables, and add three events with Chapter 18’s helper, <code>add_lab_events.py</code>, which is still in the practice folder:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="211" tabindex="0"><code>cd ../practice/relations-lab
+uv sync --locked
+uv run python manage.py migrate
+uv run python ../add_lab_events.py</code></pre><p class="" data-block="212">The last command prints <code>3 events</code>. If you no longer have the helper, recreate it from Chapter 18, Step 7.</p><p class="" data-block="213">In the lab’s <code>events/models.py</code>, add a field to <code>Event</code>, directly after <code>status</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (lab only, in Event, after status)</p><pre class="code-listing code-listing--file" data-block="214" tabindex="0"><code>    topics = models.ManyToManyField(
+        &#x27;Topic&#x27;, blank=True, related_name=&#x27;events&#x27;
+    )</code></pre><p class="" data-block="215">Then add a model at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (lab only, end of the file)</p><pre class="code-listing code-listing--file" data-block="216" tabindex="0"><code>class Topic(models.Model):
+    &quot;&quot;&quot;A subject an event covers; lab only.&quot;&quot;&quot;
+
+    name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        ordering = [&#x27;name&#x27;]
+
+    def __str__(self):
+        return self.name</code></pre><p class="" data-block="217"><code>&#x27;Topic&#x27;</code> is a string because the class is defined further down the file, the same lazy reference you used for <code>&#x27;events.Event&#x27;</code>. <code>blank=True</code> lets an event have no topics; a many-to-many field never needs <code>null=True</code>, because it adds no column to the event table. <code>related_name=&#x27;events&#x27;</code> names the reverse side, so a topic lists its events with <code>python.events</code>. There is no <code>on_delete</code>: you will see why at the end of the lab.</p><p class="" data-block="218">Run Chapter 18’s guard test before writing the migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="219" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="" data-block="220">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="221" tabindex="0"><code>Found 1 test(s).
+...
+AssertionError: Missing migrations:
+Migrations for &#x27;events&#x27;:
+  events\migrations\0003_topic_event_topics.py
+    + Create model Topic
+    + Add field topics to event
+...
+FAILED (failures=1)</code></pre><p class="" data-block="222">That is the red stage: the model changed and no migration describes it. Write the migration and read its SQL:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="223" tabindex="0"><code>uv run python manage.py makemigrations
+uv run python manage.py sqlmigrate events 0003</code></pre><p class="" data-block="224">The first command names the same file and its two operations. The second prints this, with long lines shortened:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="225" tabindex="0"><code>BEGIN;
+...
+CREATE TABLE &quot;events_topic&quot; (&quot;id&quot; integer NOT NULL PRIM...
+...
+CREATE TABLE &quot;events_event_topics&quot; (&quot;id&quot; integer NOT NU...
+CREATE UNIQUE INDEX &quot;events_event_topics_event_id_topic...
+CREATE INDEX &quot;events_event_topics_event_id_899728de&quot; ...
+CREATE INDEX &quot;events_event_topics_topic_id_1e1f2630&quot; ...
+COMMIT;</code></pre><p class="" data-block="226">The field you wrote on <code>Event</code> became a whole table, <code>events_event_topics</code>, with its own <code>id</code>, an <code>event_id</code>, and a <code>topic_id</code>: the third table from Table 20.1. Its unique index on the pair means that one event cannot hold the same topic twice. Apply it with <code>uv run python manage.py migrate events</code>, which prints <code>Applying events.0003_topic_event_topics... OK</code>.</p><p class="" data-block="227">Now use it. Start the shell with <code>uv run python manage.py shell</code>; its first line says <code>16 objects imported automatically</code>, because <code>Topic</code> is imported too. Attach topics to two events, then read them from both sides:</p><p class="code-label code-label--python" aria-hidden="true">Python</p><pre class="code-listing code-listing--python" data-block="228" tabindex="0"><code>&gt;&gt;&gt; meetup = Event.objects.first()
+&gt;&gt;&gt; sprint = Event.objects.get(title=&#x27;Django sprint&#x27;)
+&gt;&gt;&gt; python = Topic.objects.create(name=&#x27;Python&#x27;)
+&gt;&gt;&gt; web = Topic.objects.create(name=&#x27;Web&#x27;)
+&gt;&gt;&gt; meetup.topics.add(python)
+&gt;&gt;&gt; sprint.topics.add(python, web)
+&gt;&gt;&gt; sprint.topics.add(web)
+&gt;&gt;&gt; sprint.topics.all()
+&lt;QuerySet [&lt;Topic: Python&gt;, &lt;Topic: Web&gt;]&gt;
+&gt;&gt;&gt; python.events.all()
+&lt;QuerySet [&lt;Event: Python meetup&gt;, &lt;Event: Django sprint&gt;]&gt;</code></pre><p class="" data-block="229"><code>add()</code> writes rows into the link table, one for each pair, and adding <code>web</code> a second time changes nothing, because the pair is already there. <code>meetup.topics</code> and <code>python.events</code> are related managers, like <code>meetup.registrations</code>, but here both sides are plural. Filters cross the link table with the double underscore, and repeat rows as reverse filters did in Step 6:</p><p class="code-label code-label--python" aria-hidden="true">Python</p><pre class="code-listing code-listing--python" data-block="230" tabindex="0"><code>&gt;&gt;&gt; both = Event.objects.filter(
+...     topics__name__in=[&#x27;Python&#x27;, &#x27;Web&#x27;]
+... )
+&gt;&gt;&gt; [event.title for event in both]
+[&#x27;Python meetup&#x27;, &#x27;Django sprint&#x27;, &#x27;Django sprint&#x27;]
+&gt;&gt;&gt; [event.title for event in both.distinct()]
+[&#x27;Python meetup&#x27;, &#x27;Django sprint&#x27;]
+&gt;&gt;&gt; Event.topics.through
+&lt;class &#x27;events.models.Event_topics&#x27;&gt;
+&gt;&gt;&gt; Event.topics.through.objects.count()
+3</code></pre><p class="" data-block="231">The sprint matches both topics, so it appears twice until <code>distinct()</code>. <code>through</code> is the model Django made for the link table; it has no fields of its own beyond the two keys, which is exactly why a registration, with its status and times, could not be one. Reading each event’s topics in a loop is a query per row again, and <code>prefetch_related()</code> fixes it, as in Step 7:</p><p class="code-label code-label--python" aria-hidden="true">Python</p><pre class="code-listing code-listing--python" data-block="232" tabindex="0"><code>&gt;&gt;&gt; from django.test.utils import CaptureQueriesContext
+&gt;&gt;&gt; with CaptureQueriesContext(connection) as queries:
+...     events = Event.objects.prefetch_related(&#x27;topics&#x27;)
+...     for e in events:
+...         print(e, [t.name for t in e.topics.all()])
+...     print(&#x27;queries:&#x27;, len(queries))
+...
+Python meetup [&#x27;Python&#x27;]
+Django sprint [&#x27;Python&#x27;, &#x27;Web&#x27;]
+Python meetup []
+queries: 2</code></pre><p class="" data-block="233">Without <code>prefetch_related()</code>, the same loop runs four queries: one for the events and one for each event’s topics. Finally, remove a link and delete a topic:</p><p class="code-label code-label--python" aria-hidden="true">Python</p><pre class="code-listing code-listing--python" data-block="234" tabindex="0"><code>&gt;&gt;&gt; sprint.topics.remove(web)
+&gt;&gt;&gt; web.events.all()
+&lt;QuerySet []&gt;
+&gt;&gt;&gt; python.delete()
+(3, {&#x27;events.Event_topics&#x27;: 2, &#x27;events.Topic&#x27;: 1})
+&gt;&gt;&gt; meetup.topics.all()
+&lt;QuerySet []&gt;</code></pre><p class="" data-block="235"><code>remove()</code> deletes one link row and leaves both the event and the topic. Deleting the <code>Python</code> topic deleted it and its two link rows, and the events are untouched. That answers the <code>on_delete</code> question: the link table Django makes always cascades, because a link row means nothing without both ends, and you cannot choose otherwise. When a link needs a rule of its own, or facts of its own, it becomes a model with two foreign keys, as Registration is. Leave the shell with <code>exit()</code>.</p><p class="" data-block="236">Run the lab backwards, to the migration before topics, and check what is left:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="237" tabindex="0"><code>uv run python manage.py migrate events 0002
+uv run python manage.py showmigrations events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="238" tabindex="0"><code>...
+  Unapplying events.0003_topic_event_topics... OK
+events
+ [X] 0001_initial
+ [X] 0002_organizerassignment
+ [ ] 0003_topic_event_topics</code></pre><p class="" data-block="239">Both new tables are gone, and the three events remain. When you have finished, delete the <code>relations-lab</code> folder inside the practice folder; your project never saw any of it, and its 36 tests and commit are unchanged.</p><h3 class="" id="topic-240" data-block="240">When something goes wrong</h3><figure class="table-figure" data-block="241"><figcaption>Table 20.3 — Relationship problems and safe recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 20.3 — Relationship problems and safe recovery"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Safe recovery</th>
+</tr></thead><tbody><tr><th scope="row">CommandError: conflicts with the name of an existing module</th>
+<td data-label="Likely cause">A registrations folder already exists</td>
+<td data-label="Safe recovery">Inspect it; do not run startapp again</td>
+</tr>
+<tr><th scope="row">Found 11 test(s), FAILED (errors=2)</th>
+<td data-label="Likely cause">The models do not exist yet</td>
+<td data-label="Safe recovery">Expected in Step 3; write Step 4&#x27;s models</td>
+</tr>
+<tr><th scope="row">No installed app with label &#x27;registrations&#x27;</th>
+<td data-label="Likely cause">INSTALLED_APPS lacks the app</td>
+<td data-label="Safe recovery">Add Step 2&#x27;s line; run the command again</td>
+</tr>
+<tr><th scope="row">missing 1 required positional argument: &#x27;on_delete&#x27;</th>
+<td data-label="Likely cause">A ForeignKey without on_delete</td>
+<td data-label="Safe recovery">Add on_delete=models.PROTECT</td>
+</tr>
+<tr><th scope="row">fields.E304 or fields.E305: clashes</th>
+<td data-label="Likely cause">Two relations to one model share a name</td>
+<td data-label="Safe recovery">Give each its own related_name</td>
+</tr>
+<tr><th scope="row">fields.E300 and E307: app isn&#x27;t installed</th>
+<td data-label="Likely cause">A misspelled model string</td>
+<td data-label="Safe recovery">Use &#x27;events.Event&#x27;</td>
+</tr>
+<tr><th scope="row">Missing migrations, with errors</th>
+<td data-label="Likely cause">Tests ran before makemigrations</td>
+<td data-label="Safe recovery">Run makemigrations, then migrate</td>
+</tr>
+<tr><th scope="row">&#x27;Event&#x27; object has no attribute &#x27;registration_set&#x27;</th>
+<td data-label="Likely cause">The default name was replaced</td>
+<td data-label="Safe recovery">Use the related_name: registrations</td>
+</tr>
+<tr><th scope="row">&#x27;RelatedManager&#x27; object is not iterable</th>
+<td data-label="Likely cause">A loop over the manager itself</td>
+<td data-label="Safe recovery">Add .all()</td>
+</tr>
+<tr><th scope="row">The same event twice in a result</th>
+<td data-label="Likely cause">A filter across a reverse relation</td>
+<td data-label="Safe recovery">Add distinct()</td>
+</tr>
+<tr><th scope="row">ProtectedError when deleting</th>
+<td data-label="Likely cause">PROTECT keeps history</td>
+<td data-label="Safe recovery">Intended; cancel or keep the row instead</td>
+</tr>
+<tr><th scope="row">Many queries in one loop</th>
+<td data-label="Likely cause">Related rows loaded one at a time</td>
+<td data-label="Safe recovery">select_related() or prefetch_related()</td>
+</tr>
+<tr><th scope="row">Lab: IntegrityError: UNIQUE constraint failed: events_topic.name</th>
+<td data-label="Likely cause">A topic with that name exists</td>
+<td data-label="Safe recovery">Fetch it with get() instead of creating it</td>
+</tr>
+<tr><th scope="row">Lab command run in the project</th>
+<td data-label="Likely cause">Wrong folder</td>
+<td data-label="Safe recovery">git status, then git restore only the lab&#x27;s files</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2020%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter20/section-20-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter20/section-20-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter20/section-20-2/">← What You Need to Know</a><a href="/chapters/chapter20/section-20-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

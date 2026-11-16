@@ -1,0 +1,7 @@
+{% if event.places_left > 0 %}
+<span class="places text-sm">
+  {{ event.places_left }} of {{ event.capacity }} places left
+</span>
+{% else %}
+<span class="places badge">Full</span>
+{% endif %}

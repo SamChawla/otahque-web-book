@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load tz %}
+
+{% block title %}{{ event.title }} | Otahque{% endblock %}
+
+{% block content %}
+  <article class="card space-y-4 border border-base-300
+                  bg-base-100 p-6">
+    {% if event.status != 'published' %}
+      <p class="rounded-box border border-base-content
+                px-3 py-1 text-sm">
+        {{ event.get_status_display }}: only its organizers
+        and the administrator can see this page.</p>
+    {% endif %}
+    <h1>{{ event.title }}</h1>
+    {% timezone event.timezone %}
+      <p>From {{ event.starts_at|date:"l j F Y, H:i T" }}</p>
+      <p>Until {{ event.ends_at|date:"l j F Y, H:i T" }}</p>
+    {% endtimezone %}
+    {% if now < event.ends_at %}
+      <p>{% include "events/places.html" %}</p>
+    {% endif %}
+    <p>{{ event.location }}</p>
+  </article>
+  <p>
+    <a href="{% url 'events:list' %}">All events</a>
+  </p>
+{% endblock %}

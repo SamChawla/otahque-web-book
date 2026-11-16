@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 24: Django forms: Sam&#x27;s first event, typed on Otahque&#x27;s own page. Build Otahque&#x27;s first form: Sam&#x27;s New event page, a ModelForm...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter24/section-24-3/">
+<title>How We Build It · Chapter 24 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter" open><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter24/">← Chapter 24 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-24-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-86">The Custom Way</a></li><li><a href="#topic-91">The Django Way</a></li></ul></li><li><a href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 9 figures · 5 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter24:24.3" data-progress-title="Section 24.3" data-reader-prev="section-24-2.html" data-reader-next="section-24-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 24.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter24/">Chapter 24 · Django forms: Sam&#x27;s first event, typed on Otahque&#x27;s own page</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter24/section-24-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter24/section-24-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter24/section-24-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter24/section-24-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter24/section-24-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-24-3" data-block="84">How We Build It</h2><p class="" data-block="85">Start from Chapter 23, in the folder containing <code>manage.py</code>, with your own <code>.env</code> (including <code>DJANGO_ADMIN_URL=admin/</code>), the locked environment, 77 passing tests, every migration applied, the Node.js packages from Chapter 14 installed, and Sam’s superuser password from Chapter 18. Step 2 tries a first form in a practice file. Steps 3 and 4 write <code>events/forms.py</code> with its tests first. Step 5 adds the New event page: a view in <code>events/views.py</code>, an address in <code>events/urls.py</code>, the <code>LOGIN_URL</code> setting, the template <code>events/templates/events/form.html</code>, and a link in the navigation. Step 6 saves drafts, with one method added to <code>events/models.py</code> and messages in <code>templates/base.html</code>. Step 7 lets organizers and the administrator open a draft’s page. Step 8 renders the fields with Otahque’s styles, through <code>config/renderers.py</code>, a field template, two widget templates, <code>static/otahque/source.css</code>, and a small script. Step 9 proves the CSRF protection, writes the design note <code>docs/design/event-draft-form.md</code>, and commits. Every test goes in <code>events/tests.py</code>. At the end, 97 tests pass, Sam can save a draft for his New York clinic at 19:00 New York time, and there is no new migration.</p><h3 class="" id="topic-86" data-block="86">The Custom Way</h3><p class="" data-block="87">Without Django’s forms, every check, conversion, message, and redisplay is written by hand. This illustration checks two values the way a view would have to, and escapes a typed value before putting it back into the page. Run it with any Python, and do not add it to the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/by_hand.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="88" tabindex="0"><code>from html import escape
+
+
+def check(data):
+    errors, cleaned = {}, {}
+    title = data.get(&#x27;title&#x27;, &#x27;&#x27;).strip()
+    if title:
+        cleaned[&#x27;title&#x27;] = title
+    else:
+        errors[&#x27;title&#x27;] = &#x27;This field is required.&#x27;
+    try:
+        cleaned[&#x27;capacity&#x27;] = int(data.get(&#x27;capacity&#x27;, &#x27;&#x27;))
+    except ValueError:
+        errors[&#x27;capacity&#x27;] = &#x27;Enter a whole number.&#x27;
+    return errors, cleaned
+
+
+for posted in ({&#x27;title&#x27;: &#x27;&#x27;, &#x27;capacity&#x27;: &#x27;forty&#x27;},
+               {&#x27;title&#x27;: &#x27;Clinic&#x27;, &#x27;capacity&#x27;: &#x27;50&#x27;}):
+    errors, cleaned = check(posted)
+    for name, value in (errors or cleaned).items():
+        print(f&#x27;{name}: {value}&#x27;)
+typed = &#x27;Q&amp;A &quot;night&quot;&#x27;
+print(f&#x27;&lt;input name=&quot;title&quot; value=&quot;{escape(typed)}&quot;&gt;&#x27;)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="89" tabindex="0"><code>title: This field is required.
+capacity: Enter a whole number.
+title: Clinic
+capacity: 50
+&lt;input name=&quot;title&quot; value=&quot;Q&amp;amp;A &amp;quot;night&amp;quot;&quot;&gt;</code></pre><p class="" data-block="90">It handles two fields. Now count what is missing: there is no HTML for the inputs, no labels, no list of messages beside each field, no check that the request came from Otahque’s own page, and the rules are copies of the model’s, which will drift apart. <code>escape()</code> is there because a typed value written back into a page without it could close the attribute and add HTML of its own; forget it once and the page is open to attack. Django’s forms do each of these jobs, from the model, for every form.</p><h3 class="" id="topic-91" data-block="91">The Django Way</h3><p class="" data-block="92">Nine steps follow. Step 1 checks the start, Step 2 tries a plain form, Steps 3 and 4 build <code>EventForm</code>, Steps 5 to 7 build the page, its saving, and the draft’s page, Step 8 renders the fields, and Step 9 proves the CSRF protection, records the design, and commits. Each step writes its tests first.</p><h4 data-block="93">Step 1: Check the starting point</h4><p class="" data-block="94">Run every test, beside <code>manage.py</code>, in PowerShell, Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="95" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="96">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="97" tabindex="0"><code>Found 77 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 77 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="98">Then confirm that nothing is waiting to be committed and that the last commit is Chapter 23’s:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="99" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="100" tabindex="0"><code>... Configure the admin site</code></pre><p class="" data-block="101"><code>git status --short</code> prints nothing when every change is committed. Your commit’s code, the seven characters before the message, differs from the one shown.</p><h4 data-block="102">Step 2: A first form, in a practice file</h4><p class="" data-block="103">Before writing Otahque’s form, ask a small one the questions in Table 24.1. Create <code>practice/first_form.py</code>, in the practice folder beside your project that Chapter 16 created, holding:</p><p class="code-label code-label--file" aria-hidden="true">../practice/first_form.py</p><pre class="code-listing code-listing--file" data-block="104" tabindex="0"><code>import setup_django
+from django import forms
+
+
+class TitleForm(forms.Form):
+    title = forms.CharField(max_length=200)
+    capacity = forms.IntegerField(min_value=1)
+
+
+empty = TitleForm()
+print(&#x27;empty:&#x27;, empty.is_bound)
+sent = TitleForm({&#x27;title&#x27;: &#x27;&#x27;, &#x27;capacity&#x27;: &#x27;40&#x27;})
+print(&#x27;sent:&#x27;, sent.is_bound, sent.is_valid())
+print(sent.errors.as_text())
+print(repr(sent.data[&#x27;capacity&#x27;]), sent.cleaned_data)
+fixed = TitleForm({&#x27;title&#x27;: &#x27;Clinic&#x27;, &#x27;capacity&#x27;: &#x27;40&#x27;})
+print(fixed.is_valid(), fixed.cleaned_data)</code></pre><p class="" data-block="105"><code>import setup_django</code> is Chapter 16’s helper, which loads your project’s settings so the file can use Django. Run it from the folder that holds <code>manage.py</code>, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="106" tabindex="0"><code>uv run python ../practice/first_form.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="107" tabindex="0"><code>empty: False
+sent: True False
+* title
+  * This field is required.
+&#x27;40&#x27; {&#x27;capacity&#x27;: 40}
+True {&#x27;title&#x27;: &#x27;Clinic&#x27;, &#x27;capacity&#x27;: 40}</code></pre><p class="" data-block="108">The empty form is unbound. The sent form is bound and invalid, and <code>errors.as_text()</code> lists the message for <code>title</code>. <code>sent.data[&#x27;capacity&#x27;]</code> is still the text <code>&#x27;40&#x27;</code>, with quotes because <code>repr()</code> shows its type, while <code>cleaned_data</code> holds the number <code>40</code>, and no title, because the title failed. The last form passes, and <code>cleaned_data</code> has both values, converted. That is all a form does: data in, checks, then either messages or clean values.</p><h4 data-block="109">Step 3: EventForm, with its tests first</h4><p class="" data-block="110">The first tests describe the form before it exists: <code>status</code> is not one of its fields and a posted value is ignored, a missing title is refused, a capacity of 0 is refused by Chapter 21’s model rule, and a zone outside the list is refused. Open <code>events/tests.py</code> and add one import after <code>from . import views</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (after from . import views)</p><pre class="code-listing code-listing--file" data-block="111" tabindex="0"><code>from .forms import EventForm</code></pre><p class="" data-block="112">Then add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="113" tabindex="0"><code>NEW_EVENT = {
+    &#x27;title&#x27;: &#x27;Online Django clinic&#x27;,
+    &#x27;timezone&#x27;: &#x27;America/New_York&#x27;,
+    &#x27;starts_at&#x27;: &#x27;2026-12-03T19:00&#x27;,
+    &#x27;ends_at&#x27;: &#x27;2026-12-03T20:30&#x27;,
+    &#x27;location&#x27;: &#x27;Online&#x27;,
+    &#x27;capacity&#x27;: &#x27;50&#x27;,
+}
+
+
+def new_event_form(**changes):
+    &quot;&quot;&quot;An EventForm holding NEW_EVENT with changes.&quot;&quot;&quot;
+    return EventForm(NEW_EVENT | changes)
+
+
+class EventFormTests(TestCase):
+    def test_status_is_not_a_field(self):
+        self.assertNotIn(&#x27;status&#x27;, EventForm().fields)
+        form = new_event_form(status=&#x27;published&#x27;)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save().status,
+                         Event.Status.DRAFT)
+
+    def test_missing_title_is_refused(self):
+        form = new_event_form(title=&#x27;&#x27;)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors[&#x27;title&#x27;],
+                         [&#x27;This field is required.&#x27;])
+
+    def test_zero_capacity_uses_the_model_rule(self):
+        form = new_event_form(capacity=&#x27;0&#x27;)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.non_field_errors(),
+                         [&#x27;Capacity must be more than 0.&#x27;])
+
+    def test_unknown_zone_is_refused(self):
+        form = new_event_form(timezone=&#x27;Mars/Olympus&#x27;)
+        self.assertFalse(form.is_valid())
+        self.assertIn(&#x27;timezone&#x27;, form.errors)</code></pre><p class="" data-block="114"><code>NEW_EVENT</code> holds what Sam’s browser will send for his clinic, as text, the way a browser sends it. <code>new_event_form()</code> builds a bound form from it with some values changed: <code>|</code> joins two dictionaries, and the right one’s values win. Run the new tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="115" tabindex="0"><code>uv run python manage.py test events.tests.EventFormTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="116" tabindex="0"><code>Found 1 test(s).
+...
+ERROR: tests (unittest.loader._FailedTest.tests)
+...
+ImportError: Failed to import test module: tests
+...
+ModuleNotFoundError: No module named &#x27;events.forms&#x27;
+...
+FAILED (errors=1)</code></pre><p class="" data-block="117">The whole file fails to import, because <code>events/forms.py</code> does not exist yet, so Django reports the module rather than the four tests. Create <code>events/forms.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py</p><pre class="code-listing code-listing--file" data-block="118" tabindex="0"><code>from zoneinfo import available_timezones
+
+from django import forms
+
+from .models import Event
+
+ZONE_CHOICES = [(&#x27;&#x27;, &#x27;Choose a time zone&#x27;)] + [
+    (name, name) for name in sorted(available_timezones())
+]
+
+
+def local_input():
+    &quot;&quot;&quot;A date-and-time box that the browser fills in.&quot;&quot;&quot;
+    return forms.DateTimeInput(
+        attrs={&#x27;type&#x27;: &#x27;datetime-local&#x27;},
+        format=&#x27;%Y-%m-%dT%H:%M&#x27;,
+    )
+
+
+class EventForm(forms.ModelForm):
+    &quot;&quot;&quot;Sam&#x27;s new event. Status is not one of its fields.&quot;&quot;&quot;
+
+    timezone = forms.ChoiceField(
+        choices=ZONE_CHOICES,
+        label=&#x27;Time zone&#x27;,
+        help_text=&#x27;Starts and Ends are read in this zone.&#x27;,
+    )
+
+    class Meta:
+        model = Event
+        fields = [&#x27;title&#x27;, &#x27;timezone&#x27;, &#x27;starts_at&#x27;,
+                  &#x27;ends_at&#x27;, &#x27;location&#x27;, &#x27;capacity&#x27;]
+        labels = {&#x27;starts_at&#x27;: &#x27;Starts&#x27;, &#x27;ends_at&#x27;: &#x27;Ends&#x27;}
+        help_texts = {
+            &#x27;location&#x27;: &#x27;A venue address, or Online.&#x27;,
+        }
+        widgets = {&#x27;starts_at&#x27;: local_input(),
+                   &#x27;ends_at&#x27;: local_input()}</code></pre><p class="" data-block="119"><code>ZONE_CHOICES</code> is the list for the <strong>Time zone</strong> field: an empty first choice that asks for a zone, then every zone name Python’s time-zone database knows, sorted. Each choice is a pair, the value sent and the text shown, and here they are the same. <code>local_input()</code> makes the widget for a date and time: <code>type=&quot;datetime-local&quot;</code> asks the browser for its own date-and-time picker, and <code>format</code> writes a saved value back in the form that picker reads.</p><p class="" data-block="120"><code>EventForm</code> is a ModelForm. <code>Meta.model</code> names the model, <code>fields</code> is the allowlist, in the order the page shows them, <code>labels</code> and <code>help_texts</code> change what the page says, and <code>widgets</code> chooses the inputs. The field <code>timezone</code> is declared on the class itself, which replaces the one the model would give: the model has a text field for the zone, and the page needs a list. The model’s validator, <code>validate_timezone_name()</code>, still runs when the form calls the model’s validation. Run the tests again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="121" tabindex="0"><code>uv run python manage.py test events.tests.EventFormTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="122" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="123">Common Error: fields = ’__all__’</p><p class="" data-block="124">With <code>fields = &#x27;__all__&#x27;</code>, Django includes every editable field of the model, and <code>test_status_is_not_a_field</code> fails with <code>AssertionError: &#x27;status&#x27; unexpectedly found in {...}</code>. Worse, a browser that sends <code>status=published</code> would publish the event. Name the fields; the test keeps the list honest when the model gains a field.</p></div><p class="" data-block="125">To see what the ModelForm built from the model, create <code>practice/event_fields.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">../practice/event_fields.py</p><pre class="code-listing code-listing--file" data-block="126" tabindex="0"><code>import setup_django
+from events.forms import EventForm
+
+for name, field in EventForm().fields.items():
+    kind = type(field).__name__
+    print(f&#x27;{name:&lt;10} {kind:&lt;14} {field.required}&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="127" tabindex="0"><code>uv run python ../practice/event_fields.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="128" tabindex="0"><code>title      CharField      True
+timezone   ChoiceField    True
+starts_at  DateTimeField  True
+ends_at    DateTimeField  True
+location   CharField      True
+capacity   IntegerField   True</code></pre><p class="" data-block="129">Every field is required, because none of the model’s fields has <code>blank=True</code>, the setting that Chapter 20 said tells forms a field may be left empty. The model’s <code>CharField</code>s became form <code>CharField</code>s, its date and time fields <code>DateTimeField</code>s, and its <code>PositiveIntegerField</code> an <code>IntegerField</code> that refuses negative numbers. Only <code>timezone</code> is the one declared by hand.</p><h4 data-block="130">Step 4: Read the times in the event’s zone</h4><p class="" data-block="131">Sam’s form still reads every time in UTC. The tests say what it should do: his 19:00 in New York is midnight UTC on 4 December, the same text in Kolkata is 13:30 UTC, an end before the start is reported on the <strong>Ends</strong> field, and a time that New York’s clocks skip or repeat is refused with a message that says which. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="132" tabindex="0"><code>def in_utc(form, name):
+    &quot;&quot;&quot;A cleaned time from form, shown in UTC.&quot;&quot;&quot;
+    return form.cleaned_data[name].astimezone(UTC)
+
+
+class EventZoneTests(TestCase):
+    def test_times_are_read_in_the_event_zone(self):
+        form = new_event_form()
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            in_utc(form, &#x27;starts_at&#x27;),
+            datetime(2026, 12, 4, 0, 0, tzinfo=UTC),
+        )
+
+    def test_same_time_elsewhere_is_another_instant(self):
+        form = new_event_form(timezone=&#x27;Asia/Kolkata&#x27;)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            in_utc(form, &#x27;starts_at&#x27;),
+            datetime(2026, 12, 3, 13, 30, tzinfo=UTC),
+        )
+
+    def test_end_before_start_is_shown_on_ends(self):
+        form = new_event_form(ends_at=&#x27;2026-12-03T18:00&#x27;)
+        self.assertFormError(
+            form, &#x27;ends_at&#x27;,
+            &#x27;An event must end after it starts.&#x27;,
+        )
+
+    def test_skipped_time_is_refused(self):
+        form = new_event_form(
+            starts_at=&#x27;2027-03-14T02:30&#x27;,
+            ends_at=&#x27;2027-03-14T04:00&#x27;,
+        )
+        self.assertFormError(
+            form, &#x27;starts_at&#x27;,
+            &#x27;02:30 does not exist in America/New_York &#x27;
+            &#x27;that day: the clocks go forward.&#x27;,
+        )
+
+    def test_repeated_time_is_refused(self):
+        form = new_event_form(
+            starts_at=&#x27;2026-11-01T01:30&#x27;,
+            ends_at=&#x27;2026-11-01T03:00&#x27;,
+        )
+        self.assertFormError(
+            form, &#x27;starts_at&#x27;,
+            &#x27;01:30 happens twice in America/New_York &#x27;
+            &#x27;that day: the clocks go back.&#x27;,
+        )</code></pre><p class="" data-block="133"><code>assertFormError()</code> checks that a form has exactly that message on that field. Run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="134" tabindex="0"><code>uv run python manage.py test events.tests.EventZoneTests</code></pre><p class="" data-block="135">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="136" tabindex="0"><code>Found 5 test(s).
+...
+FFFFF
+...
+FAIL: test_end_before_start_is_shown_on_ends (...)
+...
+AssertionError: Lists differ: [] != [&#x27;An event must end ...
+...
+FAIL: test_repeated_time_is_refused (...)
+...
+FAIL: test_same_time_elsewhere_is_another_instant (...)
+...
+AssertionError: datetime.datetime(2026, 12, 3, 19, 0, ...
+...
+FAIL: test_skipped_time_is_refused (...)
+...
+FAIL: test_times_are_read_in_the_event_zone (...)
+...
+FAILED (failures=5)
+...</code></pre><p class="" data-block="137">All five fail. The two times are five and a half hours apart in UTC only because they were both read as UTC. The end-before-start message exists, but it is Chapter 21’s constraint, which the model reports for the whole form rather than for <strong>Ends</strong>. And the two clock-change times were accepted, because UTC has no clock changes.</p><p class="" data-block="138">In <code>events/forms.py</code>, replace the import lines at the top, from <code>from zoneinfo import available_timezones</code> to <code>from .models import Event</code>, with:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (imports, replaced)</p><pre class="code-listing code-listing--file" data-block="139" tabindex="0"><code>from datetime import UTC
+from zoneinfo import ZoneInfo, available_timezones
+
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+from .models import Event</code></pre><p class="" data-block="140">Add this function after <code>local_input()</code>, with two blank lines before and after it:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (after local_input)</p><pre class="code-listing code-listing--file" data-block="141" tabindex="0"><code>def in_zone(value, zone_name):
+    &quot;&quot;&quot;Read a typed time as a time in the named zone.&quot;&quot;&quot;
+    typed = timezone.make_naive(value)
+    zone = ZoneInfo(zone_name)
+    first = typed.replace(tzinfo=zone)
+    second = typed.replace(tzinfo=zone, fold=1)
+    if first.utcoffset() == second.utcoffset():
+        return first
+    params = {&#x27;time&#x27;: typed.strftime(&#x27;%H:%M&#x27;),
+              &#x27;zone&#x27;: zone_name}
+    back = first.astimezone(UTC).astimezone(zone)
+    if back.replace(tzinfo=None) != typed:
+        raise ValidationError(
+            &#x27;%(time)s does not exist in %(zone)s that &#x27;
+            &#x27;day: the clocks go forward.&#x27;,
+            code=&#x27;skipped_time&#x27;, params=params,
+        )
+    raise ValidationError(
+        &#x27;%(time)s happens twice in %(zone)s that day: &#x27;
+        &#x27;the clocks go back.&#x27;,
+        code=&#x27;repeated_time&#x27;, params=params,
+    )</code></pre><p class="" data-block="142">And add this method at the end of the file, inside <code>EventForm</code>, after the <code>Meta</code> class and one blank line below it:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (EventForm, add at the end)</p><pre class="code-listing code-listing--file" data-block="143" tabindex="0"><code>    def clean(self):
+        data = super().clean()
+        zone = data.get(&#x27;timezone&#x27;)
+        for name in (&#x27;starts_at&#x27;, &#x27;ends_at&#x27;):
+            if zone and data.get(name):
+                try:
+                    data[name] = in_zone(data[name], zone)
+                except ValidationError as error:
+                    self.add_error(name, error)
+        starts = data.get(&#x27;starts_at&#x27;)
+        ends = data.get(&#x27;ends_at&#x27;)
+        if starts and ends and ends &lt;= starts:
+            self.add_error(
+                &#x27;ends_at&#x27;,
+                &#x27;An event must end after it starts.&#x27;,
+            )
+        return data</code></pre><p class="" data-block="144"><code>clean()</code> runs after every field has been cleaned, so <code>data</code>, the <code>cleaned_data</code> that <code>super().clean()</code> returns, holds every value that passed. For each time, <code>in_zone()</code> reads it again in the chosen zone. <code>add_error()</code> attaches a message to a field and removes that field from <code>cleaned_data</code>, which is why the comparison afterwards checks that both times are still there. When the end is not after the start, the message is attached to <code>ends_at</code>, and the model then skips its own constraint for that field, so the message appears once.</p><div class="callout callout--hood"><p class="callout__title" data-block="145">Under the Hood: how in_zone() finds a clock change</p><p class="" data-block="146">The field has already turned the text into an aware date and time in the current zone, UTC. <code>timezone.make_naive()</code> takes the zone off again, which gives back exactly what Sam typed, 19:00 on 3 December. <code>replace(tzinfo=zone)</code> then attaches the event’s zone. For an ordinary time that is the answer. Python marks the two readings of a repeated time with <code>fold</code>: 0 for the first, 1 for the second. For an ordinary time both give the same offset from UTC; for a time that happens twice, or not at all, they differ. To tell the two apart, the function converts the first reading to UTC and back: a time that does not exist comes back as a different time, an hour later, while a repeated one comes back unchanged.</p></div><p class="" data-block="147">Run the tests again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="148" tabindex="0"><code>uv run python manage.py test events.tests.EventZoneTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="149" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="150">Then run all the event tests, to see that Step 3’s still pass:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="151" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="152" tabindex="0"><code>Found 53 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 53 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="153">Step 5: The New event page, and who may open it</h4><p class="" data-block="154">The page’s tests come first: a visitor is sent to sign in, a member without <code>add_event</code> is refused, and Sam sees a form with a label for every field, no <code>status</code> input, a CSRF token, and a link to the page in the navigation. Add one import to <code>events/tests.py</code>, after <code>from django.contrib.auth import get_user_model</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (after the get_user_model import)</p><pre class="code-listing code-listing--file" data-block="155" tabindex="0"><code>from django.contrib.auth.models import Permission</code></pre><p class="" data-block="156">Then add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="157" tabindex="0"><code>def member(email, *codenames):
+    &quot;&quot;&quot;A member holding the named permissions.&quot;&quot;&quot;
+    name = email.split(&#x27;@&#x27;)[0].title()
+    user = User.objects.create_user(email, display_name=name)
+    user.user_permissions.add(*Permission.objects.filter(
+        codename__in=codenames
+    ))
+    return user
+
+
+class NewEventPageTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = member(&#x27;sam@example.org&#x27;, &#x27;add_event&#x27;)
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+        cls.url = reverse(&#x27;events:create&#x27;)
+
+    def test_visitor_is_sent_to_sign_in(self):
+        response = self.client.get(self.url)
+        sign_in = reverse(&#x27;admin:login&#x27;)
+        self.assertRedirects(
+            response, f&#x27;{sign_in}?next={self.url}&#x27;,
+            fetch_redirect_response=False,
+        )
+
+    def test_member_without_permission_is_refused(self):
+        self.client.force_login(self.sai)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_form_page_has_labelled_fields(self):
+        self.client.force_login(self.sam)
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, &#x27;events/form.html&#x27;)
+        for name in (&#x27;title&#x27;, &#x27;timezone&#x27;, &#x27;starts_at&#x27;,
+                     &#x27;ends_at&#x27;, &#x27;location&#x27;, &#x27;capacity&#x27;):
+            self.assertContains(response, f&#x27;for=&quot;id_{name}&quot;&#x27;)
+        self.assertNotContains(response, &#x27;name=&quot;status&quot;&#x27;)
+        self.assertContains(response, &#x27;csrfmiddlewaretoken&#x27;)
+        self.assertContains(response, f&#x27;href=&quot;{self.url}&quot;&#x27;)</code></pre><p class="" data-block="158"><code>member()</code> creates a member and gives them the permissions named by their codenames, such as <code>add_event</code>, from the rows Chapter 18’s migrations created. <code>reverse(&#x27;admin:login&#x27;)</code> is the admin’s sign-in address, whatever your <code>DJANGO_ADMIN_URL</code>. <code>fetch_redirect_response=False</code> checks the redirect without following it. Run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="159" tabindex="0"><code>uv run python manage.py test events.tests.NewEventPageTests</code></pre><p class="" data-block="160">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="161" tabindex="0"><code>Found 3 test(s).
+...
+ERROR: setUpClass (events.tests.NewEventPageTests)
+...
+django.urls.exceptions.NoReverseMatch: Reverse for ...
+...
+FAILED (errors=1)
+...</code></pre><p class="" data-block="162"><code>reverse(&#x27;events:create&#x27;)</code> fails in <code>setUpTestData()</code>, before any test runs, because no address has that name yet. Open <code>events/urls.py</code> and add a pattern before the event page’s:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py (before the events/&lt;int:event_id&gt;/ pattern)</p><pre class="code-listing code-listing--file" data-block="163" tabindex="0"><code>    path(&#x27;events/new/&#x27;, views.event_create,
+         name=&#x27;create&#x27;),</code></pre><p class="" data-block="164"><code>events/new/</code> comes before <code>events/&lt;int:event_id&gt;/</code> only for readability; <code>new</code> is not a whole number, so the two never clash. In <code>events/views.py</code>, replace the import lines at the top, from <code>from django.shortcuts import get_object_or_404, render</code> to <code>from .models import Event</code>, with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (imports, replaced)</p><pre class="code-listing code-listing--file" data-block="165" tabindex="0"><code>from django.contrib.auth.decorators import (
+    login_required, permission_required,
+)
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
+
+from .forms import EventForm
+from .models import Event</code></pre><p class="" data-block="166">And add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="167" tabindex="0"><code>@login_required
+@permission_required(
+    &#x27;events.add_event&#x27;, raise_exception=True
+)
+def event_create(request):
+    form = EventForm()
+    return render(request, &#x27;events/form.html&#x27;,
+                  {&#x27;form&#x27;: form})</code></pre><p class="" data-block="168">The decorators run before the view, from the top: <code>login_required</code> sends a visitor to sign in, and only then does <code>permission_required</code> check the permission, raising a 403 refusal with <code>raise_exception=True</code>. Without <code>login_required</code>, a visitor would also be refused with 403, instead of being offered a way to sign in. For now the view always shows an empty form; Step 6 handles what it sends.</p><p class="" data-block="169">Now tell Django where to send people to sign in. Open <code>config/settings.py</code> and add these lines after the <code>ADMIN_URL</code> check, the block that ends with <code>&#x27;with it; see .env.example.&#x27;</code> and a closing bracket:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (after the ADMIN_URL check)</p><pre class="code-listing code-listing--file" data-block="170" tabindex="0"><code># Pages for signed-in people send everyone else here.
+# Chapter 27 points it at the members&#x27; sign-in page.
+LOGIN_URL = &#x27;admin:login&#x27;</code></pre><p class="" data-block="171"><code>LOGIN_URL</code> can be an address or, as here, a URL pattern’s name, which Django looks up when it needs it. Create <code>events/templates/events/form.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/form.html</p><pre class="code-listing code-listing--file" data-block="172" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}New event | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;New event&lt;/h1&gt;
+  &lt;p&gt;Otahque saves it as a draft. Only its organizers and
+     the administrator can see it until it is published.&lt;/p&gt;
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    {{ form }}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+      Save draft&lt;/button&gt;
+  &lt;/form&gt;
+{% endblock %}</code></pre><p class="" data-block="173"><code>{{ form }}</code> draws every field with its label, help text, errors, and input, using Django’s own templates for now. <code>{% csrf_token %}</code> writes the hidden token. The button submits the form, which posts to the page’s own address, because the <code>&lt;form&gt;</code> element has no <code>action</code>. Last, replace <code>templates/includes/site_nav.html</code> with:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html</p><pre class="code-listing code-listing--file" data-block="174" tabindex="0"><code>&lt;nav class=&quot;site-nav navbar gap-5 bg-neutral px-4
+            text-neutral-content&quot; aria-label=&quot;Site&quot;&gt;
+  &lt;a href=&quot;{% url &#x27;events:home&#x27; %}&quot;&gt;Home&lt;/a&gt;
+  &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;Events&lt;/a&gt;
+  {% if perms.events.add_event %}
+    &lt;a href=&quot;{% url &#x27;events:create&#x27; %}&quot;&gt;New event&lt;/a&gt;
+  {% endif %}
+&lt;/nav&gt;</code></pre><p class="" data-block="175"><code>perms</code> is a template variable that Django’s <code>auth</code> context processor provides: <code>perms.events.add_event</code> is true when the signed-in account holds that permission, so only people who may use the page see its link. Run the tests again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="176" tabindex="0"><code>uv run python manage.py test events.tests.NewEventPageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="177" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="178">Common Error: sent to /accounts/login/</p><p class="" data-block="179">Without the <code>LOGIN_URL</code> setting, <code>test_visitor_is_sent_to_sign_in</code> fails, saying <code>Response redirected to &#x27;/accounts/login/?next=/events/new/&#x27;, expected &#x27;/admin/login/?next=/events/new/&#x27;</code>, and in the browser the visitor lands on a “Page not found” page: <code>/accounts/login/</code> is Django’s default address, and Otahque has no page there until Chapter 27.</p></div><div class="callout callout--error"><p class="callout__title" data-block="180">Common Error: no {% csrf_token %}</p><p class="" data-block="181">Without the tag, <code>test_form_page_has_labelled_fields</code> fails with <code>AssertionError: False is not true : Couldn&#x27;t find &#x27;csrfmiddlewaretoken&#x27; in the following response</code>, and in the browser, pressing <strong>Save draft</strong> in Step 6 answers “Forbidden (403)” and “CSRF verification failed. Request aborted.” Put the tag inside every <code>&lt;form method=&quot;post&quot;&gt;</code>.</p></div><p class="" data-block="182">Start the development server, in any of the four shells, and leave it running:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="183" tabindex="0"><code>uv run python manage.py runserver</code></pre><p class="" data-block="184">Open <a href="http://127.0.0.1:8000/events/new/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/events/new/ (opens in a new tab)"><code>http://127.0.0.1:8000/events/new/</code></a> in a private browser window, so that you are not signed in. Django sends you to <code>/admin/login/?next=/events/new/</code>, the admin’s sign-in page. Sign in as <code>sam@example.org</code> with your Chapter 18 password, and you return to <strong>New event</strong>, with a <strong>New event</strong> link in the navigation. The page asks for a title, a time zone, starts, ends, a location, and a capacity, and the fields are not styled yet. Pressing <strong>Save draft</strong> shows the empty form again: the view does not read what it receives until Step 6.</p><h4 data-block="185">Step 6: Save the draft, then redirect</h4><p class="" data-block="186">The tests describe both outcomes of a POST. When the title is missing, the page returns with status 200, the message, and the values Sam typed, and nothing is saved. When everything holds, a draft is saved with Sam as its organizer, and the response redirects to the event’s page. Add these two methods at the end of <code>events/tests.py</code>, inside <code>NewEventPageTests</code>, after its last test and one blank line below it:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (NewEventPageTests, add at the end)</p><pre class="code-listing code-listing--file" data-block="187" tabindex="0"><code>    def test_invalid_post_keeps_values_saves_nothing(self):
+        self.client.force_login(self.sam)
+        response = self.client.post(
+            self.url, NEW_EVENT | {&#x27;title&#x27;: &#x27;&#x27;}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response,
+                            &#x27;This field is required.&#x27;)
+        self.assertContains(response, &#x27;value=&quot;Online&quot;&#x27;)
+        self.assertContains(response,
+                            &#x27;value=&quot;2026-12-03T19:00&quot;&#x27;)
+        self.assertFalse(Event.objects.exists())
+
+    def test_valid_post_saves_draft_and_organizer(self):
+        self.client.force_login(self.sam)
+        response = self.client.post(self.url, NEW_EVENT)
+        event = Event.objects.get()
+        self.assertRedirects(
+            response,
+            reverse(&#x27;events:detail&#x27;, args=[event.pk]),
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(event.status, Event.Status.DRAFT)
+        organizers = [assignment.member for assignment
+                      in event.organizer_assignments.all()]
+        self.assertEqual(organizers, [self.sam])</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="188" tabindex="0"><code>uv run python manage.py test events.tests.NewEventPageTests</code></pre><p class="" data-block="189">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="190" tabindex="0"><code>Found 5 test(s).
+...
+.F.E.
+...
+ERROR: test_valid_post_saves_draft_and_organizer (...)
+...
+events.models.Event.DoesNotExist: Event matching query ...
+...
+FAIL: test_invalid_post_keeps_values_saves_nothing (...)
+...
+AssertionError: False is not true : Couldn&#x27;t find &#x27;This ...
+...
+FAILED (failures=1, errors=1)
+...</code></pre><p class="" data-block="191">Both fail: the view ignores the POST, so the page has neither the message nor what was typed, and no event exists to fetch. First give <code>Event</code> a method that records an organizer. Open <code>events/models.py</code> and add, in the <code>Event</code> class after its <code>__str__()</code> method and one blank line below it:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, after __str__)</p><pre class="code-listing code-listing--file" data-block="192" tabindex="0"><code>    def add_organizer(self, member):
+        &quot;&quot;&quot;Make member a current organizer of this event.&quot;&quot;&quot;
+        return self.organizer_assignments.create(
+            member=member
+        )</code></pre><p class="" data-block="193"><code>organizer_assignments</code> is Chapter 20’s reverse relation from an event to its assignments, and <code>create()</code> on it saves a new assignment for this event. Keeping the action on the model follows Chapter 22’s rule: actions are model methods, and views stay thin. Now replace the import lines at the top of <code>events/views.py</code>, from the first line to <code>from .models import Event</code>, with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (imports, replaced)</p><pre class="code-listing code-listing--file" data-block="194" tabindex="0"><code>from django.contrib import messages
+from django.contrib.auth.decorators import (
+    login_required, permission_required,
+)
+from django.db import transaction
+from django.shortcuts import (
+    get_object_or_404, redirect, render,
+)
+from django.utils import timezone
+
+from .forms import EventForm
+from .models import Event</code></pre><p class="" data-block="195">And replace the <code>event_create()</code> function, from <code>def event_create(request):</code> to the end of the file, keeping its two decorator lines above it, with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (event_create, replaced)</p><pre class="code-listing code-listing--file" data-block="196" tabindex="0"><code>def event_create(request):
+    if request.method == &#x27;POST&#x27;:
+        form = EventForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                event = form.save()
+                event.add_organizer(request.user)
+            messages.success(request, &#x27;Draft saved.&#x27;)
+            return redirect(&#x27;events:detail&#x27;, event.pk)
+    else:
+        form = EventForm()
+    return render(request, &#x27;events/form.html&#x27;,
+                  {&#x27;form&#x27;: form})</code></pre><p class="" data-block="197">On a POST, the form is bound to <code>request.POST</code> and checked. If it is valid, <code>form.save()</code> creates the event, a draft because <code>status</code> is not on the form, and <code>add_organizer()</code> records Sam. <code>transaction.atomic()</code>, from Chapter 21, makes the two writes one: if recording the organizer failed, the event would not be kept either, so there is never a draft that nobody organizes. <code>messages.success()</code> stores a message to show on the next page, and <code>redirect()</code> answers with status 302 and the event page’s address. If the form is invalid, the code falls through to <code>render()</code> with the same bound form, which still holds what Sam typed and the messages. The <code>else:</code> belongs to the first <code>if</code>: only a GET makes a new, empty form.</p><p class="" data-block="198">Messages need a place on every page. Open <code>templates/base.html</code> and add these lines inside <code>&lt;main&gt;</code>, before <code>{% block content %}{% endblock %}</code>, indented to match it:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html (before the content block)</p><pre class="code-listing code-listing--file" data-block="199" tabindex="0"><code>    {% if messages %}
+      &lt;div role=&quot;status&quot;&gt;
+        {% for message in messages %}
+          &lt;p class=&quot;alert alert-success&quot;&gt;{{ message }}&lt;/p&gt;
+        {% endfor %}
+      &lt;/div&gt;
+    {% endif %}</code></pre><p class="" data-block="200"><code>messages</code> is provided by the context processor Chapter 6’s settings already list. Showing a message removes it, so it appears once. <code>role=&quot;status&quot;</code> asks screen readers to announce the message. Run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="201" tabindex="0"><code>uv run python manage.py test events.tests.NewEventPageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="202" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="203">Common Error: an empty form after a mistake</p><p class="" data-block="204">If the view always makes a new form before <code>render()</code>, as in <code>form = EventForm()</code> just above it, <code>test_invalid_post_keeps_values_saves_nothing</code> fails with <code>AssertionError: False is not true : Couldn&#x27;t find &#x27;This field is required.&#x27; in the following response</code>. The page lost both the message and everything Sam typed. Pass the same bound form back to the template.</p></div><p class="" data-block="205">With the server running, reload <strong>New event</strong>, type the clinic, and press <strong>Save draft</strong>. Choose <strong>America/New_York</strong> in <strong>Time zone</strong>, 3 December 2026 at 19:00 for <strong>Starts</strong>, 20:30 for <strong>Ends</strong>, <strong>Online</strong> for <strong>Location</strong>, and 50 for <strong>Capacity</strong>. The browser follows the redirect to <code>/events/6/</code>, the next free number after Chapter 23’s events, and shows “Page not found”: the draft was saved, and the event page still shows published events only. Step 7 changes that. Try it again with <strong>Ends</strong> at 18:00, and the same page returns with “An event must end after it starts.” under <strong>Ends</strong>, and every value still in place.</p><h4 data-block="206">Step 7: Let organizers and the administrator see a draft</h4><p class="" data-block="207">The rule from Figure 24.4: a draft’s page is “not found” for visitors and members, and shown, with a note saying it is a draft, to its organizers and to accounts with <code>view_event</code>. The tests also follow Sam’s redirect to check that the page opens with “Draft saved.”. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="208" tabindex="0"><code>class DraftPageTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = member(&#x27;sam@example.org&#x27;, &#x27;add_event&#x27;)
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+        cls.admin = member(&#x27;admin@example.org&#x27;, &#x27;view_event&#x27;)
+        cls.draft = save_event(status=Event.Status.DRAFT)
+        cls.draft.add_organizer(cls.sam)
+        cls.url = reverse(&#x27;events:detail&#x27;,
+                          args=[cls.draft.pk])
+
+    def test_draft_is_hidden_from_visitors_and_members(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+        self.client.force_login(self.sai)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_organizer_and_administrator_see_it(self):
+        for person in (self.sam, self.admin):
+            with self.subTest(person=person.email):
+                self.client.force_login(person)
+                response = self.client.get(self.url)
+                self.assertContains(
+                    response, &#x27;Draft: only its organizers&#x27;
+                )
+
+    def test_saved_draft_opens_with_message(self):
+        self.client.force_login(self.sam)
+        response = self.client.post(
+            reverse(&#x27;events:create&#x27;), NEW_EVENT, follow=True
+        )
+        self.assertContains(response, &#x27;Draft saved.&#x27;)
+        self.assertContains(
+            response, &#x27;&lt;h1&gt;Online Django clinic&lt;/h1&gt;&#x27;,
+            html=True,
+        )</code></pre><p class="" data-block="209">The administrator in these tests is any account with <code>view_event</code>; whether it is also staff makes no difference to Otahque’s own pages. <code>follow=True</code> makes the test client follow redirects, as a browser does. Run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="210" tabindex="0"><code>uv run python manage.py test events.tests.DraftPageTests</code></pre><p class="" data-block="211">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="212" tabindex="0"><code>Found 3 test(s).
+...
+.FFF
+...
+AssertionError: 404 != 200 : Couldn&#x27;t retrieve content: ...
+...
+FAILED (failures=3)
+...</code></pre><p class="" data-block="213">The first test passes already, because the event page has always hidden drafts. The other two fail with 404, and the second is counted twice, once for each person in its <code>subTest()</code>, which is why three failures are reported. Add a second method to <code>Event</code>, after <code>add_organizer()</code> and one blank line below it:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, after add_organizer)</p><pre class="code-listing code-listing--file" data-block="214" tabindex="0"><code>    def is_visible_to(self, user):
+        &quot;&quot;&quot;Published: everyone. Otherwise: organizers and
+        holders of the view_event permission.&quot;&quot;&quot;
+        if self.status == self.Status.PUBLISHED:
+            return True
+        if user.has_perm(&#x27;events.view_event&#x27;):
+            return True
+        if not user.is_authenticated:
+            return False
+        return self.organizer_assignments.filter(
+            member=user, revoked_at__isnull=True
+        ).exists()</code></pre><p class="" data-block="215">A published event is visible to everyone. Otherwise, <code>has_perm()</code> asks whether the account holds <code>view_event</code>; for a visitor, Django’s <code>AnonymousUser</code> holds no permissions, so the answer is false. A visitor cannot organize anything, so the method stops there. For a member, it looks for a current assignment, one with no <code>revoked_at</code>, and <code>exists()</code> asks the database only whether such a row exists. In <code>events/views.py</code>, add one import after <code>from django.db import transaction</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (after the transaction import)</p><pre class="code-listing code-listing--file" data-block="216" tabindex="0"><code>from django.http import Http404</code></pre><p class="" data-block="217">Then replace the <code>event_detail()</code> function with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (event_detail, replaced)</p><pre class="code-listing code-listing--file" data-block="218" tabindex="0"><code>def event_detail(request, event_id):
+    event = get_object_or_404(
+        Event.objects.with_places(), pk=event_id
+    )
+    if not event.is_visible_to(request.user):
+        raise Http404(&#x27;No event matches the given query.&#x27;)
+    return render(request, &#x27;events/detail.html&#x27;, {
+        &#x27;event&#x27;: event,
+        &#x27;now&#x27;: timezone.now(),
+    })</code></pre><p class="" data-block="219">The view fetches the event whatever its status, then asks the model whether this person may see it, and raises <code>Http404</code>, Django’s “not found”, when not. The answer is the same as for an event that does not exist, so the page reveals nothing about drafts to people who may not see them. Last, open <code>events/templates/events/detail.html</code> and add these lines inside <code>&lt;article&gt;</code>, before <code>&lt;h1&gt;{{ event.title }}&lt;/h1&gt;</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (before the h1)</p><pre class="code-listing code-listing--file" data-block="220" tabindex="0"><code>    {% if event.status != &#x27;published&#x27; %}
+      &lt;p class=&quot;rounded-box border border-base-content
+                px-3 py-1 text-sm&quot;&gt;
+        {{ event.get_status_display }}: only its organizers
+        and the administrator can see this page.&lt;/p&gt;
+    {% endif %}</code></pre><p class="" data-block="221"><code>get_status_display()</code> is the readable label Chapter 16’s choices gave each status, such as “Draft”. The note uses text, not only a colour, to say what the page is. Run the tests, then every event test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="222" tabindex="0"><code>uv run python manage.py test events.tests.DraftPageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="223" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="224" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="225" tabindex="0"><code>Found 61 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 61 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="226">Chapter 19’s tests that hide drafts and cancelled events from visitors still pass, and so does Chapter 22’s test that the event page runs one query: a published event needs no permission or assignment check. Reload the “Page not found” address from Step 6. The clinic’s page now shows “Draft: only its organizers and the administrator can see this page.”, the title, and From and Until in New York time, with EST after each. Saving another event now ends on its page, under “Draft saved.”</p><h4 data-block="227">Step 8: Render the fields with Otahque’s styles</h4><p class="" data-block="228">The fields work, and they look like Django’s defaults. The tests describe the page Otahque wants: every field in a daisyUI <code>fieldset</code>, the five inputs and the list with daisyUI’s classes, the page loading the time-zone script, and, after a mistake, the error and help text still connected to their inputs. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="229" tabindex="0"><code>class FormMarkupTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = member(&#x27;sam@example.org&#x27;, &#x27;add_event&#x27;)
+        cls.url = reverse(&#x27;events:create&#x27;)
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+
+    def test_fields_use_otahque_styles_and_script(self):
+        response = self.client.get(self.url)
+        for text, count in ((&#x27;class=&quot;fieldset&quot;&#x27;, 6),
+                            (&#x27;class=&quot;input w-full&quot;&#x27;, 5),
+                            (&#x27;class=&quot;select w-full&quot;&#x27;, 1)):
+            self.assertContains(response, text, count=count)
+        script = &#x27;otahque/event-zone.js&#x27;
+        self.assertContains(response, script)
+        self.assertTrue(finders.find(script))
+
+    def test_errors_and_help_are_linked(self):
+        response = self.client.post(
+            self.url, NEW_EVENT | {&#x27;title&#x27;: &#x27;&#x27;}
+        )
+        help_id = &#x27;id_location_helptext&#x27;
+        for text in (&#x27;aria-invalid=&quot;true&quot;&#x27;,
+                     &#x27;aria-describedby=&quot;id_title_error&quot;&#x27;,
+                     &#x27;id=&quot;id_title_error&quot;&#x27;,
+                     f&#x27;aria-describedby=&quot;{help_id}&quot;&#x27;,
+                     f&#x27;id=&quot;{help_id}&quot;&#x27;):
+            self.assertContains(response, text, count=1)</code></pre><p class="" data-block="230"><code>count=</code> makes <code>assertContains()</code> check how many times the text appears. <code>finders.find()</code>, used by Chapter 14’s tests, checks that the static file exists. Run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="231" tabindex="0"><code>uv run python manage.py test events.tests.FormMarkupTests</code></pre><p class="" data-block="232">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="233" tabindex="0"><code>Found 2 test(s).
+...
+.F
+...
+FAIL: test_fields_use_otahque_styles_and_script (...)
+...
+AssertionError: 0 != 6 : Found 0 instances of &#x27;class=&quot;f...
+...
+FAILED (failures=1)
+...</code></pre><p class="" data-block="234">The first test fails on the first class it looks for. The second passes already: Django 6.1 writes the ids and the <code>aria-</code> attributes itself. It stays, because the templates you are about to write replace Django’s, and the test proves they keep those connections.</p><p class="" data-block="235">First, the renderer. Create <code>config/renderers.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/renderers.py</p><pre class="code-listing code-listing--file" data-block="236" tabindex="0"><code>from django.forms.renderers import TemplatesSetting
+
+
+class OtahqueFormRenderer(TemplatesSetting):
+    &quot;&quot;&quot;Look for form templates in TEMPLATES, so the
+    project&#x27;s own field and widget templates win.&quot;&quot;&quot;
+
+    field_template_name = &#x27;forms/field.html&#x27;</code></pre><p class="" data-block="237"><code>TemplatesSetting</code> finds form templates through the <code>TEMPLATES</code> setting, so a template in your <code>templates/</code> folder replaces Django’s template of the same name, and <code>field_template_name</code> names the template that draws each field. In <code>config/settings.py</code>, add <code>&#x27;django.forms&#x27;,</code> to <code>INSTALLED_APPS</code>, after <code>&#x27;django.contrib.staticfiles&#x27;,</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (INSTALLED_APPS, after staticfiles)</p><pre class="code-listing code-listing--file" data-block="238" tabindex="0"><code>    &#x27;django.forms&#x27;,</code></pre><p class="" data-block="239">That makes Django’s own form templates findable through <code>TEMPLATES</code> too, for every template you do not replace. Then add these lines after the <code>TEMPLATES</code> setting, before <code>WSGI_APPLICATION</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (after TEMPLATES)</p><pre class="code-listing code-listing--file" data-block="240" tabindex="0"><code># Forms render with Otahque&#x27;s field and widget templates,
+# in templates/forms/ and templates/django/forms/widgets/.
+FORM_RENDERER = &#x27;config.renderers.OtahqueFormRenderer&#x27;</code></pre><p class="" data-block="241">Now the templates. Create <code>templates/forms/field.html</code>, which draws one field:</p><p class="code-label code-label--file" aria-hidden="true">templates/forms/field.html</p><pre class="code-listing code-listing--file" data-block="242" tabindex="0"><code>&lt;div class=&quot;fieldset&quot;&gt;
+  &lt;label class=&quot;fieldset-legend&quot;
+         for=&quot;{{ field.id_for_label }}&quot;&gt;
+    {{ field.label }}&lt;/label&gt;
+  {% if field.help_text %}
+    &lt;p class=&quot;label&quot; id=&quot;{{ field.auto_id }}_helptext&quot;&gt;
+      {{ field.help_text }}&lt;/p&gt;
+  {% endif %}
+  {{ field.errors }}
+  {{ field }}
+&lt;/div&gt;</code></pre><p class="" data-block="243"><code>field.id_for_label</code> is the input’s <code>id</code>, <code>field.auto_id</code> is the same id that Django’s own field template uses to name the help text, and <code>{{ field.errors }}</code> draws the error list with its id. <code>{{ field }}</code> draws the input through its widget template. Create <code>templates/django/forms/widgets/input.html</code>, which replaces Django’s template for text, number, date-and-time, and other single inputs:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/input.html</p><pre class="code-listing code-listing--file" data-block="244" tabindex="0"><code>&lt;input type=&quot;{{ widget.type }}&quot; name=&quot;{{ widget.name }}&quot;
+       class=&quot;input w-full&quot;{% if widget.value != None %}
+       value=&quot;{{ widget.value|stringformat:&#x27;s&#x27; }}&quot;{% endif %}
+       {% include &quot;django/forms/widgets/attrs.html&quot; %}&gt;</code></pre><p class="" data-block="245">And <code>templates/django/forms/widgets/select.html</code>, for lists:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/select.html</p><pre class="code-listing code-listing--file" data-block="246" tabindex="0"><code>&lt;select name=&quot;{{ widget.name }}&quot; class=&quot;select w-full&quot;
+        {% include &quot;django/forms/widgets/attrs.html&quot; %}&gt;
+{% spaceless %}
+{% for group, choices, index in widget.optgroups %}
+  {% if group %}&lt;optgroup label=&quot;{{ group }}&quot;&gt;{% endif %}
+  {% for option in choices %}
+    {% include option.template_name with widget=option %}
+  {% endfor %}
+  {% if group %}&lt;/optgroup&gt;{% endif %}
+{% endfor %}
+{% endspaceless %}
+&lt;/select&gt;</code></pre><p class="" data-block="247">Both are Django’s own templates, with daisyUI’s classes added and laid out to read more easily. <code>attrs.html</code> is Django’s template that writes every other attribute, such as <code>id</code>, <code>required</code>, <code>aria-invalid</code>, and <code>aria-describedby</code>, so including it keeps them all. The names and folders must match Django’s exactly, <code>django/forms/widgets/</code>, or Django keeps using its own.</p><p class="" data-block="248">Next, the colours. Chapter 14’s theme has no colours for errors or success, so daisyUI’s success message would be grey and Otahque’s errors would be in the body’s colour. Open <code>static/otahque/source.css</code> and add these lines inside the <code>otahque</code> theme, after <code>--color-neutral-content: #ffffff;</code>:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (in the theme, after --color-neutral-content)</p><pre class="code-listing code-listing--file" data-block="249" tabindex="0"><code>  --color-success: #1d6b38;
+  --color-success-content: #ffffff;
+  --color-error: #b42318;
+  --color-error-content: #ffffff;</code></pre><p class="" data-block="250">Then add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (add at the end)</p><pre class="code-listing code-listing--file" data-block="251" tabindex="0"><code>/* daisyUI styles form fields inside the utilities layer,
+   so rules that change those fields sit there too. */
+@layer utilities {
+  .fieldset :is(.input, .select) {
+    --input-color: #6b7686;
+  }
+
+  .fieldset [aria-invalid=&quot;true&quot;] {
+    --input-color: var(--color-error);
+  }
+
+  .errorlist {
+    color: var(--color-error);
+    font-size: 0.875rem;
+  }
+}</code></pre><p class="" data-block="252">The colours were measured against the page’s white, as Chapter 13 measured the others: the error red has a contrast of 6.57 to 1 against white, white text on the success green 6.54 to 1, and the input border 4.60 to 1, against about 1.5 to 1 for daisyUI’s default. WCAG 2.2 asks for 4.5 to 1 for text and 3 to 1 for the edge of a control. The rules sit in <code>@layer utilities</code> because daisyUI 5 styles its fields in that layer, and a rule in an earlier layer would lose to it. A field with an error gets a red border and its message, so colour is never the only sign.</p><p class="" data-block="253">Last, the script. Create <code>static/otahque/event-zone.js</code>:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/event-zone.js</p><pre class="code-listing code-listing--file" data-block="254" tabindex="0"><code>// Choose the browser&#x27;s time zone when none is chosen yet.
+const field = document.getElementById(&#x27;id_timezone&#x27;);
+const zone = Intl.DateTimeFormat()
+  .resolvedOptions().timeZone;
+const known = field &amp;&amp; [...field.options]
+  .some((option) =&gt; option.value === zone);
+if (known &amp;&amp; !field.value) {
+  field.value = zone;
+}</code></pre><p class="" data-block="255"><code>Intl.DateTimeFormat().resolvedOptions().timeZone</code> is the browser’s own zone name, such as <code>Asia/Kolkata</code>. The script chooses it only if it is in the list and nothing is chosen yet, so it never overrides a choice, and it leaves the field empty when it cannot help. Replace <code>events/templates/events/form.html</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/form.html</p><pre class="code-listing code-listing--file" data-block="256" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+{% load static %}
+
+{% block title %}New event | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;New event&lt;/h1&gt;
+  &lt;p&gt;Otahque saves it as a draft. Only its organizers and
+     the administrator can see it until it is published.&lt;/p&gt;
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    {{ form }}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+      Save draft&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;script src=&quot;{% static &#x27;otahque/event-zone.js&#x27; %}&quot;
+          defer&gt;&lt;/script&gt;
+{% endblock %}</code></pre><p class="" data-block="257"><code>{% load static %}</code> makes the <code>static</code> tag available, and <code>defer</code> runs the script after the page has loaded. Rebuild the stylesheet, so it holds the classes the new templates use, in any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="258" tabindex="0"><code>npm run build</code></pre><p class="code-label code-label--tree" aria-hidden="true">Folder structure</p><pre class="code-listing code-listing--tree" data-block="259" tabindex="0"><code>&gt; build
+&gt; npm run css -- -o static/otahque/site.css
+...
+/*! 🌼 daisyUI 5.7.50 */
+Done in ...</code></pre><p class="" data-block="260">The last line’s time varies. Run the tests again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="261" tabindex="0"><code>uv run python manage.py test events.tests.FormMarkupTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="262" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="263">Common Error: TemplateDoesNotExist: django/forms/div.html</p><p class="" data-block="264">With the renderer set and <code>&#x27;django.forms&#x27;</code> missing from <code>INSTALLED_APPS</code>, every page with a form fails with <code>django.template.exceptions.TemplateDoesNotExist: django/forms/div.html</code>. <code>TemplatesSetting</code> looks only where <code>TEMPLATES</code> looks, and Django’s own form templates are found there only through the <code>django.forms</code> app. Add it.</p></div><div class="callout callout--error"><p class="callout__title" data-block="265">Common Error: help text without its id</p><p class="" data-block="266">If <code>field.html</code> writes the help text without <code>id=&quot;{{ field.auto_id }}_helptext&quot;</code>, the input still says <code>aria-describedby=&quot;id_location_helptext&quot;</code>, but nothing on the page has that id, and <code>test_errors_and_help_are_linked</code> fails with <code>AssertionError: 0 != 1 : Found 0 instances of &#x27;id=&quot;id_location_helptext&quot;&#x27; (expected 1) in the following response</code>. A screen reader then reads no help at all. Keep Django’s ids.</p></div><p class="" data-block="267">Reload <strong>New event</strong> in the browser. Each field now has a bold label, help text in grey under <strong>Time zone</strong> and <strong>Location</strong>, and a full-width box with a darker border, and <strong>Time zone</strong> already shows your browser’s zone. Clear <strong>Title</strong> and press <strong>Save draft</strong>: most browsers stop the form themselves and say the field must be filled in, because Django writes <code>required</code> on the input. That check is a convenience for people; the server’s check is the one that counts, because a script can post without a browser, and the tests post to the server directly. Type an <strong>Ends</strong> before <strong>Starts</strong> instead, and the page returns with the message in red under <strong>Ends</strong>, and a red border on the box.</p><h4 data-block="268">Step 9: Prove the CSRF protection, record the design, and commit</h4><p class="" data-block="269">The last test proves the protection Step 5’s tag relies on. Add one import to <code>events/tests.py</code>, changing <code>from django.test import SimpleTestCase, TestCase</code> to:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (the django.test import, replaced)</p><pre class="code-listing code-listing--file" data-block="270" tabindex="0"><code>from django.test import Client, SimpleTestCase, TestCase</code></pre><p class="" data-block="271">Then add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="272" tabindex="0"><code>class CsrfTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = member(&#x27;sam@example.org&#x27;, &#x27;add_event&#x27;)
+        cls.url = reverse(&#x27;events:create&#x27;)
+
+    def test_a_post_without_the_token_is_refused(self):
+        browser = Client(enforce_csrf_checks=True)
+        browser.force_login(self.sam)
+        refused = browser.post(self.url, NEW_EVENT)
+        self.assertEqual(refused.status_code, 403)
+        self.assertFalse(Event.objects.exists())
+        page = browser.get(self.url)
+        token = str(page.context[&#x27;csrf_token&#x27;])
+        saved = browser.post(
+            self.url,
+            NEW_EVENT | {&#x27;csrfmiddlewaretoken&#x27;: token},
+        )
+        self.assertEqual(saved.status_code, 302)</code></pre><p class="" data-block="273"><code>Client(enforce_csrf_checks=True)</code> makes a test client that checks CSRF tokens, as a real request is checked. It posts without a token and is refused, nothing is saved, and then it fetches the page, takes the token the page was given, and posts again, successfully. <code>page.context</code> holds the variables the page’s template was given, including <code>csrf_token</code>. Run it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="274" tabindex="0"><code>uv run python manage.py test events.tests.CsrfTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="275" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="276">It passes the first time, because <code>CsrfViewMiddleware</code> has protected every POST since Chapter 6; until now nothing proved it. Every other POST test in this chapter uses the default client, which skips the check, and would pass with the middleware removed. This test would not.</p><p class="" data-block="277">Now record the design. Chapter 5 promised that low-level designs would begin when a feature needed one, and this form is the first. A <strong>low-level design</strong>, or LLD, describes how one feature works inside: its path through the code, its rules, and its failures. Create <code>docs/design/event-draft-form.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-draft-form.md</p><pre class="code-listing code-listing--file" data-block="278" tabindex="0"><code># New event form: low-level design
+
+Status: Drafted in Chapter 24, for review.
+Who: members with events.add_event (Sam, on your
+computer). Visitors cannot propose events.
+
+## Request path
+
+- GET /events/new/: login_required, then
+  permission_required(add_event, raise 403); an unbound
+  EventForm; events/form.html.
+- POST /events/new/: the same checks; CsrfViewMiddleware
+  refuses a missing or wrong token with 403 first.
+  EventForm(request.POST).is_valid():
+  - invalid: the same page, status 200, messages beside
+    the fields, typed values kept, nothing saved;
+  - valid: in one transaction, form.save() (status
+    draft, as status is not a field) and
+    event.add_organizer(user); message &quot;Draft saved.&quot;;
+    302 to the event page (Post/Redirect/Get).
+- GET /events/&lt;id&gt;/: Event.is_visible_to(user):
+  published for all; otherwise holders of view_event
+  and current organizers; 404 for everyone else.
+
+## Validation layers
+
+1. Fields: required values, lengths, whole numbers,
+   the zone from the list.
+2. EventForm.clean(): starts and ends read in the
+   event&#x27;s zone (in_zone); times a clock change skips
+   or repeats refused; ends after starts, on Ends.
+3. Model full_clean(): validate_timezone_name and
+   Chapter 21&#x27;s constraints (capacity more than 0).
+4. Database: Chapter 21&#x27;s constraints refuse a bad
+   row from anywhere.
+
+## Limits and later work
+
+- Sign-in is the admin&#x27;s page until Chapter 27, so
+  only staff can sign in through a browser.
+- The edit form must show stored times in the event&#x27;s
+  zone (Chapter 25); publishing is Chapter 26.
+- Once Chapter 28 activates each viewer&#x27;s zone, clean
+  the times under the event&#x27;s zone instead.
+- Widget templates copy Django 6.1&#x27;s; check them when
+  Django is upgraded.</code></pre><p class="" data-block="279">Run every test, then check that no model change needs a migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="280" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="281">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="282" tabindex="0"><code>Found 97 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 97 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="283" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="284" tabindex="0"><code>No changes detected</code></pre><p class="" data-block="285">The two methods added to <code>Event</code> are code, not fields, so the database is unchanged. Stage everything and check what is staged:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="286" tabindex="0"><code>git add config docs events static templates
+git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="287" tabindex="0"><code>A  config/renderers.py
+M  config/settings.py
+A  docs/design/event-draft-form.md
+A  events/forms.py
+M  events/models.py
+M  events/templates/events/detail.html
+A  events/templates/events/form.html
+M  events/tests.py
+M  events/urls.py
+M  events/views.py
+A  static/otahque/event-zone.js
+M  static/otahque/site.css
+M  static/otahque/source.css
+M  templates/base.html
+A  templates/django/forms/widgets/input.html
+A  templates/django/forms/widgets/select.html
+A  templates/forms/field.html
+M  templates/includes/site_nav.html</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="288" tabindex="0"><code>git commit -m &quot;Add the new event form&quot;</code></pre><figure class="table-figure" data-block="289"><figcaption>Table 24.2 — When something goes wrong</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 24.2 — When something goes wrong"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">ModuleNotFoundError: No module named &#x27;events.forms&#x27;</th>
+<td data-label="Likely cause">forms.py missing or misnamed</td>
+<td data-label="Recovery">Create events/forms.py beside models.py</td>
+</tr>
+<tr><th scope="row">Visitor lands on Page not found at /accounts/login/</th>
+<td data-label="Likely cause">LOGIN_URL not set</td>
+<td data-label="Recovery">Add it after the ADMIN_URL check (Step 5)</td>
+</tr>
+<tr><th scope="row">Forbidden (403) CSRF verification failed</th>
+<td data-label="Likely cause">{% csrf_token %} missing from the form</td>
+<td data-label="Recovery">Add it inside the form element</td>
+</tr>
+<tr><th scope="row">Typed values vanish after a mistake</th>
+<td data-label="Likely cause">A new form is made before render()</td>
+<td data-label="Recovery">Pass the bound form back (Step 6)</td>
+</tr>
+<tr><th scope="row">Saved event opens as Page not found</th>
+<td data-label="Likely cause">event_detail() not changed, or the account is not an organizer</td>
+<td data-label="Recovery">Repeat Step 7; check the assignment in the admin</td>
+</tr>
+<tr><th scope="row">Times stored hours away</th>
+<td data-label="Likely cause">clean() missing, or zone chosen wrongly</td>
+<td data-label="Recovery">Compare with Step 4; read the stored time in the admin</td>
+</tr>
+<tr><th scope="row">TemplateDoesNotExist: django/forms/div.html</th>
+<td data-label="Likely cause">&#x27;django.forms&#x27; missing from INSTALLED_APPS</td>
+<td data-label="Recovery">Add it (Step 8)</td>
+</tr>
+<tr><th scope="row">Fields unstyled after Step 8</th>
+<td data-label="Likely cause">npm run build not run</td>
+<td data-label="Recovery">Run it, then reload with the cache bypassed</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="290">When a file’s contents are in doubt, compare it with the listings here rather than deleting your work: <code>git diff</code> shows what changed since Chapter 23’s commit, and <code>git stash</code> can set your changes aside while you compare.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2024%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter24/section-24-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter24/section-24-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter24/section-24-2/">← What You Need to Know</a><a href="/chapters/chapter24/section-24-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

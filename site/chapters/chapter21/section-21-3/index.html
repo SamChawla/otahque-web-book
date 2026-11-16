@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 21: Validation, constraints, and data integrity: rules the database keeps. Make the database keep Otahque’s rules: validation...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter21/section-21-3/">
+<title>How We Build It · Chapter 21 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter21/">← Chapter 21 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-21-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-81">The Custom Way</a></li><li><a href="#topic-86">The Django Way</a></li><li><a href="#topic-211">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 7 figures · 6 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter21:21.3" data-progress-title="Section 21.3" data-reader-prev="section-21-2.html" data-reader-next="section-21-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 21.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter21/">Chapter 21 · Validation, constraints, and data integrity: rules the database keeps</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter21/section-21-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter21/section-21-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter21/section-21-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter21/section-21-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter21/section-21-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-21-3" data-block="79">How We Build It</h2><p class="" data-block="80">Start from Chapter 20, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 36 passing tests, every migration applied, and the rows from Chapter 20: Sam, Sai, and Raj, three events, Sam’s organizer assignment, and three active registrations. Step 2 adds some deliberately bad rows. Step 3 writes the tests first. Steps 4 and 5 add the rules to <code>events/models.py</code> and <code>registrations/models.py</code>, and Step 6 finds and fixes the bad rows, then creates and applies two migrations. Step 7 changes <code>accounts/managers.py</code> and <code>accounts/models.py</code> for the email decision, with a third migration. Step 8 watches the database refuse bad rows, and Step 9 updates the ERD and commits. At the end, 51 tests pass and the public pages are unchanged.</p><h3 class="" id="topic-81" data-block="81">The Custom Way</h3><p class="" data-block="82">This illustration plays out Sai’s double-click with plain <code>sqlite3</code>, in memory; do not add it to the project. Instead of two real requests at the same time, it runs each request’s check before either insert, which is the order that matters:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/two_requests.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="83" tabindex="0"><code>import sqlite3
+
+db = sqlite3.connect(&#x27;:memory:&#x27;)
+db.execute(&#x27;&#x27;&#x27;
+    CREATE TABLE place (event INTEGER, member TEXT,
+                        status TEXT)
+&#x27;&#x27;&#x27;)
+
+
+def has_place(event, member):
+    found = db.execute(
+        &quot;SELECT 1 FROM place WHERE event = ? AND member = ?&quot;
+        &quot; AND status = &#x27;active&#x27;&quot;, (event, member)
+    ).fetchone()
+    return found is not None
+
+
+def add_place(event, member):
+    db.execute(&quot;INSERT INTO place VALUES (?, ?, &#x27;active&#x27;)&quot;,
+               (event, member))
+
+
+first_free = not has_place(1, &#x27;Sai&#x27;)    # request A checks
+second_free = not has_place(1, &#x27;Sai&#x27;)   # request B checks
+if first_free:
+    add_place(1, &#x27;Sai&#x27;)                 # request A inserts
+if second_free:
+    add_place(1, &#x27;Sai&#x27;)                 # request B inserts
+print(db.execute(&#x27;SELECT COUNT(*) FROM place&#x27;).fetchone())
+
+db.execute(&#x27;DELETE FROM place&#x27;)
+db.execute(&quot;CREATE UNIQUE INDEX one_active ON place&quot;
+           &quot; (event, member) WHERE status = &#x27;active&#x27;&quot;)
+add_place(1, &#x27;Sai&#x27;)
+try:
+    add_place(1, &#x27;Sai&#x27;)
+except sqlite3.IntegrityError as error:
+    print(&#x27;refused:&#x27;, error)
+print(db.execute(&#x27;SELECT COUNT(*) FROM place&#x27;).fetchone())</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="84" tabindex="0"><code>(2,)
+refused: UNIQUE constraint failed: place.event, place.member
+(1,)</code></pre><p class="" data-block="85">Both checks found no active place, so both inserts ran, and Sai holds two places. After <code>CREATE UNIQUE INDEX ... WHERE</code>, the hand-written partial index, the second insert is refused by the database itself, however the checks went. Now list what the hand-written version still lacks: the index lives outside any model, so nothing keeps it in step with the code; the error is a bare <code>sqlite3</code> message for programmers; and nothing can check the rule before saving to show a member a sentence. <code>UniqueConstraint</code> gives you all three.</p><h3 class="" id="topic-86" data-block="86">The Django Way</h3><p class="" data-block="87">Nine steps follow. Step 1 checks the start, Step 2 creates bad rows on purpose, Step 3 writes the tests, Steps 4 and 5 write the rules, Step 6 fixes the data and migrates, Step 7 adds the email rule, Step 8 tries to break every rule, and Step 9 commits.</p><h4 data-block="88">Step 1: Check the starting point</h4><p class="" data-block="89">Run every test, beside <code>manage.py</code>, in PowerShell, Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="90" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="91">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="92" tabindex="0"><code>Found 36 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+....................................
+...
+Ran 36 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="93">Then start the shell, in any of the four shells, with <code>uv run python manage.py shell</code>, and count the rows:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="94" tabindex="0"><code>15 objects imported automatically (use -v 2 for details).
+
+Python 3.14.9 ...
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for ...
+(InteractiveConsole)
+&gt;&gt;&gt; Event.objects.count(), User.objects.count()
+(3, 3)
+&gt;&gt;&gt; Registration.objects.filter(status=&#x27;active&#x27;).count()
+3
+&gt;&gt;&gt; OrganizerAssignment.objects.count()
+1
+&gt;&gt;&gt; exit()
+now exiting InteractiveConsole...</code></pre><p class="" data-block="95">Three events, three members, three active registrations, and Sam’s assignment, as Chapter 20 left them. If your numbers differ, rows are left from experiments of your own. Keep them: Step 6 searches for rows that break the new rules, whatever rows you have, and shows how to fix each kind.</p><h4 data-block="96">Step 2: See the gaps</h4><p class="" data-block="97">Start the shell again. First, an event with two typing mistakes, checked with <code>full_clean()</code> and then saved:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="98" tabindex="0"><code>&gt;&gt;&gt; from datetime import UTC, datetime
+&gt;&gt;&gt; social = Event(
+...     title=&#x27;Winter social&#x27;,
+...     starts_at=datetime(2027, 1, 14, 18, 0, tzinfo=UTC),
+...     ends_at=datetime(2027, 1, 14, 21, 0, tzinfo=UTC),
+...     timezone=&#x27;Europe/Londn&#x27;,
+...     location=&#x27;Leeds Central Library&#x27;,
+...     capacity=0,
+... )
+&gt;&gt;&gt; social.full_clean()
+&gt;&gt;&gt; social.save()
+&gt;&gt;&gt; Event.objects.filter(title=&#x27;Winter social&#x27;).count()
+1</code></pre><p class="" data-block="99"><code>full_clean()</code> printed nothing, so it found nothing wrong: zero is a valid positive-integer value, and nothing checks a time-zone name. The draft event is stored, with both mistakes. Now Sai’s double-click, and a cancellation without a time:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="100" tabindex="0"><code>&gt;&gt;&gt; meetup = Event.objects.get(title=&#x27;Python meetup&#x27;)
+&gt;&gt;&gt; sai = User.objects.get(email=&#x27;sai@example.org&#x27;)
+&gt;&gt;&gt; Registration.objects.create(event=meetup, member=sai)
+&lt;Registration: sai@example.org at Python meetup&gt;
+&gt;&gt;&gt; active = meetup.registrations.filter(status=&#x27;active&#x27;)
+&gt;&gt;&gt; active.filter(member=sai).count()
+2
+&gt;&gt;&gt; raj_place = meetup.registrations.get(
+...     member__email=&#x27;raj@example.org&#x27;
+... )
+&gt;&gt;&gt; raj_place.status = Registration.Status.CANCELLED
+&gt;&gt;&gt; raj_place.save()
+&gt;&gt;&gt; print(raj_place.cancelled_at)
+None</code></pre><p class="" data-block="101">Sai now holds two active places, and Raj’s registration says cancelled, but not when. Last, Sai signs up again with capital letters:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="102" tabindex="0"><code>&gt;&gt;&gt; User.objects.create_user(
+...     &#x27;Sai@Example.ORG&#x27;, display_name=&#x27;Sai&#x27;
+... )
+&lt;User: Sai@example.org&gt;
+&gt;&gt;&gt; User.objects.count()
+4</code></pre><p class="" data-block="103">Chapter 17’s manager lower-cased only the domain, so <code>Sai@example.org</code> differs from <code>sai@example.org</code>, and <code>unique=True</code> accepts it as a new member. Leave the shell with <code>exit()</code>. Keep all four bad rows: Step 6 and Step 7 find them again, the way you would find real ones.</p><h4 data-block="104">Step 3: Write the tests first</h4><p class="" data-block="105">The tests describe each rule before it exists. Start with <code>events/tests.py</code>. At the top, add one import line, <code>from django.db import IntegrityError, transaction</code>, after the <code>ValidationError</code> import, so that the block begins:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (1 of 3: imports)</p><pre class="code-listing code-listing--file" data-block="106" tabindex="0"><code>from datetime import UTC, datetime, timedelta
+from pathlib import Path
+
+from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
+from django.db.models import ProtectedError</code></pre><p class="" data-block="107">Next, find the class <code>EventModelTests</code>, from Chapter 16, and change its base class from <code>SimpleTestCase</code> to <code>TestCase</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (2 of 3: one changed line)</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>class EventModelTests(TestCase):</code></pre><p class="" data-block="109">Chapter 16 used <code>SimpleTestCase</code> because <code>full_clean()</code> then needed no database. From this chapter, <code>full_clean()</code> also checks the model’s constraints, and that asks the database, which <code>SimpleTestCase</code> forbids.</p><div class="callout callout--error"><p class="callout__title" data-block="110">Common Error: database queries are not allowed in SimpleTestCase</p><p class="" data-block="111">If you skip that change, <code>test_status_starts_draft_and_is_checked</code> fails after Step 4 with <code>DatabaseOperationForbidden: Database queries to &#x27;default&#x27; are not allowed in SimpleTestCase subclasses.</code> The traceback passes through <code>validate_constraints()</code>. Change the class to <code>TestCase</code>, which gives each test a database inside a transaction.</p></div><p class="" data-block="112">Then add a class at the end of the file, after <code>OrganizerAssignmentTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (3 of 3: add at the end)</p><pre class="code-listing code-listing--file" data-block="113" tabindex="0"><code>class EventRuleTests(TestCase):
+    def test_capacity_must_be_more_than_zero(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                save_event(capacity=0)
+        self.assertFalse(Event.objects.exists())
+
+    def test_end_must_be_after_start(self):
+        start = datetime(2027, 2, 1, 18, tzinfo=UTC)
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                save_event(starts_at=start, ends_at=start)
+        self.assertFalse(Event.objects.exists())
+
+    def test_only_listed_statuses_can_be_saved(self):
+        for status in Event.Status.values:
+            save_event(status=status)
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                save_event(status=&#x27;archived&#x27;)
+        self.assertEqual(Event.objects.count(), 3)
+
+    def test_unknown_time_zone_fails_validation(self):
+        event = save_event(timezone=&#x27;Europe/Londn&#x27;)
+        with self.assertRaises(ValidationError) as caught:
+            event.full_clean()
+        self.assertEqual(
+            caught.exception.message_dict,
+            {&#x27;timezone&#x27;: [
+                &#x27;Europe/Londn is not a known time zone.&#x27;
+            ]},
+        )
+
+    def test_one_current_assignment_per_event(self):
+        event = save_event()
+        sam = User.objects.create_user(
+            &#x27;sam@example.org&#x27;, display_name=&#x27;Sam&#x27;
+        )
+        first = OrganizerAssignment.objects.create(
+            event=event, member=sam
+        )
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                OrganizerAssignment.objects.create(
+                    event=event, member=sam
+                )
+        day = timedelta(days=1)
+        first.revoked_at = first.assigned_at + day
+        first.save()
+        OrganizerAssignment.objects.create(
+            event=event, member=sam
+        )
+        self.assertEqual(
+            event.organizer_assignments.count(), 2
+        )
+
+    def test_revoked_never_before_assigned(self):
+        event = save_event()
+        sam = User.objects.create_user(
+            &#x27;sam@example.org&#x27;, display_name=&#x27;Sam&#x27;
+        )
+        early = OrganizerAssignment.objects.create(
+            event=event, member=sam
+        )
+        day = timedelta(days=1)
+        early.revoked_at = early.assigned_at - day
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                early.save()</code></pre><p class="" data-block="114">Each refused write sits inside <code>transaction.atomic()</code>. A <code>TestCase</code> runs every test inside a transaction, and after a database error, that transaction cannot run another query. The inner <code>atomic()</code> block marks a point to roll back to, so the test can go on to check that nothing was saved. The status test saves one event for every value in <code>Event.Status.values</code>, then tries one value that is not in the list: if someone later adds a status to the model but not to the constraint, the loop fails and says so. The time-zone test saves first, which works, because only validation checks time zones, and then calls <code>full_clean()</code>. The assignment test revokes the first assignment and makes a new one, proving that the rule is “one current assignment”, not “one ever”.</p><p class="" data-block="115">Now <code>registrations/tests.py</code>. Its imports gain three lines, and <code>timedelta</code> joins the <code>datetime</code> import; cancellations in these tests take the current time, which always comes after the registration’s. The top of the file becomes:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (1 of 2: imports)</p><pre class="code-listing code-listing--file" data-block="116" tabindex="0"><code>from datetime import UTC, datetime, timedelta
+
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
+from django.db.models import ProtectedError
+from django.test import TestCase
+from django.utils import timezone
+
+from events.models import Event
+from .models import Registration
+
+User = get_user_model()</code></pre><p class="" data-block="117">Add five methods at the end of the file, indented inside <code>RegistrationTests</code>, so that they share its event, member, and active registration:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (2 of 2: add at the end)</p><pre class="code-listing code-listing--file" data-block="118" tabindex="0"><code>    def test_second_active_registration_is_refused(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                Registration.objects.create(
+                    event=self.event, member=self.member
+                )
+        self.assertEqual(
+            self.event.registrations.count(), 1
+        )
+
+    def test_member_can_register_after_cancelling(self):
+        self.registration.status = &#x27;cancelled&#x27;
+        self.registration.cancelled_at = timezone.now()
+        self.registration.save()
+        Registration.objects.create(
+            event=self.event, member=self.member
+        )
+        active = self.event.registrations.filter(
+            status=Registration.Status.ACTIVE
+        )
+        self.assertEqual(active.count(), 1)
+
+    def test_cancelled_at_matches_status(self):
+        rows = Registration.objects.filter(
+            pk=self.registration.pk
+        )
+        for status, cancelled_at in [
+            (&#x27;cancelled&#x27;, None),
+            (&#x27;active&#x27;, timezone.now()),
+        ]:
+            with self.subTest(status=status):
+                with self.assertRaises(IntegrityError):
+                    with transaction.atomic():
+                        rows.update(
+                            status=status,
+                            cancelled_at=cancelled_at,
+                        )
+
+    def test_cancelled_never_before_registered(self):
+        rows = Registration.objects.filter(
+            pk=self.registration.pk
+        )
+        day = timedelta(days=1)
+        before = self.registration.registered_at - day
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                rows.update(status=&#x27;cancelled&#x27;,
+                            cancelled_at=before)
+
+    def test_full_clean_explains_a_duplicate(self):
+        duplicate = Registration(
+            event=self.event, member=self.member
+        )
+        with self.assertRaises(ValidationError) as caught:
+            duplicate.full_clean()
+        self.assertEqual(
+            caught.exception.messages,
+            [&#x27;This member already has a place at &#x27;
+             &#x27;this event.&#x27;],
+        )</code></pre><p class="" data-block="119">The cancellation test uses <code>update()</code> on purpose: it writes without calling <code>save()</code>, which is exactly the path that only a constraint can guard. <code>subTest()</code> runs the same check for both wrong combinations and reports each separately. The order test dates a cancellation one day before the registration, the kind of row a careless import could write. The last test is the friendly side: <code>full_clean()</code> on a duplicate raises <code>ValidationError</code> with the message you will write in Step 5, before anything reaches the database.</p><p class="" data-block="120">Last, <code>accounts/tests.py</code>. One line of Chapter 18’s <code>test_create_user_saves_a_member</code> pinned the old behaviour, which kept capitals before the <code>@</code>. Change its expected email to lower case:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (1 of 2: one changed line)</p><pre class="code-listing code-listing--file" data-block="121" tabindex="0"><code>        self.assertEqual(saved.email, &#x27;sai@example.org&#x27;)</code></pre><p class="" data-block="122">That is how a test records a decision: when the decision changes, the test changes with it, in the same commit. Then add four methods at the end of the file, inside <code>UserCreationTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (2 of 2: add at the end)</p><pre class="code-listing code-listing--file" data-block="123" tabindex="0"><code>    def test_email_differing_in_case_is_refused(self):
+        User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        with self.assertRaises(IntegrityError):
+            User.objects.create_user(
+                &#x27;SAI@example.org&#x27;, display_name=&#x27;Sai&#x27;
+            )
+
+    def test_upper_case_email_cannot_be_saved(self):
+        user = User(
+            email=&#x27;Sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        with self.assertRaises(IntegrityError):
+            user.save()
+
+    def test_full_clean_lower_cases_the_email(self):
+        user = User(
+            email=&#x27;Sai@Example.ORG&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        user.set_unusable_password()
+        user.full_clean()
+        self.assertEqual(user.email, &#x27;sai@example.org&#x27;)
+
+    def test_sign_in_lookup_ignores_case(self):
+        sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        found = User.objects.get_by_natural_key(
+            &#x27;SAI@Example.org&#x27;
+        )
+        self.assertEqual(found, sai)</code></pre><p class="" data-block="124"><code>get_by_natural_key()</code> is the method Django’s sign-in uses to find a member by the address they type; Chapter 27 builds sign-in on it. <code>set_unusable_password()</code> gives the unsaved user a password value, so that <code>full_clean()</code> checks only what this test is about. Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="125" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="126">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="127" tabindex="0"><code>Found 51 test(s).
+...
+ERROR: test_sign_in_lookup_ignores_case (accounts.test...
+...
+accounts.models.User.DoesNotExist: User matching query...
+...
+FAIL: test_create_user_saves_a_member (accounts.tes...
+...
+AssertionError: &#x27;Sai@example.org&#x27; != &#x27;sai@example.org&#x27;
+...
+FAIL: test_capacity_must_be_more_than_zero (events.tes...
+...
+AssertionError: IntegrityError not raised
+...
+FAILED (failures=15, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="128">Fifteen tests are new, and every new rule fails, each for the reason it should: an expected <code>IntegrityError</code> or <code>ValidationError</code> is not raised, an email keeps its capitals, and the case-insensitive lookup finds nobody. The failures count each <code>subTest</code> separately, so the cancellation test counts twice. One new test already passes: <code>test_member_can_register_after_cancelling</code>, because nothing refuses a second registration yet. It is there to make sure the rule you add stays conditional.</p><h4 data-block="129">Step 4: Add the event rules</h4><p class="" data-block="130">Open <code>events/models.py</code>. Replace its three import lines with these imports and a validator function, so the file begins:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (1 of 4: imports and a validator)</p><pre class="code-listing code-listing--file" data-block="131" tabindex="0"><code>from zoneinfo import available_timezones
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
+
+
+def validate_timezone_name(value):
+    &quot;&quot;&quot;Refuse names missing from the time-zone database.&quot;&quot;&quot;
+    if value not in available_timezones():
+        raise ValidationError(
+            &#x27;%(value)s is not a known time zone.&#x27;,
+            code=&#x27;unknown_timezone&#x27;,
+            params={&#x27;value&#x27;: value},
+        )</code></pre><p class="" data-block="132">A validator is a function that takes a value and raises <code>ValidationError</code> if the value is wrong. <code>zoneinfo</code> is the Python standard library’s time-zone module, which Chapter 16’s time-zone field already relied on, and <code>available_timezones()</code> returns the set of names it knows, read on Windows from the <code>tzdata</code> package in the project’s lock file. The message uses <code>%(value)s</code> with <code>params</code>, rather than an f-string, so that Django can later translate the sentence; <code>code</code> names the kind of error for code that checks it.</p><p class="" data-block="133">In the <code>Event</code> class, attach the validator to the time-zone field, which becomes:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (2 of 4: the timezone field)</p><pre class="code-listing code-listing--file" data-block="134" tabindex="0"><code>    timezone = models.CharField(
+        max_length=64, validators=[validate_timezone_name]
+    )</code></pre><p class="" data-block="135">Then replace <code>Event</code>’s <code>Meta</code> class, which held only the ordering, with this:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (3 of 4: Event&#x27;s Meta)</p><pre class="code-listing code-listing--file" data-block="136" tabindex="0"><code>    class Meta:
+        ordering = [&#x27;starts_at&#x27;]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(capacity__gt=0),
+                name=&#x27;event_capacity_gt_0&#x27;,
+                violation_error_message=(
+                    &#x27;Capacity must be more than 0.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    ends_at__gt=models.F(&#x27;starts_at&#x27;)
+                ),
+                name=&#x27;event_ends_after_start&#x27;,
+                violation_error_message=(
+                    &#x27;An event must end after it starts.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(status__in=[
+                    &#x27;draft&#x27;, &#x27;published&#x27;, &#x27;cancelled&#x27;,
+                ]),
+                name=&#x27;event_status_valid&#x27;,
+                violation_error_message=(
+                    &#x27;Status must be draft, published, &#x27;
+                    &#x27;or cancelled.&#x27;
+                ),
+            ),
+        ]</code></pre><p class="" data-block="137">Each name starts with the model it protects, so an error message points straight at the rule. The status list is written out, rather than taken from <code>Status</code>, for a reason the next Common Error shows; the migration stores these literal values anyway, and the status test from Step 3 fails if the two lists ever disagree.</p><div class="callout callout--error"><p class="callout__title" data-block="138">Common Error: Status inside Meta</p><p class="" data-block="139">Writing <code>condition=models.Q(status__in=Status.values)</code> stops the project with <code>NameError: name &#x27;Status&#x27; is not defined</code>. A nested class such as <code>Meta</code> cannot see the names defined beside it in the model’s class body. Write the values out, as in the listing. In the same spirit, <code>CheckConstraint(check=...)</code> from older articles fails with <code>TypeError: CheckConstraint.__init__() got an unexpected keyword argument &#x27;check&#x27;</code>: Django 6.0 removed that spelling, and the argument is now <code>condition</code>.</p></div><p class="" data-block="140">Finally, replace <code>OrganizerAssignment</code>’s <code>Meta</code> class at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (4 of 4: OrganizerAssignment&#x27;s Meta)</p><pre class="code-listing code-listing--file" data-block="141" tabindex="0"><code>    class Meta:
+        ordering = [&#x27;assigned_at&#x27;]
+        constraints = [
+            models.UniqueConstraint(
+                fields=[&#x27;event&#x27;, &#x27;member&#x27;],
+                condition=models.Q(revoked_at__isnull=True),
+                name=&#x27;assignment_one_current&#x27;,
+                violation_error_message=(
+                    &#x27;This member already organizes this &#x27;
+                    &#x27;event.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(revoked_at__isnull=True)
+                    | models.Q(revoked_at__gte=models.F(
+                        &#x27;assigned_at&#x27;
+                    ))
+                ),
+                name=&#x27;assignment_revoked_after_assigned&#x27;,
+                violation_error_message=(
+                    &#x27;An assignment cannot be revoked before &#x27;
+                    &#x27;it starts.&#x27;
+                ),
+            ),
+        ]</code></pre><p class="" data-block="142">The condition <code>revoked_at__isnull=True</code> selects current assignments only, so a revoked assignment stays as history and does not block a new one. The second rule compares two columns of the same row with <code>F</code>, as the event’s end-time rule does: a revocation is at or after the assignment it ends. Its first branch says that a current assignment, with no revocation time, is fine, which is the database’s own behaviour for an empty value in a <code>CHECK</code>; written out, the rule says what it means. Check the project:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="143" tabindex="0"><code>uv run python manage.py check</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="144" tabindex="0"><code>System check identified no issues (0 silenced).</code></pre><h4 data-block="145">Step 5: Add the registration rules</h4><p class="" data-block="146">Open <code>registrations/models.py</code> and replace the <code>Meta</code> class of <code>Registration</code> with this:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py (Meta)</p><pre class="code-listing code-listing--file" data-block="147" tabindex="0"><code>    class Meta:
+        ordering = [&#x27;registered_at&#x27;]
+        constraints = [
+            models.UniqueConstraint(
+                fields=[&#x27;event&#x27;, &#x27;member&#x27;],
+                condition=models.Q(status=&#x27;active&#x27;),
+                name=&#x27;registration_one_active&#x27;,
+                violation_error_message=(
+                    &#x27;This member already has a place at &#x27;
+                    &#x27;this event.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(status__in=[
+                    &#x27;active&#x27;, &#x27;cancelled&#x27;,
+                ]),
+                name=&#x27;registration_status_valid&#x27;,
+                violation_error_message=(
+                    &#x27;Status must be active or cancelled.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(status=&#x27;active&#x27;,
+                             cancelled_at__isnull=True)
+                    | models.Q(status=&#x27;cancelled&#x27;,
+                               cancelled_at__isnull=False)
+                ),
+                name=&#x27;cancelled_at_matches_status&#x27;,
+                violation_error_message=(
+                    &#x27;A cancelled registration needs a &#x27;
+                    &#x27;cancellation time; an active one has &#x27;
+                    &#x27;none.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(cancelled_at__isnull=True)
+                    | models.Q(cancelled_at__gte=models.F(
+                        &#x27;registered_at&#x27;
+                    ))
+                ),
+                name=&#x27;cancelled_after_registered&#x27;,
+                violation_error_message=(
+                    &#x27;A registration cannot be cancelled &#x27;
+                    &#x27;before it was made.&#x27;
+                ),
+            ),
+        ]</code></pre><p class="" data-block="148">The first rule is the one Chapter 20 promised: unique event and member, among active rows. The third reads “active with no cancellation time, or cancelled with one”, the only two combinations that make sense. The fourth keeps time in order: a cancellation is never earlier than the registration it ends. Check the project again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="149" tabindex="0"><code>uv run python manage.py check</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="150" tabindex="0"><code>System check identified no issues (0 silenced).</code></pre><h4 data-block="151">Step 6: Fix the rows that break the rules, then migrate</h4><p class="" data-block="152">A constraint applies to every row already in the table, so the migration fails if one row breaks it. Find those rows first. Start the shell and ask one question per rule:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="153" tabindex="0"><code>&gt;&gt;&gt; from zoneinfo import available_timezones
+&gt;&gt;&gt; Event.objects.filter(capacity__lte=0)
+&lt;QuerySet [&lt;Event: Winter social&gt;]&gt;
+&gt;&gt;&gt; Event.objects.filter(
+...     ends_at__lte=models.F(&#x27;starts_at&#x27;)
+... )
+&lt;QuerySet []&gt;
+&gt;&gt;&gt; Registration.objects.filter(
+...     cancelled_at__lt=models.F(&#x27;registered_at&#x27;)
+... )
+&lt;QuerySet []&gt;
+&gt;&gt;&gt; OrganizerAssignment.objects.filter(
+...     revoked_at__lt=models.F(&#x27;assigned_at&#x27;)
+... )
+&lt;QuerySet []&gt;
+&gt;&gt;&gt; Event.objects.exclude(status__in=Event.Status.values)
+&lt;QuerySet []&gt;
+&gt;&gt;&gt; [event.title for event in Event.objects.all()
+...  if event.timezone not in available_timezones()]
+[&#x27;Winter social&#x27;]
+&gt;&gt;&gt; Registration.objects.filter(
+...     status=&#x27;cancelled&#x27;, cancelled_at__isnull=True
+... )
+&lt;QuerySet [&lt;Registration: raj@example.org at Python mee...
+&gt;&gt;&gt; Registration.objects.filter(
+...     status=&#x27;active&#x27;, cancelled_at__isnull=False
+... )
+&lt;QuerySet []&gt;</code></pre><p class="" data-block="154">The registration line is shortened here; it ends <code>Python meetup&gt;]&gt;</code>. <code>exclude()</code> returns the rows that do not match its condition, which is how you find rows outside a list. A list comprehension handles the time zones, because the database cannot check names against Python’s list.</p><p class="" data-block="155">Duplicates take one more idea. <code>values_list()</code> returns each row’s chosen fields as a tuple, and <code>Counter</code>, from the standard library’s <code>collections</code> module, counts how often each tuple appears; <code>most_common(1)</code> gives the most frequent:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="156" tabindex="0"><code>&gt;&gt;&gt; from collections import Counter
+&gt;&gt;&gt; active = Registration.objects.filter(status=&#x27;active&#x27;)
+&gt;&gt;&gt; pairs = active.values_list(
+...     &#x27;event__title&#x27;, &#x27;member__email&#x27;
+... )
+&gt;&gt;&gt; Counter(pairs).most_common(1)
+[((&#x27;Python meetup&#x27;, &#x27;sai@example.org&#x27;), 2)]
+&gt;&gt;&gt; current = OrganizerAssignment.objects.filter(
+...     revoked_at__isnull=True
+... )
+&gt;&gt;&gt; ids = current.values_list(&#x27;event&#x27;, &#x27;member&#x27;)
+&gt;&gt;&gt; Counter(ids).most_common(1)
+[((1, 1), 1)]</code></pre><p class="" data-block="157">Sai’s pair appears twice among active registrations, which breaks the new rule. The most common assignment pair appears once, so there are no duplicate assignments; your ids may differ. Fix each problem with the smallest change that makes the row true, never by deleting the database:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="158" tabindex="0"><code>&gt;&gt;&gt; social = Event.objects.get(title=&#x27;Winter social&#x27;)
+&gt;&gt;&gt; social.capacity = 30
+&gt;&gt;&gt; social.timezone = &#x27;Europe/London&#x27;
+&gt;&gt;&gt; social.full_clean()
+&gt;&gt;&gt; social.save()
+&gt;&gt;&gt; raj_place = Registration.objects.get(
+...     status=&#x27;cancelled&#x27;, cancelled_at__isnull=True
+... )
+&gt;&gt;&gt; raj_place.cancelled_at = timezone.now()
+&gt;&gt;&gt; raj_place.save()
+&gt;&gt;&gt; extra = active.filter(
+...     member__email=&#x27;sai@example.org&#x27;,
+...     event__title=&#x27;Python meetup&#x27;,
+... ).last()
+&gt;&gt;&gt; extra.delete()
+(1, {&#x27;registrations.Registration&#x27;: 1})
+&gt;&gt;&gt; Counter(pairs.all()).most_common(1)
+[((&#x27;Python meetup&#x27;, &#x27;sai@example.org&#x27;), 1)]</code></pre><p class="" data-block="159">The winter social keeps its row, with a real capacity and time zone; this time <code>full_clean()</code> checks the constraints too, against the database, and passes. Raj’s cancellation gets its time: <code>timezone</code> here is Django’s <code>django.utils.timezone</code>, which the shell imports for you, and <code>now()</code> is the current time in UTC. Sai’s second registration was never a real place, only a double-click, so it is deleted; <code>last()</code> picks the newer of the two, because registrations are ordered by <code>registered_at</code>. <code>pairs</code> keeps the rows it fetched the first time, Chapter 19’s result cache, so <code>pairs.all()</code> asks the database again, and now the pair appears once. Leave the shell with <code>exit()</code>.</p><p class="" data-block="160">Now create the migrations, for both apps at once. <code>--name</code> gives each new file a readable name, instead of one made from the constraint names. In any of the four shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="161" tabindex="0"><code>uv run python manage.py makemigrations --name rules</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="162" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0003_rules.py
+    ~ Alter field timezone on event
+    + Create constraint event_capacity_gt_0 on model event
+    + Create constraint event_ends_after_start on model e...
+    + Create constraint event_status_valid on model event
+    + Create constraint assignment_one_current on model ...
+    + Create constraint assignment_revoked_after_assigned...
+Migrations for &#x27;registrations&#x27;:
+  registrations\migrations\0002_rules.py
+    + Create constraint registration_one_active on model ...
+    + Create constraint registration_status_valid on mod...
+    + Create constraint cancelled_at_matches_status on m...
+    + Create constraint cancelled_after_registered on mod...</code></pre><p class="" data-block="163">On macOS and Linux, the paths use <code>/</code>. The time-zone field is altered because its validators changed; a validator lives in Python, so that operation runs no SQL. Read the SQL for the registrations migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="164" tabindex="0"><code>uv run python manage.py sqlmigrate registrations 0002</code></pre><p class="" data-block="165">Expected result, with long lines shortened:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="166" tabindex="0"><code>BEGIN;
+--
+-- Create constraint registration_one_active on model re...
+--
+CREATE UNIQUE INDEX &quot;registration_one_active&quot; ON &quot;regist...
+--
+-- Create constraint registration_status_valid on model ...
+--
+CREATE TABLE &quot;new__registrations_registration&quot; (&quot;id&quot; int...
+INSERT INTO &quot;new__registrations_registration&quot; (&quot;id&quot;, &quot;st...
+DROP TABLE &quot;registrations_registration&quot;;
+ALTER TABLE &quot;new__registrations_registration&quot; RENAME TO ...
+...
+COMMIT;</code></pre><p class="" data-block="167">On your screen, the first <code>CREATE UNIQUE INDEX</code> line ends <code>WHERE &quot;status&quot; = &#x27;active&#x27;;</code>, the partial index from the Under the Hood box. Each <code>CheckConstraint</code> rebuilds the table: create <code>new__registrations_registration</code> with the rule, copy the rows, drop the old table, rename the new one, and recreate its indexes. Apply both migrations:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="168" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="169" tabindex="0"><code>Operations to perform:
+  Apply all migrations: accounts, admin, auth, ...
+Running migrations:
+  Applying events.0003_rules... OK
+  Applying registrations.0002_rules... OK</code></pre><div class="callout callout--error"><p class="callout__title" data-block="170">Common Error: a migration stopped by an existing row</p><p class="" data-block="171">If a row still breaks a rule, <code>migrate</code> stops with a long traceback ending, for example, <code>django.db.utils.IntegrityError: CHECK constraint failed: event_capacity_gt_0</code>. Each migration runs in a transaction, so the failed one is not applied: <code>showmigrations</code> still shows <code>[ ]</code> beside it, and your rows are as they were. Run the matching question from this step’s first session, fix the row it finds, and run <code>migrate</code> again. Do not delete the migration or the database.</p></div><p class="" data-block="172">Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="173" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="174">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="175" tabindex="0"><code>Found 51 test(s).
+...
+FAILED (failures=4, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="176">Every event and registration rule now passes. The five remaining problems are all in <code>accounts</code>: the email decision is the next step.</p><h4 data-block="177">Step 7: Store email addresses in lower case</h4><p class="" data-block="178">Open <code>accounts/managers.py</code> and add two methods to <code>UserManager</code>, after the line <code>use_in_migrations = True</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/managers.py (add after use_in_migrations)</p><pre class="code-listing code-listing--file" data-block="179" tabindex="0"><code>    @classmethod
+    def normalize_email(cls, email):
+        &quot;&quot;&quot;Store the whole address in lower case.&quot;&quot;&quot;
+        return super().normalize_email(email).lower()
+
+    def get_by_natural_key(self, email):
+        return super().get_by_natural_key(
+            self.normalize_email(email)
+        )</code></pre><p class="" data-block="180"><code>normalize_email()</code> is the method Chapter 17’s <code>create_user()</code> already calls. Django’s version, which <code>super()</code> runs first, lower-cases only the domain; this one then lower-cases the whole address. It is a class method, as in Django, so it can be called on the class itself. <code>get_by_natural_key()</code> is the lookup that sign-in uses to find a member from the address they typed, so it normalizes the typed address in the same way before searching.</p><p class="" data-block="181">Then open <code>accounts/models.py</code>. Add one import, so the imports read:</p><p class="code-label code-label--file" aria-hidden="true">accounts/models.py (1 of 2: imports)</p><pre class="code-listing code-listing--file" data-block="182" tabindex="0"><code>from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+)
+from django.db import models
+from django.db.models.functions import Lower
+from django.utils import timezone
+
+from .managers import UserManager</code></pre><p class="" data-block="183"><code>Lower</code> is a <strong>database function</strong>: Django turns <code>Lower(&#x27;email&#x27;)</code> into SQL <code>LOWER(&quot;email&quot;)</code>. At the end of the <code>User</code> class, replace the <code>__str__()</code> method with a <code>Meta</code> class, the same <code>__str__()</code>, and a <code>clean()</code> method:</p><p class="code-label code-label--file" aria-hidden="true">accounts/models.py (2 of 2: end of the User class)</p><pre class="code-listing code-listing--file" data-block="184" tabindex="0"><code>    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(email=Lower(&#x27;email&#x27;)),
+                name=&#x27;user_email_lowercase&#x27;,
+                violation_error_message=(
+                    &#x27;Email addresses are stored in lower &#x27;
+                    &#x27;case.&#x27;
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return self.email
+
+    def clean(self):
+        super().clean()
+        self.email = UserManager.normalize_email(self.email)</code></pre><p class="" data-block="185">The condition compares each row’s email with its own lower-case form, so it holds only for addresses with no capitals. <code>clean()</code> first runs the parent class’s <code>clean()</code>, which tidies the Unicode characters of the sign-in field, then lower-cases the email, so that <code>full_clean()</code> fixes the address instead of refusing it. Find the members that would break the new rule:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="186" tabindex="0"><code>&gt;&gt;&gt; User.objects.exclude(email=functions.Lower(&#x27;email&#x27;))
+&lt;QuerySet [&lt;User: Sai@example.org&gt;]&gt;
+&gt;&gt;&gt; twin = User.objects.get(email=&#x27;Sai@example.org&#x27;)
+&gt;&gt;&gt; links = twin.registrations, twin.organizer_assignments
+&gt;&gt;&gt; [manager.count() for manager in links]
+[0, 0]
+&gt;&gt;&gt; twin.delete()
+(1, {&#x27;accounts.User&#x27;: 1})
+&gt;&gt;&gt; User.objects.count()
+3</code></pre><p class="" data-block="187"><code>functions</code> is <code>django.db.models.functions</code>, imported by the shell, so <code>functions.Lower</code> is the same <code>Lower</code> as in the model. The account is Step 2’s accidental second Sai. Before deleting a member, check that nothing points at them: this one has no registrations and no assignments, and the original <code>sai@example.org</code> keeps all of Sai’s places. If a real account had capitals, you would change its address with <code>twin.email = twin.email.lower()</code> and <code>twin.save()</code> instead. Leave the shell, then create and apply the migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="188" tabindex="0"><code>uv run python manage.py makemigrations --name email_lowercase
+uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="189" tabindex="0"><code>Migrations for &#x27;accounts&#x27;:
+  accounts\migrations\0002_email_lowercase.py
+    + Create constraint user_email_lowercase on model user
+Operations to perform:
+  Apply all migrations: accounts, admin, auth, ...
+Running migrations:
+  Applying accounts.0002_email_lowercase... OK</code></pre><p class="" data-block="190">Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="191" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="192">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="193" tabindex="0"><code>Found 51 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+...................................................
+...
+Ran 51 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="194">Thirty-six tests from before, and fifteen for the new rules, all passing.</p><h4 data-block="195">Step 8: Try to break every rule</h4><p class="" data-block="196">Start the shell. Each line below tries to write a bad row, using a different path:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="197" tabindex="0"><code>&gt;&gt;&gt; from django.core.exceptions import ValidationError
+&gt;&gt;&gt; meetup = Event.objects.get(title=&#x27;Python meetup&#x27;)
+&gt;&gt;&gt; sai = User.objects.get(email=&#x27;sai@example.org&#x27;)
+&gt;&gt;&gt; Registration.objects.create(event=meetup, member=sai)
+Traceback (most recent call last):
+...
+django.db.utils.IntegrityError: UNIQUE constraint failed: ...
+&gt;&gt;&gt; second = Registration(event=meetup, member=sai)
+&gt;&gt;&gt; try:
+...     second.full_clean()
+... except ValidationError as error:
+...     print(error.messages)
+...
+[&#x27;This member already has a place at this event.&#x27;]</code></pre><p class="" data-block="198"><code>create()</code> reached the database, which refused the row: the traceback’s last line continues <code>registrations_registration.event_id, registrations_registration.member_id</code>, the two columns of the partial index. <code>full_clean()</code> asked first, and explains the same rule in a sentence. Now an <code>update()</code>, which skips <code>save()</code> entirely, and a member signing up again in capitals:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="199" tabindex="0"><code>&gt;&gt;&gt; spring = Event.objects.filter(title=&#x27;Spring planning&#x27;)
+&gt;&gt;&gt; spring.update(capacity=0)
+Traceback (most recent call last):
+...
+django.db.utils.IntegrityError: CHECK constraint failed: ...
+&gt;&gt;&gt; User.objects.create_user(
+...     &#x27;SAI@Example.org&#x27;, display_name=&#x27;Sai&#x27;
+... )
+Traceback (most recent call last):
+...
+django.db.utils.IntegrityError: UNIQUE constraint failed: ...
+&gt;&gt;&gt; User.objects.get_by_natural_key(&#x27;SAI@Example.org&#x27;)
+&lt;User: sai@example.org&gt;</code></pre><p class="" data-block="200">The capacity error ends <code>event_capacity_gt_0</code>, the constraint’s name. The sign-up error ends <code>accounts_user.email</code>: the manager lower-cased the address, so Chapter 17’s unique email refused it as a duplicate of Sai’s account, and the sign-in lookup finds her account however she types it. Last, the one rule that is only validation:</p><p class="code-label code-label--file" aria-hidden="true">Django shell</p><pre class="code-listing code-listing--file" data-block="201" tabindex="0"><code>&gt;&gt;&gt; social = Event.objects.get(title=&#x27;Winter social&#x27;)
+&gt;&gt;&gt; social.timezone = &#x27;Europe/Londn&#x27;
+&gt;&gt;&gt; try:
+...     social.full_clean()
+... except ValidationError as error:
+...     print(error.messages)
+...
+[&#x27;Europe/Londn is not a known time zone.&#x27;]
+&gt;&gt;&gt; social.refresh_from_db()
+&gt;&gt;&gt; social.timezone
+&#x27;Europe/London&#x27;</code></pre><p class="" data-block="202"><code>full_clean()</code> refuses the name. <code>save()</code> would not have: the time-zone rule protects only code that validates, as Table 21.1 said. <code>refresh_from_db()</code> reloads the stored row, undoing the change in memory. Every refused write left the data as it was. Leave the shell with <code>exit()</code>.</p><h4 data-block="203">Step 9: Update the ERD and commit</h4><p class="" data-block="204">Chapter 15’s ERD, in <code>docs/design/erd.md</code>, still lists two rules as future work. Open it. In the section “Rules the structure holds”, add three items after the capacity item:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (Rules the structure holds, three items)</p><pre class="code-listing code-listing--file" data-block="205" tabindex="0"><code>- PR-2: cancelled_at is filled exactly when status is
+  cancelled (CHECK constraint).
+- A cancellation is never earlier than its registration,
+  and a revocation never earlier than its assignment
+  (CHECK constraints).
+- Email addresses are stored in lower case, so two
+  that differ only in letter case are one member
+  (CHECK constraint; decided in Chapter 21).</code></pre><p class="" data-block="206">Then delete two items that this chapter answered: in “Rules that need more than structure”, the item beginning <code>PR-2, cancelled_at filled exactly</code>, and in “Open questions”, the item beginning <code>Are addresses that differ only in letter case</code>. Each is two lines long. Look at what changed:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="207" tabindex="0"><code>git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="208" tabindex="0"><code> M accounts/managers.py
+ M accounts/models.py
+ M accounts/tests.py
+ M docs/design/erd.md
+ M events/models.py
+ M events/tests.py
+ M registrations/models.py
+ M registrations/tests.py
+?? accounts/migrations/0002_email_lowercase.py
+?? events/migrations/0003_rules.py
+?? registrations/migrations/0002_rules.py</code></pre><p class="" data-block="209">Eight changed files and three new migrations. Your fixed rows are not listed: they live in <code>db.sqlite3</code>, which Git ignores. Commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="210" tabindex="0"><code>git add accounts docs events registrations
+git commit -m &quot;Add constraints and lower-case emails&quot;</code></pre><h3 class="" id="topic-211" data-block="211">When something goes wrong</h3><figure class="table-figure" data-block="212"><figcaption>Table 21.3 — Integrity problems and safe recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 21.3 — Integrity problems and safe recovery"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Safe recovery</th>
+</tr></thead><tbody><tr><th scope="row">Found 51 test(s), FAILED (failures=15, errors=1)</th>
+<td data-label="Likely cause">The rules do not exist yet</td>
+<td data-label="Safe recovery">Expected in Step 3; continue with Step 4</td>
+</tr>
+<tr><th scope="row">NameError: name &#x27;Status&#x27; is not defined</th>
+<td data-label="Likely cause">Status used inside Meta</td>
+<td data-label="Safe recovery">Write the values out as a list</td>
+</tr>
+<tr><th scope="row">unexpected keyword argument &#x27;check&#x27;</th>
+<td data-label="Likely cause">An older spelling</td>
+<td data-label="Safe recovery">Use condition=</td>
+</tr>
+<tr><th scope="row">DatabaseOperationForbidden in a model test</th>
+<td data-label="Likely cause">full_clean() now queries the database</td>
+<td data-label="Safe recovery">Change the class to TestCase</td>
+</tr>
+<tr><th scope="row">Missing migrations in the tests</th>
+<td data-label="Likely cause">Models changed, no migration yet</td>
+<td data-label="Safe recovery">Run Step 6&#x27;s makemigrations</td>
+</tr>
+<tr><th scope="row">IntegrityError during migrate</th>
+<td data-label="Likely cause">A row breaks the new rule</td>
+<td data-label="Safe recovery">Find it with Step 6&#x27;s questions, fix it, migrate again</td>
+</tr>
+<tr><th scope="row">TransactionManagementError in a test</th>
+<td data-label="Likely cause">A query after an IntegrityError</td>
+<td data-label="Safe recovery">Wrap the refused write in transaction.atomic()</td>
+</tr>
+<tr><th scope="row">IntegrityError on create() or update()</th>
+<td data-label="Likely cause">The rule refused a bad row</td>
+<td data-label="Safe recovery">Intended; nothing was written</td>
+</tr>
+<tr><th scope="row">Constraint “...” is violated.</th>
+<td data-label="Likely cause">No violation_error_message</td>
+<td data-label="Safe recovery">Add a message for people</td>
+</tr>
+<tr><th scope="row">A time-zone typo saved without error</th>
+<td data-label="Likely cause">save() does not validate</td>
+<td data-label="Safe recovery">Call full_clean() before saving</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="213">The <code>TransactionManagementError</code> row deserves a word. Inside a <code>TestCase</code>, a database error spoils the test’s transaction, and the next query fails with <code>An error occurred in the current transaction. You can&#x27;t execute queries until the end of the &#x27;atomic&#x27; block.</code> That is why every expected <code>IntegrityError</code> in Step 3 sits inside its own <code>transaction.atomic()</code>.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2021%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter21/section-21-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter21/section-21-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter21/section-21-2/">← What You Need to Know</a><a href="/chapters/chapter21/section-21-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

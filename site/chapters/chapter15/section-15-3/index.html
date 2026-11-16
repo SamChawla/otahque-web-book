@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 15: Relational databases and our first ERD. Design Otahque&#x27;s first data model: tables, keys, relationships, and an...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter15/section-15-3/">
+<title>How We Build It · Chapter 15 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter" open><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter15/">← Chapter 15 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-15-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-99">The Custom Way</a></li><li><a href="#topic-103">The Recorded Way</a></li><li><a href="#topic-190">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 8 figures · 7 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter15:15.3" data-progress-title="Section 15.3" data-reader-prev="section-15-2.html" data-reader-next="section-15-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 15.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter15/">Chapter 15 · Relational databases and our first ERD</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter15/section-15-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter15/section-15-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter15/section-15-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter15/section-15-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter15/section-15-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-15-3" data-block="97">How We Build It</h2><p class="" data-block="98">Start from Chapter 14, in the directory containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 18 passing tests, and the Chapter 14 work committed to your Git repository. This chapter changes no Python, template, or stylesheet file. It adds one document to the project, <code>docs/design/erd.md</code>, and one throwaway script, <code>relational_lab.py</code>, in a <code>practice</code> folder beside the project folder, outside it, so that the lab never becomes part of Otahque. At the end, the design is committed, the lab shows the database refusing each bad row, and the project still has no tables.</p><h3 class="" id="topic-99" data-block="99">The Custom Way</h3><p class="" data-block="100">This illustration shows Sam’s spreadsheet as a single database table; do not add it to the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/one_table.sql (not part of the project)</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>CREATE TABLE sheet (
+    event_title TEXT,
+    event_date TEXT,
+    member_name TEXT,
+    member_email TEXT
+);
+-- Raj cancels: his row, and every fact in it, is gone.
+DELETE FROM sheet WHERE member_name = &#x27;Raj&#x27;;</code></pre><p class="" data-block="102">It is quick to create and it accepts anything. Every event detail and every email address is repeated in each row that needs it. No column identifies a person, so two Sais cannot be told apart, and a deleted row leaves no trace that it existed. Nothing refuses an empty email address or an event that was never arranged. The approach below starts from the rules instead, gives each kind of thing its own table and key, and checks the result against a real database before anything reaches Django.</p><h3 class="" id="topic-103" data-block="103">The Recorded Way</h3><p class="" data-block="104">Design chapters build documents, so this part designs and records rather than writing Django code. Each step either adds to <code>docs/design/erd.md</code> or tests an idea in the lab.</p><h4 data-block="105">Step 1: Check the starting point</h4><p class="" data-block="106">Run the Chapter 14 tests beside <code>manage.py</code>, in PowerShell, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="107" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="" data-block="108">Expected result, shortened with <code>...</code> where lines are left out:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="109" tabindex="0"><code>Found 18 test(s).
+System check identified no issues (0 silenced).
+..................
+...
+Ran 18 tests in ...
+
+OK</code></pre><p class="" data-block="110">Next, look for a file called <code>db.sqlite3</code> beside <code>manage.py</code>. You probably have one: Chapter 6 explained that the development server may create an empty database file while checking migrations. A file is fine; tables are what this chapter must not create yet. If the file exists, ask SQLite to list the names of everything in it. The command is split over two lines, with each shell’s own continuation character. In PowerShell, beside <code>manage.py</code>:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="111" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 `
+    &quot;SELECT name FROM sqlite_schema&quot;</code></pre><p class="" data-block="112">In a macOS shell or Linux/WSL Bash, beside <code>manage.py</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="113" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 \
+    &quot;SELECT name FROM sqlite_schema&quot;</code></pre><p class="" data-block="114">Expected result: nothing at all. <code>sqlite_schema</code> is SQLite’s own list of the tables and indexes in a database, so an empty answer means there are none. If there is no <code>db.sqlite3</code>, skip this check; do not run the command, because connecting to a missing file creates an empty one.</p><div class="callout callout--error"><p class="callout__title" data-block="115">Common Error: running migrate to get a database</p><p class="" data-block="116">It is tempting to run <code>uv run python manage.py migrate</code> so that the database has something in it. Do not do it yet. <code>migrate</code> creates Django’s built-in tables, including a table of users, and Chapter 17 must choose Otahque’s user model before those tables exist, because changing the user model afterwards is difficult. A second trap: SQLite’s own command-line program accepts commands such as <code>.tables</code>, but <code>python -m sqlite3</code> treats its argument as SQL, so <code>.tables</code> there fails with <code>OperationalError</code> and a syntax error near “.”. Use the <code>SELECT</code> above.</p></div><p class="" data-block="117">If the query lists tables such as <code>django_migrations</code> or <code>auth_user</code>, <code>migrate</code> has already been run. Keep the file: rename it, for example to <code>db-before-ch15.sqlite3</code>, so that the project starts Chapter 17 with no tables, and keep the renamed copy until Chapter 17 confirms that nothing in it is needed.</p><p class="" data-block="118">Finally, create the practice folder beside the project folder. The same command works in PowerShell and in a macOS shell or Linux/WSL Bash; PowerShell also prints a short table describing the new folder:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="119" tabindex="0"><code>mkdir ../practice</code></pre><h4 data-block="120">Step 2: Find the entities</h4><p class="" data-block="121">Open Chapter 2’s rules and Sam’s spreadsheet, and list every noun that names something Otahque might store. Then decide, for each, whether it is a kind of thing with its own facts and identity, a fact about something else, or outside the first release. Table 15.3 records our decisions.</p><figure class="table-figure" data-block="122"><figcaption>Table 15.3 — Candidate nouns, kept and rejected</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 15.3 — Candidate nouns, kept and rejected"><table><thead><tr><th scope="col">Noun</th>
+<th scope="col">Decision</th>
+<th scope="col">Reason</th>
+</tr></thead><tbody><tr><th scope="row">Member</th>
+<td data-label="Decision">Entity</td>
+<td data-label="Reason">A person with an account; registrations and assignments refer to it</td>
+</tr>
+<tr><th scope="row">Event</th>
+<td data-label="Decision">Entity</td>
+<td data-label="Reason">Has its own facts: title, start, end, time zone, location, capacity, status</td>
+</tr>
+<tr><th scope="row">Registration</th>
+<td data-label="Decision">Entity</td>
+<td data-label="Reason">A member&#x27;s place in an event, with its own status and times</td>
+</tr>
+<tr><th scope="row">Organizer assignment</th>
+<td data-label="Decision">Entity</td>
+<td data-label="Reason">Which member organizes which event, until revoked (<span class="label">PR-4</span>)</td>
+</tr>
+<tr><th scope="row">Attendee</th>
+<td data-label="Decision">Not an entity</td>
+<td data-label="Reason">A member with an active registration for that event</td>
+</tr>
+<tr><th scope="row">Venue, location</th>
+<td data-label="Decision">Attribute</td>
+<td data-label="Reason">The first release only shows where an event takes place</td>
+</tr>
+<tr><th scope="row">Capacity, status</th>
+<td data-label="Decision">Attributes</td>
+<td data-label="Reason">Facts about one event, or about one registration</td>
+</tr>
+<tr><th scope="row">Category, tag</th>
+<td data-label="Decision">Out of scope</td>
+<td data-label="Reason">Not in the first release; Chapter 20&#x27;s optional lab builds topics in a copy of the project</td>
+</tr>
+<tr><th scope="row">Attendance, waitlist</th>
+<td data-label="Decision">Out of scope</td>
+<td data-label="Reason">Event-day operations, Chapter 46</td>
+</tr>
+<tr><th scope="row">Community</th>
+<td data-label="Decision">Out of scope</td>
+<td data-label="Reason">One community for now; several communities in Chapters 67 and 68</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="123">Create the folders <code>docs/design</code> beside <code>manage.py</code>, and in them a file called <code>erd.md</code>. Start it with its status, so that nobody mistakes it for an approved design:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (start of the file)</p><pre class="code-listing code-listing--file" data-block="124" tabindex="0"><code># Otahque data model (ERD)
+
+Status: Proposed, for review. No table exists yet.
+Scope: the first release (one community, free events).
+Sources: Chapter 2 rules PR-1 to PR-6.</code></pre><h4 data-block="125">Step 3: Add keys and relationships</h4><p class="" data-block="126">Give each entity an <code>id</code> primary key. Then read each relationship aloud in both directions, and put the foreign key on the side that has many:</p><ul class="outcomes"><li data-block="127">One member makes zero or more registrations; each registration is made by exactly one member.</li><li data-block="128">One event has zero or more registrations; each registration is for exactly one event.</li><li data-block="129">One member holds zero or more organizer assignments; each assignment belongs to exactly one member.</li><li data-block="130">One event has zero or more organizer assignments; each assignment is for exactly one event.</li></ul><p class="" data-block="131">An event may have no organizer assignment at all, because who appoints organizers, and whether every event needs one, is still an open decision. Add the diagram section to <code>erd.md</code>, below the status lines. The diagram sits between a line <code>~~~mermaid</code> and a line <code>~~~</code>, which Markdown treats as a fenced block and Mermaid-aware viewers draw:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (continued)</p><pre class="code-listing code-listing--file" data-block="132" tabindex="0"><code>
+## Diagram
+
+~~~mermaid
+erDiagram
+    MEMBER ||--o{ REGISTRATION : &quot;makes&quot;
+    EVENT ||--o{ REGISTRATION : &quot;has&quot;
+    MEMBER ||--o{ ORGANIZER_ASSIGNMENT : &quot;holds&quot;
+    EVENT ||--o{ ORGANIZER_ASSIGNMENT : &quot;is run through&quot;
+    MEMBER {
+        int id PK
+        text email UK
+        text display_name
+    }
+    EVENT {
+        int id PK
+        text title
+        datetime starts_at &quot;an instant, in UTC&quot;
+        datetime ends_at &quot;after starts_at, in UTC&quot;
+        text timezone &quot;IANA name&quot;
+        text location
+        int capacity &quot;more than 0&quot;
+        text status &quot;draft, published, cancelled&quot;
+    }
+    REGISTRATION {
+        int id PK
+        int event_id FK
+        int member_id FK
+        text status &quot;active or cancelled&quot;
+        datetime registered_at
+        datetime cancelled_at &quot;empty until cancelled&quot;
+    }
+    ORGANIZER_ASSIGNMENT {
+        int id PK
+        int event_id FK
+        int member_id FK
+        datetime assigned_at
+        datetime revoked_at &quot;empty while current&quot;
+    }
+~~~</code></pre><p class="" data-block="133">Each attribute line gives a type, a name, an optional key mark (<code>PK</code>, <code>FK</code>, or <code>UK</code> for unique), and an optional note in quotes. The types are words for people, not database column types; Django’s fields decide those in Chapter 16. <code>starts_at</code> and <code>ends_at</code> are instants, stored in UTC, and an event ends after it starts. <code>timezone</code> keeps the event’s own time-zone name, used for both, such as <code>Europe/London</code>, so pages can show the local time Chapter 2 asked for. Figure 15.3 draws the same design.</p><figure data-block="134"><a href="/assets/chapter15/figure-15-3-erd.png" aria-label="Open Figure 15.3 at full size"><img src="/assets/chapter15/figure-15-3-erd.png" alt="Four green entity boxes. MEMBER, on the left, has id (PK), email (UK), and display_name. EVENT, on the right, has id (PK), title, starts_at, ends_at, timezone, location, capacity, and status. Between them, REGISTRATION has id (PK), event_id (FK), member_id (FK), status, registered_at, and cancelled_at, and ORGANIZER ASSIGNMENT below it has id (PK), event_id (FK), member_id (FK), assigned_at, and revoked_at. Each line runs from MEMBER or EVENT, marked with two bars for exactly one, to the matching foreign-key row of REGISTRATION or ORGANIZER ASSIGNMENT, marked with a circle and a crow’s foot for zero or more. Orange notes say: one active registration per member and event, through a partial unique index; one current assignment per member and event; and capacity is stored while places taken are counted from active registrations." width="1500" height="980" loading="lazy"></a><figcaption data-block="135">Figure 15.3 — The proposed first-release ERD.</figcaption></figure><div class="callout callout--error"><p class="callout__title" data-block="136">Common Error: a line without its marks, or a key on the wrong side</p><p class="" data-block="137">A line between two boxes with no marks at its ends says nothing about how many rows take part, and two readers will assume different answers. Mark both ends. If you find yourself wanting an event column that holds several registration numbers, the foreign key is on the wrong side: it belongs in the registration, the side that has many. And if a relationship needs a status or a time, it is an entity of its own, not a bare link.</p></div><h4 data-block="138">Step 4: Write the lab test-first</h4><p class="" data-block="139">A diagram can be wrong in ways that only a database reveals. The lab writes down, first, the rows the design says must be refused. Then it runs them against tables that have columns but almost no rules, and we watch every bad row being accepted. That is the red stage, the same habit as a test written before the code since Chapter 9.</p><p class="" data-block="140">Create <code>relational_lab.py</code> in the practice folder:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py</p><pre class="code-listing code-listing--file" data-block="141" tabindex="0"><code>&quot;&quot;&quot;Chapter 15 lab: which bad rows are refused?&quot;&quot;&quot;
+import sqlite3
+
+SCHEMA = &quot;&quot;&quot;
+CREATE TABLE member (
+    id INTEGER PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE
+);
+CREATE TABLE event (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    capacity INTEGER NOT NULL
+);
+CREATE TABLE registration (
+    id INTEGER PRIMARY KEY,
+    event_id INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
+    status TEXT NOT NULL
+);
+&quot;&quot;&quot;
+
+GOOD_ROWS = [
+    &quot;INSERT INTO member VALUES (1, &#x27;sai@example.org&#x27;)&quot;,
+    &quot;INSERT INTO event VALUES (7, &#x27;Python meetup&#x27;, 2)&quot;,
+    &quot;INSERT INTO registration VALUES (1, 7, 1, &#x27;active&#x27;)&quot;,
+]
+
+BAD_ROWS = {
+    &quot;orphan registration&quot;: &quot;INSERT INTO registration&quot;
+        &quot; VALUES (2, 99, 1, &#x27;active&#x27;)&quot;,
+    &quot;capacity of 0&quot;: &quot;INSERT INTO event&quot;
+        &quot; VALUES (8, &#x27;Data night&#x27;, 0)&quot;,
+    &quot;unknown status&quot;: &quot;INSERT INTO registration&quot;
+        &quot; VALUES (3, 7, 1, &#x27;maybe&#x27;)&quot;,
+    &quot;second active place&quot;: &quot;INSERT INTO registration&quot;
+        &quot; VALUES (4, 7, 1, &#x27;active&#x27;)&quot;,
+}
+
+
+def fresh_database():
+    db = sqlite3.connect(&quot;:memory:&quot;, autocommit=True)
+    db.executescript(SCHEMA)
+    for sql in GOOD_ROWS:
+        db.execute(sql)
+    return db
+
+
+def report(name, error):
+    kind, _, detail = str(error).partition(&quot;: &quot;)
+    print(f&quot;refused   {name}: {kind}&quot;)
+    if detail:
+        print(f&quot;          {detail}&quot;)
+
+
+for name, sql in BAD_ROWS.items():
+    db = fresh_database()
+    try:
+        db.execute(sql)
+        print(f&quot;accepted  {name}&quot;)
+    except sqlite3.IntegrityError as error:
+        report(name, error)
+    db.close()</code></pre><p class="" data-block="142">Read it from the top. <code>SCHEMA</code> holds the SQL that creates the three tables; only <code>NOT NULL</code> and the email’s <code>UNIQUE</code> are rules so far. <code>GOOD_ROWS</code> are a member (Sai, number 1), an event (number 7, with two places), and Sai’s active registration. <code>BAD_ROWS</code> names four rows that break a Chapter 2 rule, each written as two string literals side by side, which Python joins into one string so that each line stays short: a registration for event 99, which does not exist; an event with no places; a status Otahque does not have; and a second active registration by Sai for the same event. <code>fresh_database()</code> creates a new database in memory, with <code>autocommit=True</code> so that each statement takes effect on its own, builds the schema, and adds the good rows. The loop gives each bad row its own fresh database, so the bad rows cannot affect each other, and prints whether the database accepted or refused it. <code>report()</code> splits SQLite’s message at its first colon so that each line fits on the page.</p><p class="" data-block="143">Because every run builds its database from <code>SCHEMA</code>, nothing carries over between runs. Each change you make in Step 5 changes what the next run creates; there is never an old table to alter. Run the lab from the project folder, so that <code>uv</code> uses the project’s Python. The same command works in PowerShell and in a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="144" tabindex="0"><code>uv run python ../practice/relational_lab.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="145" tabindex="0"><code>accepted  orphan registration
+accepted  capacity of 0
+accepted  unknown status
+accepted  second active place</code></pre><p class="" data-block="146">Every bad row is accepted. That is the result we expect: nothing in the schema says otherwise yet.</p><h4 data-block="147">Step 5: Add structure until each bad row is refused</h4><p class="" data-block="148">Make four edits, and rerun the lab after each.</p><div class="callout callout--error"><p class="callout__title" data-block="149">Common Error: foreign keys declared but not checked</p><p class="" data-block="150">After the first edit below, the schema declares foreign keys. If you add the <code>REFERENCES</code> clauses but not the <code>PRAGMA</code> line, the orphan registration is still accepted, with no error or warning, because SQLite checks foreign keys only on connections that ask for it. Both lines of the edit are needed. Django asks on every connection it opens, which is why the project will not need this line.</p></div><p class="" data-block="151">First, the foreign keys. In <code>SCHEMA</code>, give the registration table’s two key columns their references:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (registration table)</p><pre class="code-listing code-listing--file" data-block="152" tabindex="0"><code>    event_id INTEGER NOT NULL REFERENCES event (id),
+    member_id INTEGER NOT NULL REFERENCES member (id),</code></pre><p class="" data-block="153">Then, in <code>fresh_database()</code>, turn foreign-key checking on straight after connecting:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (fresh_database)</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>    db = sqlite3.connect(&quot;:memory:&quot;, autocommit=True)
+    db.execute(&quot;PRAGMA foreign_keys = ON&quot;)</code></pre><p class="" data-block="155">Run the lab again:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="156" tabindex="0"><code>refused   orphan registration: FOREIGN KEY constraint failed
+accepted  capacity of 0
+accepted  unknown status
+accepted  second active place</code></pre><p class="" data-block="157">Second, the checks. A <code>CHECK</code> constraint can be given a name with <code>CONSTRAINT</code>, and SQLite then uses that name in its message, which makes refusals easy to recognize. Change the end of the event table:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (event table)</p><pre class="code-listing code-listing--file" data-block="158" tabindex="0"><code>    capacity INTEGER NOT NULL,
+    CONSTRAINT positive_capacity CHECK (capacity &gt; 0)
+);</code></pre><p class="" data-block="159">and the end of the registration table:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (registration table)</p><pre class="code-listing code-listing--file" data-block="160" tabindex="0"><code>    status TEXT NOT NULL,
+    CONSTRAINT known_status
+        CHECK (status IN (&#x27;active&#x27;, &#x27;cancelled&#x27;))
+);</code></pre><p class="" data-block="161">Run the lab:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="162" tabindex="0"><code>refused   orphan registration: FOREIGN KEY constraint failed
+refused   capacity of 0: CHECK constraint failed
+          positive_capacity
+refused   unknown status: CHECK constraint failed
+          known_status
+accepted  second active place</code></pre><p class="" data-block="163">Third, the partial unique index. Add it at the end of <code>SCHEMA</code>, after the registration table and before the closing <code>&quot;&quot;&quot;</code>:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (end of SCHEMA)</p><pre class="code-listing code-listing--file" data-block="164" tabindex="0"><code>CREATE UNIQUE INDEX one_active_registration
+    ON registration (event_id, member_id)
+    WHERE status = &#x27;active&#x27;;
+&quot;&quot;&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="165" tabindex="0"><code>refused   orphan registration: FOREIGN KEY constraint failed
+refused   capacity of 0: CHECK constraint failed
+          positive_capacity
+refused   unknown status: CHECK constraint failed
+          known_status
+refused   second active place: UNIQUE constraint failed
+          registration.event_id, registration.member_id</code></pre><p class="" data-block="166">All four bad rows are now refused, each by the rule written for it. For a unique index, SQLite names the columns rather than the index.</p><div class="callout callout--error"><p class="callout__title" data-block="167">Common Error: uniqueness that blocks registering again</p><p class="" data-block="168">Writing <code>UNIQUE (event_id, member_id)</code> in the registration table also refuses the second active place, and looks finished. But it refuses every second row for the same member and event, cancelled or not, so a member who cancels can never register again, and the history Chapter 2 asked for has no room. The rule is about active rows only, which is what the partial index’s <code>WHERE</code> says. The last edit tests exactly this.</p></div><p class="" data-block="169">Fourth, the case that must succeed. Add this block at the end of the file. Sai cancels her registration, registers again for the same event, and the lab shows her history and one count of the places taken:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (end of the file)</p><pre class="code-listing code-listing--file" data-block="170" tabindex="0"><code>
+print()
+print(&quot;Sai cancels, then registers again:&quot;)
+db = fresh_database()
+db.execute(&quot;UPDATE registration SET status = &#x27;cancelled&#x27;&quot;
+           &quot; WHERE id = 1&quot;)
+db.execute(&quot;INSERT INTO registration&quot;
+           &quot; VALUES (5, 7, 1, &#x27;active&#x27;)&quot;)
+rows = db.execute(&quot;SELECT id, status FROM registration&quot;)
+for row in rows:
+    print(row)
+places = db.execute(&quot;&quot;&quot;
+    SELECT event.title, event.capacity,
+           COUNT(registration.id)
+    FROM event
+    JOIN registration ON registration.event_id = event.id
+    WHERE registration.status = &#x27;active&#x27;
+    GROUP BY event.id
+&quot;&quot;&quot;).fetchall()
+print(places)
+db.close()</code></pre><p class="" data-block="171">The query is the first <strong>join</strong> of the book: <code>JOIN ... ON</code> puts each registration beside the event its <code>event_id</code> names, <code>WHERE</code> keeps only active registrations, and <code>GROUP BY event.id</code> with <code>COUNT</code> counts them per event. This is the derived count from What You Need to Know.</p><p class="" data-block="172">Run the lab one last time:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="173" tabindex="0"><code>refused   orphan registration: FOREIGN KEY constraint failed
+refused   capacity of 0: CHECK constraint failed
+          positive_capacity
+refused   unknown status: CHECK constraint failed
+          known_status
+refused   second active place: UNIQUE constraint failed
+          registration.event_id, registration.member_id
+
+Sai cancels, then registers again:
+(1, &#x27;cancelled&#x27;)
+(5, &#x27;active&#x27;)
+[(&#x27;Python meetup&#x27;, 2, 1)]</code></pre><p class="" data-block="174">The cancelled row is kept, the new active row is accepted, and the Python meetup has one of its two places taken. The complete lab, as it should now read:</p><p class="code-label code-label--file" aria-hidden="true">../practice/relational_lab.py (complete)</p><pre class="code-listing code-listing--file" data-block="175" tabindex="0"><code>&quot;&quot;&quot;Chapter 15 lab: which bad rows are refused?&quot;&quot;&quot;
+import sqlite3
+
+SCHEMA = &quot;&quot;&quot;
+CREATE TABLE member (
+    id INTEGER PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE
+);
+CREATE TABLE event (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    capacity INTEGER NOT NULL,
+    CONSTRAINT positive_capacity CHECK (capacity &gt; 0)
+);
+CREATE TABLE registration (
+    id INTEGER PRIMARY KEY,
+    event_id INTEGER NOT NULL REFERENCES event (id),
+    member_id INTEGER NOT NULL REFERENCES member (id),
+    status TEXT NOT NULL,
+    CONSTRAINT known_status
+        CHECK (status IN (&#x27;active&#x27;, &#x27;cancelled&#x27;))
+);
+CREATE UNIQUE INDEX one_active_registration
+    ON registration (event_id, member_id)
+    WHERE status = &#x27;active&#x27;;
+&quot;&quot;&quot;
+
+GOOD_ROWS = [
+    &quot;INSERT INTO member VALUES (1, &#x27;sai@example.org&#x27;)&quot;,
+    &quot;INSERT INTO event VALUES (7, &#x27;Python meetup&#x27;, 2)&quot;,
+    &quot;INSERT INTO registration VALUES (1, 7, 1, &#x27;active&#x27;)&quot;,
+]
+
+BAD_ROWS = {
+    &quot;orphan registration&quot;: &quot;INSERT INTO registration&quot;
+        &quot; VALUES (2, 99, 1, &#x27;active&#x27;)&quot;,
+    &quot;capacity of 0&quot;: &quot;INSERT INTO event&quot;
+        &quot; VALUES (8, &#x27;Data night&#x27;, 0)&quot;,
+    &quot;unknown status&quot;: &quot;INSERT INTO registration&quot;
+        &quot; VALUES (3, 7, 1, &#x27;maybe&#x27;)&quot;,
+    &quot;second active place&quot;: &quot;INSERT INTO registration&quot;
+        &quot; VALUES (4, 7, 1, &#x27;active&#x27;)&quot;,
+}
+
+
+def fresh_database():
+    db = sqlite3.connect(&quot;:memory:&quot;, autocommit=True)
+    db.execute(&quot;PRAGMA foreign_keys = ON&quot;)
+    db.executescript(SCHEMA)
+    for sql in GOOD_ROWS:
+        db.execute(sql)
+    return db
+
+
+def report(name, error):
+    kind, _, detail = str(error).partition(&quot;: &quot;)
+    print(f&quot;refused   {name}: {kind}&quot;)
+    if detail:
+        print(f&quot;          {detail}&quot;)
+
+
+for name, sql in BAD_ROWS.items():
+    db = fresh_database()
+    try:
+        db.execute(sql)
+        print(f&quot;accepted  {name}&quot;)
+    except sqlite3.IntegrityError as error:
+        report(name, error)
+    db.close()
+
+print()
+print(&quot;Sai cancels, then registers again:&quot;)
+db = fresh_database()
+db.execute(&quot;UPDATE registration SET status = &#x27;cancelled&#x27;&quot;
+           &quot; WHERE id = 1&quot;)
+db.execute(&quot;INSERT INTO registration&quot;
+           &quot; VALUES (5, 7, 1, &#x27;active&#x27;)&quot;)
+rows = db.execute(&quot;SELECT id, status FROM registration&quot;)
+for row in rows:
+    print(row)
+places = db.execute(&quot;&quot;&quot;
+    SELECT event.title, event.capacity,
+           COUNT(registration.id)
+    FROM event
+    JOIN registration ON registration.event_id = event.id
+    WHERE registration.status = &#x27;active&#x27;
+    GROUP BY event.id
+&quot;&quot;&quot;).fetchall()
+print(places)
+db.close()</code></pre><p class="" data-block="176">The lab proves what structure can do, not what it cannot. One connection ran one statement at a time, so it says nothing about two people taking the last place at once; that is Chapter 33’s work.</p><h4 data-block="177">Step 6: Complete the ERD, check it, and commit</h4><p class="" data-block="178">Finish <code>erd.md</code> with the rules the structure holds, the rules it cannot hold and where they will be enforced, the open questions, and what is out of scope. Add this below the diagram:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (end of the file)</p><pre class="code-listing code-listing--file" data-block="179" tabindex="0"><code>
+## Rules the structure holds
+
+- PR-1: at most one active registration per member and
+  event (partial unique index on event_id and member_id
+  where status is active).
+- PR-1, PR-2: a registration refers to a real event and
+  a real member (foreign keys).
+- PR-2: a cancelled registration keeps its row, with
+  its status and cancelled_at; it is never deleted.
+- PR-4: at most one current assignment per member and
+  event (partial unique index where revoked_at is empty).
+- Capacity is more than 0; an event ends after it
+  starts; each status comes from its fixed list
+  (CHECK constraints).
+- Intent: deleting an event or member that has
+  registrations is refused, so history survives.
+
+## Rules that need more than structure
+
+- PR-2, cancelled_at filled exactly when status is
+  cancelled: a CHECK constraint, Chapter 21.
+- PR-3, never more active places than capacity:
+  transactions, Chapter 33.
+- PR-4, own registrations and assigned events only:
+  Chapters 27 and 30.
+- PR-5, valid details before publication; drafts hidden:
+  Chapters 21, 25, and 26.
+- PR-6, access administration: Chapters 23 and 30.
+
+## Open questions
+
+- Which contact details, beyond an email address?
+- Are addresses that differ only in letter case one
+  member? Decided in Chapter 21, before sign-up.
+- Who appoints organizers, and must an event have one?
+- When registration opens and closes (Chapter 2 policy).
+- What happens to active registrations when an event
+  is cancelled?
+
+## Out of scope for this release
+
+- Category and tag: not first-release requirements.
+- Venue: the location is an attribute of the event;
+  an online event records Virtual as its location.
+- Attendance, check-in, and waitlists: Chapter 46.
+- Communities and tenancy: Chapters 67 and 68.
+- Audit records: Chapter 65.</code></pre><p class="" data-block="180">The “intent” line records a decision for Chapter 20, where Django’s <code>on_delete</code> setting will make it real. Figure 15.4 traces each Chapter 2 rule through the structure to the later control that completes it. No rule is finished by structure alone: registration still needs its eligibility checks in Chapter 31, even though the database already refuses a duplicate.</p><figure data-block="181"><a href="/assets/chapter15/figure-15-4-trace.png" aria-label="Open Figure 15.4 at full size"><img src="/assets/chapter15/figure-15-4-trace.png" alt="Five numbered rows, each running from an orange rule card through a green structure card to a dashed grey card for a later chapter. Rule 1, PR-1 one active place: foreign keys and a partial unique index, then eligibility checks in Chapter 31. Rule 2, PR-2 cancellation: status and cancelled_at with the row kept, then the cancel workflow in Chapter 31. Rule 3, PR-3 never over capacity: capacity stored and the count derived, then transactions in Chapter 33. Rule 4, PR-4 own records and assigned events: member and event keys on each row, then access checks in Chapters 27 and 30. Rule 5, PR-5 publication: the event status draft or published, then validation in Chapters 21 to 26." width="1500" height="1010" loading="lazy"></a><figcaption data-block="182">Figure 15.4 — Each rule traced to its structure and its later control.</figcaption></figure><p class="" data-block="183">Now review the file as plain text, which is the check that matters; a drawing is optional. Read <code>erd.md</code> from the top and confirm five things: four entities; one primary key each; every foreign key on the many side, matching a relationship line; marks at both ends of every line; and the active-registration rule stated. If you use GitHub or another Mermaid-aware viewer, you may also see it drawn, but the text is the record.</p><div class="callout callout--error"><p class="callout__title" data-block="184">Common Error: calling the ERD approved, or committing the lab</p><p class="" data-block="185">The status line says Proposed, and it should stay that way until someone responsible for the product has reviewed it; this book records decisions, it does not invent approvals. The lab is practice. It lives outside the project folder so that it is never committed with Otahque, and nothing in the project imports it.</p></div><p class="" data-block="186">Rerun the tests and, if <code>db.sqlite3</code> exists, the table query from Step 1. Expect the same results as before: 18 tests pass, and the query prints nothing. Then check what Git sees:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="187" tabindex="0"><code>git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="188" tabindex="0"><code>?? docs/</code></pre><p class="" data-block="189">Only the new <code>docs</code> folder is listed. The Git Commit section in Checkpoint: Quiz and Challenge records it.</p><h3 class="" id="topic-190" data-block="190">When something goes wrong</h3><figure class="table-figure" data-block="191"><figcaption>Table 15.4 — Design and lab problems and safe recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 15.4 — Design and lab problems and safe recovery"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Safe recovery</th>
+</tr></thead><tbody><tr><th scope="row">The orphan registration is still accepted</th>
+<td data-label="Likely cause">The PRAGMA line is missing, or comes after other statements</td>
+<td data-label="Safe recovery">Put it straight after connecting, as in the listing, and rerun</td>
+</tr>
+<tr><th scope="row">A second active registration is accepted</th>
+<td data-label="Likely cause">The index lacks its WHERE clause, or names other columns</td>
+<td data-label="Safe recovery">Compare the CREATE UNIQUE INDEX lines with the listing</td>
+</tr>
+<tr><th scope="row">Registering again after cancelling raises IntegrityError</th>
+<td data-label="Likely cause">UNIQUE (event_id, member_id) on the table instead of the partial index</td>
+<td data-label="Safe recovery">Remove the table rule; use the partial index</td>
+</tr>
+<tr><th scope="row">sqlite3.OperationalError: near ... syntax error</th>
+<td data-label="Likely cause">A typo in SCHEMA, such as a missing comma between two columns</td>
+<td data-label="Safe recovery">Read the line the message names; every run starts fresh, so nothing is damaged</td>
+</tr>
+<tr><th scope="row">The query in Step 1 lists tables</th>
+<td data-label="Likely cause">migrate was run earlier</td>
+<td data-label="Safe recovery">Rename the file and keep it until Chapter 17; do not delete it now</td>
+</tr>
+<tr><th scope="row">OperationalError near &quot;.&quot; from python -m sqlite3</th>
+<td data-label="Likely cause">A command such as .tables was passed as SQL</td>
+<td data-label="Safe recovery">Use the SELECT on sqlite_schema from Step 1</td>
+</tr>
+<tr><th scope="row">can&#x27;t open file ... relational_lab.py</th>
+<td data-label="Likely cause">Run from the wrong folder</td>
+<td data-label="Safe recovery">Run from the folder with manage.py; the practice folder is beside it</td>
+</tr>
+<tr><th scope="row">A relationship cannot be drawn without a list column</th>
+<td data-label="Likely cause">The foreign key is on the wrong side, or a link needs its own entity</td>
+<td data-label="Safe recovery">Move the key to the many side, or add an association entity</td>
+</tr>
+<tr><th scope="row">A rule has no structure in the trace</th>
+<td data-label="Likely cause">It depends on who acts or when, not on one row</td>
+<td data-label="Safe recovery">Record the later chapter that enforces it; do not invent a column</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2015%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter15/section-15-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter15/section-15-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter15/section-15-2/">← What You Need to Know</a><a href="/chapters/chapter15/section-15-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

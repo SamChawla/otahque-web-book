@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 12: Template inheritance, includes, and partials. Share one layout and navigation across pages, reuse an event row, and label...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter12/section-12-3/">
+<title>How We Build It · Chapter 12 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter12/">← Chapter 12 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-12-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-72">The Custom Way</a></li><li><a href="#topic-76">The Django Way</a></li><li><a href="#topic-163">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 6 figures · 5 tables<br>Working towards: Browsable event pages (Chapter 14)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter12:12.3" data-progress-title="Section 12.3" data-reader-prev="section-12-2.html" data-reader-next="section-12-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 12.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter12/">Chapter 12 · Template inheritance, includes, and partials</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter12/section-12-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter12/section-12-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter12/section-12-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter12/section-12-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter12/section-12-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-12-3" data-block="70">How We Build It</h2><p class="" data-block="71">Start from Chapter 11, in the directory containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, and nine passing tests. We will change <code>events/tests.py</code>, <code>events/views.py</code>, <code>config/settings.py</code>, and the two Chapter 11 templates. We will add <code>templates/base.html</code>, <code>templates/includes/site_nav.html</code>, <code>events/templates/events/home.html</code>, and a <code>templatetags</code> package with one module. <code>events/urls.py</code> does not change.</p><h3 class="" id="topic-72" data-block="72">The Custom Way</h3><p class="" data-block="73">This illustration shows the problem; do not add it to the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/joined_page.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="74" tabindex="0"><code>HEADER = &#x27;&lt;nav&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;/nav&gt;&lt;main&gt;&#x27;
+FOOTER = &#x27;&lt;/main&gt;&#x27;
+
+
+def page(body):
+    return HEADER + body + FOOTER</code></pre><p class="" data-block="75">Every view would wrap its HTML in the same two strings. It works until one view forgets, a link changes and the header has to know it, or a body contains a title that is never escaped. The Django Way keeps the structure in a template and leaves escaping on.</p><h3 class="" id="topic-76" data-block="76">The Django Way</h3><h4 data-block="77">Step 1: Write the tests first</h4><p class="" data-block="78">Open <code>events/tests.py</code> and make three changes. First, replace the import lines at the top with these:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (top of the file)</p><pre class="code-listing code-listing--file" data-block="79" tabindex="0"><code>from unittest.mock import patch
+
+from django.template import Context, Template
+from django.template.loader import render_to_string
+from django.test import SimpleTestCase
+from django.urls import resolve, reverse
+
+from . import views</code></pre><p class="" data-block="80">Second, in <code>EventDetailTests</code>, replace the first assertion of <code>test_sample_event</code>, the one that looks for <code>Sample: Python meetup</code>, with this one. The detail heading will soon hold the filter’s label element, so the test compares HTML structure (<code>html=True</code>) rather than raw text:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (in test_sample_event)</p><pre class="code-listing code-listing--file" data-block="81" tabindex="0"><code>        self.assertContains(
+            response,
+            &#x27;&lt;h1&gt;&lt;span class=&quot;sample-label&quot;&gt;Sample:&lt;/span&gt;&#x27;
+            &#x27; Python meetup&lt;/h1&gt;&#x27;,
+            html=True,
+        )</code></pre><p class="" data-block="82">Third, add these three classes at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (end of the file)</p><pre class="code-listing code-listing--file" data-block="83" tabindex="0"><code>class LayoutTests(SimpleTestCase):
+    pages = [
+        (&#x27;/&#x27;, &#x27;events/home.html&#x27;, &#x27;Otahque&#x27;),
+        (&#x27;/events/&#x27;, &#x27;events/list.html&#x27;,
+         &#x27;Sample events | Otahque&#x27;),
+        (&#x27;/events/1/&#x27;, &#x27;events/detail.html&#x27;,
+         &#x27;Sample event | Otahque&#x27;),
+    ]
+
+    def test_pages_extend_layout(self):
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertTemplateUsed(response, template)
+                self.assertTemplateUsed(
+                    response, &#x27;base.html&#x27;
+                )
+                self.assertContains(
+                    response, f&#x27;&lt;title&gt;{title}&lt;/title&gt;&#x27;,
+                    html=True,
+                )
+
+    def test_pages_include_navigation(self):
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertTemplateUsed(
+                    response, &#x27;includes/site_nav.html&#x27;
+                )
+                self.assertContains(
+                    response,
+                    &#x27;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&#x27;,
+                    html=True,
+                )
+                self.assertContains(
+                    response,
+                    &#x27;&lt;a href=&quot;/events/&quot;&gt;Events&lt;/a&gt;&#x27;,
+                    html=True,
+                )
+
+
+class EventRowPartialTests(SimpleTestCase):
+    def test_row_renders_alone(self):
+        event = {&#x27;id&#x27;: 1, &#x27;title&#x27;: &#x27;&lt;b&gt;Not a tag&lt;/b&gt;&#x27;}
+        html = render_to_string(
+            &#x27;events/list.html#event-row&#x27;, {&#x27;event&#x27;: event}
+        )
+        self.assertIn(&#x27;href=&quot;/events/1/&quot;&#x27;, html)
+        self.assertIn(&#x27;&amp;lt;b&amp;gt;Not a tag&#x27;, html)
+        self.assertNotIn(&#x27;&lt;nav&#x27;, html)
+
+
+class SampleLabelFilterTests(SimpleTestCase):
+    def render_label(self, title):
+        template = Template(
+            &#x27;{% load event_labels %}{{ title|sample_label }}&#x27;
+        )
+        return template.render(Context({&#x27;title&#x27;: title}))
+
+    def test_labels_title(self):
+        self.assertEqual(
+            self.render_label(&#x27;Python meetup&#x27;),
+            &#x27;&lt;span class=&quot;sample-label&quot;&gt;Sample:&lt;/span&gt;&#x27;
+            &#x27; Python meetup&#x27;,
+        )
+
+    def test_escapes_title(self):
+        title = &#x27;&lt;strong&gt;Not a tag&lt;/strong&gt;&#x27;
+        html = self.render_label(title)
+        self.assertIn(&#x27;&amp;lt;strong&amp;gt;&#x27;, html)
+        self.assertNotIn(&#x27;&lt;strong&gt;&#x27;, html)</code></pre><p class="" data-block="84"><code>LayoutTests</code> checks all three pages with one loop. <code>self.subTest(url=url)</code> reports each page separately, so one failing page does not hide the others. The partial test renders one row alone and checks that it links to the event, escapes its title, and carries no navigation. The filter tests render a tiny template that loads our filter, the same way a page will use it.</p><p class="" data-block="85">Run the tests beside <code>manage.py</code> in PowerShell, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="86" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="" data-block="87">Expected result, shortened with <code>...</code> where lines are left out:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="88" tabindex="0"><code>Found 14 test(s).
+System check identified no issues (0 silenced).
+..FEFFFFFF...EE...
+...
+ERROR: test_row_renders_alone (events.tests...
+...
+...TemplateDoesNotExist: events/list.html#event-row
+...
+...TemplateSyntaxError: &#x27;event_labels&#x27; is not a registered...
+...
+FAIL: test_sample_event (events.tests.EventDetailTests...
+...
+FAIL: test_pages_extend_layout (events.tests.LayoutTests...
+...
+FAIL: test_pages_include_navigation (events.tests...
+...
+Ran 14 tests in ...
+
+FAILED (failures=7, errors=3)</code></pre><p class="" data-block="89">Eight of the nine Chapter 11 tests still pass. The ninth, <code>test_sample_event</code>, fails because the detail heading has no label element yet. All five new tests fail or stop with an error, each for a reason we expected: no page uses <code>base.html</code>, nothing includes the navigation, <code>events/list.html</code> has no <code>event-row</code> partial, and there is no <code>event_labels</code> library to load. The count says <code>failures=7</code> because <code>subTest</code> reports each failing page separately. Read the messages, then continue.</p><h4 data-block="90">Step 2: Add the project templates folder and the layout</h4><div class="callout callout--error"><p class="callout__title" data-block="91">Common Error: changing APP_DIRS instead of DIRS</p><p class="" data-block="92"><code>APP_DIRS</code> is <code>True</code> or <code>False</code>: it switches the search of app folders on or off. The project folder is added to the list in <code>DIRS</code>. Setting <code>APP_DIRS</code> to a path does not add a folder, and setting it to <code>False</code> would hide the Chapter 11 templates.</p></div><p class="" data-block="93">In <code>config/settings.py</code>, find the <code>TEMPLATES</code> setting and change only the <code>DIRS</code> line, so that it reads:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (in TEMPLATES)</p><pre class="code-listing code-listing--file" data-block="94" tabindex="0"><code>        &#x27;DIRS&#x27;: [BASE_DIR / &#x27;templates&#x27;],</code></pre><p class="" data-block="95"><code>BASE_DIR</code> is the folder containing <code>manage.py</code>, as Chapter 6 explained. Now create the folder for the layout. In PowerShell, beside <code>manage.py</code>:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="96" tabindex="0"><code>New-Item -ItemType Directory -Force templates</code></pre><p class="" data-block="97">In a macOS shell or Linux/WSL Bash, beside <code>manage.py</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="98" tabindex="0"><code>mkdir -p templates</code></pre><p class="" data-block="99">Create <code>templates/base.html</code> with this complete file:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html</p><pre class="code-listing code-listing--file" data-block="100" tabindex="0"><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;{% block title %}Otahque{% endblock %}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    {% block content %}{% endblock %}
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p class="" data-block="101">This is Chapter 11’s document structure, moved to one place, with two blocks where pages differ. Check the settings, then run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="102" tabindex="0"><code>uv run python manage.py check
+uv run python manage.py test events</code></pre><p class="" data-block="103">The check reports no issues. The tests still fail as in Step 1, because no page extends the layout yet.</p><h4 data-block="104">Step 3: Move the pages onto the layout</h4><div class="callout callout--error"><p class="callout__title" data-block="105">Common Error: a misspelled block name, or text outside a block</p><p class="" data-block="106">Neither raises an error. The page returns 200 with that content missing. If part of a page disappears, compare each block name with <code>base.html</code> and check that the content sits inside a block.</p></div><p class="" data-block="107">Replace <code>events/templates/events/list.html</code> with this complete file:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/list.html</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Sample events | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Sample events&lt;/h1&gt;
+  &lt;p&gt;These fictional events are examples.&lt;/p&gt;
+  &lt;ul&gt;
+    {% for event in events %}
+      &lt;li&gt;
+        &lt;a href=&quot;{% url &#x27;events:detail&#x27; event.id %}&quot;&gt;
+          {{ event.title }}
+        &lt;/a&gt;
+      &lt;/li&gt;
+    {% empty %}
+      &lt;li&gt;No sample events yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre><p class="" data-block="109">Replace <code>events/templates/events/detail.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html</p><pre class="code-listing code-listing--file" data-block="110" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Sample event | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Sample: {{ title }}&lt;/h1&gt;
+  &lt;p&gt;This fictional event is an example.&lt;/p&gt;
+  &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;All sample events&lt;/a&gt;
+{% endblock %}</code></pre><p class="" data-block="111">The home page gets a template too. Create <code>events/templates/events/home.html</code>. It does not fill the <code>title</code> block, so the tab shows the fallback, <code>Otahque</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/home.html</p><pre class="code-listing code-listing--file" data-block="112" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block content %}
+  &lt;h1&gt;Welcome to Otahque.&lt;/h1&gt;
+  &lt;p&gt;Find a community event and see what it is about.&lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="113">In <code>events/views.py</code>, the home view now renders that template, so <code>HttpResponse</code> is no longer needed. Replace the file:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py</p><pre class="code-listing code-listing--file" data-block="114" tabindex="0"><code>from django.http import Http404
+from django.shortcuts import render
+
+SAMPLE_EVENTS = {1: &#x27;Python meetup&#x27;}
+
+
+def home(request):
+    return render(request, &#x27;events/home.html&#x27;)
+
+
+def event_list(request):
+    events = [
+        {&#x27;id&#x27;: event_id, &#x27;title&#x27;: title}
+        for event_id, title in SAMPLE_EVENTS.items()
+    ]
+    return render(
+        request, &#x27;events/list.html&#x27;, {&#x27;events&#x27;: events}
+    )
+
+
+def event_detail(request, event_id):
+    title = SAMPLE_EVENTS.get(event_id)
+    if title is None:
+        raise Http404(&#x27;Sample event not found&#x27;)
+    return render(
+        request, &#x27;events/detail.html&#x27;, {&#x27;title&#x27;: title}
+    )</code></pre><p class="" data-block="115">Run the tests again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="116" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="" data-block="117">Expected result, shortened:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="118" tabindex="0"><code>Found 14 test(s).
+System check identified no issues (0 silenced).
+..FE.FFF...EE...
+...
+FAIL: test_pages_include_navigation (events.tests...
+...
+Ran 14 tests in ...
+
+FAILED (failures=4, errors=3)</code></pre><p class="" data-block="119"><code>test_pages_extend_layout</code> now passes: all three pages use the layout and their own titles. Navigation, the partial, and the filter remain.</p><h4 data-block="120">Step 4: Add the navigation with include</h4><div class="callout callout--error"><p class="callout__title" data-block="121">Common Error: a tag placed before extends</p><p class="" data-block="122"><code>{% extends %}</code> must be the first template tag in a child. Putting <code>{% load %}</code> or any other tag above it raises a <code>TemplateSyntaxError</code> that ends <code>{% extends &quot;base.html&quot; %} must be the first tag in &#x27;events/list.html&#x27;.</code> Plain text above it does not fail, but it is printed before the doctype, which is never what we want.</p></div><p class="" data-block="123">Create the folder <code>templates/includes</code>. In PowerShell:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="124" tabindex="0"><code>New-Item -ItemType Directory -Force templates/includes</code></pre><p class="" data-block="125">In a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="126" tabindex="0"><code>mkdir -p templates/includes</code></pre><p class="" data-block="127">Create <code>templates/includes/site_nav.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html</p><pre class="code-listing code-listing--file" data-block="128" tabindex="0"><code>&lt;nav aria-label=&quot;Site&quot;&gt;
+  &lt;a href=&quot;{% url &#x27;events:home&#x27; %}&quot;&gt;Home&lt;/a&gt;
+  &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;Events&lt;/a&gt;
+&lt;/nav&gt;</code></pre><p class="" data-block="129">The <code>aria-label</code> gives screen readers a name for this navigation area. Now include it in the layout. Replace <code>templates/base.html</code> with this version, which adds one line after <code>&lt;body&gt;</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html</p><pre class="code-listing code-listing--file" data-block="130" tabindex="0"><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;{% block title %}Otahque{% endblock %}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  {% include &quot;includes/site_nav.html&quot; %}
+  &lt;main&gt;
+    {% block content %}{% endblock %}
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p class="" data-block="131">Run the tests. <code>test_pages_include_navigation</code> now passes as well; the partial and filter tests still fail.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="132" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="133" tabindex="0"><code>Found 14 test(s).
+System check identified no issues (0 silenced).
+..FE.....EE...
+...
+Ran 14 tests in ...
+
+FAILED (failures=1, errors=3)</code></pre><h4 data-block="134">Step 5: Make the list row a partial</h4><div class="callout callout--error"><p class="callout__title" data-block="135">Common Error: an undefined partial name</p><p class="" data-block="136"><code>{% partial row %}</code> for a name that no <code>partialdef</code> defines fails with <code>TemplateSyntaxError: Partial &#x27;row&#x27; is not defined in the current template.</code> Loading <code>events/list.html#row</code> from a view or test fails with <code>TemplateDoesNotExist</code>. Compare the name in both places, including hyphens.</p></div><p class="" data-block="137">Replace <code>events/templates/events/list.html</code> with this version. The list item is now wrapped in an inline partial named <code>event-row</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/list.html</p><pre class="code-listing code-listing--file" data-block="138" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Sample events | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Sample events&lt;/h1&gt;
+  &lt;p&gt;These fictional events are examples.&lt;/p&gt;
+  &lt;ul&gt;
+    {% for event in events %}
+      {% partialdef event-row inline %}
+        &lt;li&gt;
+          &lt;a href=&quot;{% url &#x27;events:detail&#x27; event.id %}&quot;&gt;
+            {{ event.title }}
+          &lt;/a&gt;
+        &lt;/li&gt;
+      {% endpartialdef %}
+    {% empty %}
+      &lt;li&gt;No sample events yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre><p class="" data-block="139">Because the partial is <code>inline</code>, the page renders exactly as before. Run the tests; <code>test_row_renders_alone</code> now passes, and only the filter and the detail heading remain:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="140" tabindex="0"><code>uv run python manage.py test events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="141" tabindex="0"><code>Found 14 test(s).
+System check identified no issues (0 silenced).
+..F......EE...
+...
+Ran 14 tests in ...
+
+FAILED (failures=1, errors=2)</code></pre><h4 data-block="142">Step 6: Add the filter and restart the server</h4><div class="callout callout--error"><p class="callout__title" data-block="143">Common Error: load is not inherited, and a new module needs a restart</p><p class="" data-block="144">A child that uses <code>sample_label</code> without its own <code>{% load event_labels %}</code> raises a <code>TemplateSyntaxError</code> ending <code>Invalid filter: &#x27;sample_label&#x27;</code>, even if its parent loads the library. If the development server was running when you created <code>templatetags</code>, it may report <code>&#x27;event_labels&#x27; is not a registered tag library</code> until you stop it and start it again.</p></div><p class="" data-block="145">Create the package folder <code>events/templatetags</code> and an empty <code>__init__.py</code> inside it, which makes the folder a Python package. In PowerShell:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="146" tabindex="0"><code>New-Item -ItemType Directory -Force events/templatetags
+New-Item -ItemType File events/templatetags/__init__.py</code></pre><p class="" data-block="147">In a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="148" tabindex="0"><code>mkdir -p events/templatetags
+touch events/templatetags/__init__.py</code></pre><p class="" data-block="149">Create <code>events/templatetags/event_labels.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templatetags/event_labels.py</p><pre class="code-listing code-listing--file" data-block="150" tabindex="0"><code>from django import template
+from django.utils.html import format_html
+
+register = template.Library()
+
+
+@register.filter
+def sample_label(title):
+    &quot;&quot;&quot;Mark a title as fictional sample data, escaping it.&quot;&quot;&quot;
+    return format_html(
+        &#x27;&lt;span class=&quot;sample-label&quot;&gt;Sample:&lt;/span&gt; {}&#x27;, title
+    )</code></pre><p class="" data-block="151"><code>register</code> is the library Django finds when a template says <code>{% load event_labels %}</code>; the module’s file name is the library’s name. <code>@register.filter</code> adds the function to it under its own name. <code>format_html</code> escapes <code>title</code> before putting it in place of <code>{}</code>.</p><p class="" data-block="152">Use the filter in both pages. Replace <code>events/templates/events/list.html</code> with its final version:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/list.html</p><pre class="code-listing code-listing--file" data-block="153" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+{% load event_labels %}
+
+{% block title %}Sample events | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Sample events&lt;/h1&gt;
+  &lt;p&gt;These fictional events are examples.&lt;/p&gt;
+  &lt;ul&gt;
+    {% for event in events %}
+      {% partialdef event-row inline %}
+        &lt;li&gt;
+          &lt;a href=&quot;{% url &#x27;events:detail&#x27; event.id %}&quot;&gt;
+            {{ event.title|sample_label }}
+          &lt;/a&gt;
+        &lt;/li&gt;
+      {% endpartialdef %}
+    {% empty %}
+      &lt;li&gt;No sample events yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre><p class="" data-block="154">Replace <code>events/templates/events/detail.html</code>. The heading no longer writes <code>Sample:</code> itself; the filter supplies it:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html</p><pre class="code-listing code-listing--file" data-block="155" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+{% load event_labels %}
+
+{% block title %}Sample event | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;{{ title|sample_label }}&lt;/h1&gt;
+  &lt;p&gt;This fictional event is an example.&lt;/p&gt;
+  &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;All sample events&lt;/a&gt;
+{% endblock %}</code></pre><p class="" data-block="156">Each <code>{% load %}</code> comes after <code>{% extends %}</code>, never before it. Run the checks:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="157" tabindex="0"><code>uv run python manage.py check
+uv run python manage.py test events</code></pre><p class="" data-block="158">Expected result, shortened; the dashed line is left out:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="159" tabindex="0"><code>System check identified no issues (0 silenced).
+Found 14 test(s).
+System check identified no issues (0 silenced).
+..............
+Ran 14 tests in ...
+
+OK</code></pre><p class="" data-block="160">All 14 tests pass: the nine from Chapter 11, kept or updated, and five new ones. If the development server is running, stop it with Ctrl+C. Then start it again from the same directory:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="161" tabindex="0"><code>uv run python manage.py runserver</code></pre><p class="" data-block="162">Open <a href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/ (opens in a new tab)"><code>http://127.0.0.1:8000/</code></a>. The page shows the navigation and <code>Welcome to Otahque.</code> Follow Events, then Python meetup, and use Home and Events on each page to move around. The tab titles read <code>Otahque</code>, <code>Sample events | Otahque</code>, and <code>Sample event | Otahque</code>. Visit <a href="http://127.0.0.1:8000/events/999/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/events/999/ (opens in a new tab)"><code>http://127.0.0.1:8000/events/999/</code></a> and confirm a 404. Stop the server with Ctrl+C. As before, do not apply migrations yet.</p><h3 class="" id="topic-163" data-block="163">When something goes wrong</h3><p class="" data-block="164">When the problem is inside a template file, Django starts a <code>TemplateSyntaxError</code> message with <code>Template:</code>, the file’s full path, and a comma. Table 12.2 leaves that part out and marks the gap with <code>...</code>; the path tells you which file to open.</p><figure class="table-figure" data-block="165"><figcaption>Table 12.2 — Template problems and safe recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 12.2 — Template problems and safe recovery"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Possible cause</th>
+<th scope="col">What to check</th>
+</tr></thead><tbody><tr><th scope="row">TemplateDoesNotExist: base.html</th>
+<td data-label="Possible cause">DIRS was not changed, or the folder is misplaced</td>
+<td data-label="What to check">DIRS reads [BASE_DIR / &#x27;templates&#x27;] and templates/ sits beside manage.py</td>
+</tr>
+<tr><th scope="row">TemplateSyntaxError: ... {% extends &quot;base.html&quot; %} must be the first tag in &#x27;events/list.html&#x27;.</th>
+<td data-label="Possible cause">A tag sits above extends</td>
+<td data-label="What to check">Move load and every other tag below extends</td>
+</tr>
+<tr><th scope="row">TemplateSyntaxError: ... &#x27;block&#x27; tag with name &#x27;content&#x27; appears more than once</th>
+<td data-label="Possible cause">The same block name is used twice</td>
+<td data-label="What to check">Keep one block of each name in a template</td>
+</tr>
+<tr><th scope="row">TemplateSyntaxError: ... Invalid filter: &#x27;sample_label&#x27;</th>
+<td data-label="Possible cause">The page did not load the library</td>
+<td data-label="What to check">Add {% load event_labels %} below extends in that page</td>
+</tr>
+<tr><th scope="row">TemplateSyntaxError: ... &#x27;event_labels&#x27; is not a registered tag library</th>
+<td data-label="Possible cause">The module or package file is missing, misnamed, or new to a running server</td>
+<td data-label="What to check">Check events/templatetags/__init__.py and event_labels.py, then restart runserver</td>
+</tr>
+<tr><th scope="row">TemplateSyntaxError: Partial &#x27;row&#x27; is not defined in the current template.</th>
+<td data-label="Possible cause">The partial name differs</td>
+<td data-label="What to check">Compare the partialdef and partial names</td>
+</tr>
+<tr><th scope="row">Part of a page is missing, with no error</th>
+<td data-label="Possible cause">A misspelled block name, or content outside a block</td>
+<td data-label="What to check">Compare block names with base.html</td>
+</tr>
+<tr><th scope="row">An escaping test fails</th>
+<td data-label="Possible cause">The filter or a template bypasses escaping</td>
+<td data-label="What to check">Use format_html, and remove mark_safe or safe</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="166">Keep your work while you diagnose a problem. Compare the one file the message names with its listing, and save a copy before replacing anything you want to keep. Fix one problem at a time and rerun the tests. Do not delete the project or reset Git as a first response.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2012%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter12/section-12-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter12/section-12-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter12/section-12-2/">← What You Need to Know</a><a href="/chapters/chapter12/section-12-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

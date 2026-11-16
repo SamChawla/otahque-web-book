@@ -1,0 +1,20 @@
+{
+  "name": "otahque",
+  "private": true,
+  "engines": {
+    "node": "26.13.0"
+  },
+  "scripts": {
+    "css": "tailwindcss -i static/otahque/source.css",
+    "build": "npm run css -- -o static/otahque/site.css",
+    "watch": "npm run build -- --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.4",
+    "daisyui": "5.7.50",
+    "tailwindcss": "4.3.4"
+  },
+  "allowScripts": {
+    "@parcel/watcher": false
+  }
+}

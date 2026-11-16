@@ -25,6 +25,8 @@ Please do not include personal information in issues: they are public.
 
 ## What is in this repository
 
+`app/` holds the Otahque Django project as built so far in the book; see its README to run it.
+
 `site/` holds the published website exactly as deployed — HTML, CSS, JavaScript, and figures.
 It is generated from the book's manuscript, which is maintained separately, so fixes are made
 at the source and the site is republished; pull requests to `site/` cannot be merged directly.

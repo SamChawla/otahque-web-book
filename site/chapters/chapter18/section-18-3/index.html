@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 18: Migrations: creating and changing the database. Create Otahque&#x27;s first migrations and tables, test saving users against a...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter18/section-18-3/">
+<title>How We Build It · Chapter 18 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var s=localStorage.getItem('otahque-text');if(s)document.documentElement.dataset.text=s}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/book.css?v=20261115-qa-spacing">
+<script src="/assets/book.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/#contents">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/#contents">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>18. Migrations and schema evolution <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Draft</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>25. ModelForms and the validation lifecycle</span><small>Planned</small></li><li class="book-nav-planned"><span>26. Event creation, editing, and publication</span><small>Planned</small></li><li class="book-nav-planned"><span>27. Authentication and account workflows</span><small>Planned</small></li><li class="book-nav-planned"><span>28. Cookies, sessions, and messages</span><small>Planned</small></li><li class="book-nav-planned"><span>29. Password management and reset emails</span><small>Planned</small></li><li class="book-nav-planned"><span>30. Permissions, ownership, and roles</span><small>Planned</small></li><li class="book-nav-planned"><span>31. Event registration and cancellation</span><small>Planned</small></li><li class="book-nav-planned"><span>32. Moving to PostgreSQL</span><small>Planned</small></li><li class="book-nav-planned"><span>33. Transactions, concurrency, and the last available seat</span><small>Planned</small></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter18/">← Chapter 18 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-18-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-76">The Custom Way</a></li><li><a href="#topic-81">The Django Way</a></li><li><a href="#topic-258">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 6 figures · 6 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter18:18.3" data-progress-title="Section 18.3" data-reader-prev="section-18-2.html" data-reader-next="section-18-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 18.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the top</button></span></div><div class="reader-tools"><span class="status-pill draft">Draft for review</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter18/">Chapter 18 · Migrations: creating and changing the database</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter18/section-18-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter18/section-18-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter18/section-18-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter18/section-18-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter18/section-18-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-18-3" data-block="74">How We Build It</h2><p class="" data-block="75">Start from Chapter 17, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 25 passing tests, the user model committed, and a <code>db.sqlite3</code> with no tables. You change one file, <code>accounts/tests.py</code>, and create one, <code>config/tests.py</code>, both before any migration exists. <code>makemigrations</code> then writes a first migration, <code>0001_initial.py</code>, in the <code>migrations</code> folder of each app. <code>migrate</code> creates the tables in <code>db.sqlite3</code>, and <code>createsuperuser</code> saves the first account. A practice script goes in <code>../practice</code>. At the end of Step 6, 29 tests pass, every migration is applied, and the work is committed. Step 7 then copies the committed project into <code>../practice/migrations-lab</code>, a lab you discard afterwards, and changes the event table there.</p><h3 class="" id="topic-76" data-block="76">The Custom Way</h3><p class="" data-block="77">This illustration keeps a schema up to date by hand, with numbered SQL scripts and a home-made table of applied versions; do not add it to the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/apply_scripts.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="78" tabindex="0"><code>import sqlite3
+
+SCRIPTS = {
+    1: &#x27;CREATE TABLE event (id INTEGER PRIMARY KEY,&#x27;
+       &#x27; title TEXT NOT NULL)&#x27;,
+    2: &#x27;ALTER TABLE event ADD COLUMN slug TEXT&#x27;,
+}
+
+db = sqlite3.connect(&#x27;:memory:&#x27;)
+db.execute(&#x27;CREATE TABLE schema_version (number INTEGER)&#x27;)
+
+
+def upgrade():
+    done = {n for (n,) in db.execute(
+        &#x27;SELECT number FROM schema_version&#x27;)}
+    for number in sorted(SCRIPTS):
+        if number not in done:
+            db.execute(SCRIPTS[number])
+            db.execute(&#x27;INSERT INTO schema_version&#x27;
+                       &#x27; VALUES (?)&#x27;, (number,))
+
+
+upgrade()
+upgrade()
+print(db.execute(&#x27;SELECT number FROM schema_version&#x27;)
+      .fetchall())</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="79" tabindex="0"><code>[(1,), (2,)]</code></pre><p class="" data-block="80">It works: running <code>upgrade()</code> twice applies each script once. Now list what it does not do. It has one sequence of numbers for the whole project, so two apps, or two teammates, cannot add scripts without colliding, and nothing says that one script needs another app’s table first. The scripts are written by hand, so nothing checks that they match the models, and a forgotten column only appears when a page fails. There is no way back: undoing script 2 means writing another script. Tests would need their own copy of the whole routine. And Django’s own apps, which need the user table to exist before their tables can point at it, would have no way to say so. Django’s migrations do each of these things, and the steps below use them.</p><h3 class="" id="topic-81" data-block="81">The Django Way</h3><p class="" data-block="82">Seven steps follow. Steps 1 to 6 work in the reader project; Step 7 works in a lab copy. The tests come before the migrations, so you see them fail first.</p><h4 data-block="83">Step 1: Check the starting point</h4><p class="" data-block="84">Run every test, beside <code>manage.py</code>, in PowerShell, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="85" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="86">Expected result, shortened with <code>...</code> where lines are left out:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="87" tabindex="0"><code>Found 25 test(s).
+System check identified no issues (0 silenced).
+.........................
+...
+Ran 25 tests in ...
+
+OK</code></pre><p class="" data-block="88">Then confirm that the database has no tables, with the query from Chapters 15 to 17. In PowerShell, beside <code>manage.py</code>:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="89" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 `
+    &quot;SELECT name FROM sqlite_schema&quot;</code></pre><p class="" data-block="90">In a macOS shell or Linux/WSL Bash, beside <code>manage.py</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="91" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 \
+    &quot;SELECT name FROM sqlite_schema&quot;</code></pre><p class="" data-block="92">Expected result: nothing at all. Now ask Django what migrations your models need, without writing anything. <code>--dry-run</code> reports what would be written and writes nothing, and <code>--check</code> makes the command finish with an error status when something is missing:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="93" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="94" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0001_initial.py
+    + Create model Event
+Migrations for &#x27;accounts&#x27;:
+  accounts\migrations\0001_initial.py
+    + Create model User</code></pre><p class="" data-block="95">On Windows, in PowerShell and in Git Bash, Django prints paths with backslashes; on macOS and Linux they have forward slashes. <code>+ Create model</code> names the operation each file would hold. Both apps need a first migration. No file has been written: each app’s <code>migrations</code> folder still holds only <code>__init__.py</code>. Finally, <code>git status --short</code> should print nothing.</p><p class="" data-block="96">If the table query lists tables, <code>migrate</code> ran at some point since Chapter 15. Rename <code>db.sqlite3</code>, for example to <code>db-before-ch18.sqlite3</code>, keep it, and carry on: Django creates a new, empty file the next time it needs one. If a <code>0001_initial.py</code> file already exists in either app, from an earlier attempt, do not delete it; move it into <code>../practice</code> and keep it to compare with the one you generate in Step 3.</p><h4 data-block="97">Step 2: Write the database tests first</h4><p class="" data-block="98">Chapter 17’s tests stopped before anything was saved. These tests save users and read them back. Open <code>accounts/tests.py</code> and change its imports to these:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (imports)</p><pre class="code-listing code-listing--file" data-block="99" tabindex="0"><code>from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.test import SimpleTestCase, TestCase
+
+from .models import User</code></pre><p class="" data-block="100">Then add a third class at the end of the file, after <code>UserManagerTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (end of file)</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>class UserCreationTests(TestCase):
+    def test_create_user_saves_a_member(self):
+        user = User.objects.create_user(
+            email=&#x27;Sai@EXAMPLE.org&#x27;,
+            password=&#x27;correct horse&#x27;,
+            display_name=&#x27;Sai&#x27;,
+        )
+        saved = User.objects.get(pk=user.pk)
+        self.assertEqual(saved.email, &#x27;Sai@example.org&#x27;)
+        self.assertTrue(
+            saved.check_password(&#x27;correct horse&#x27;)
+        )
+        self.assertTrue(saved.is_active)
+        self.assertFalse(saved.is_staff)
+        self.assertFalse(saved.is_superuser)
+
+    def test_create_superuser_saves_both_flags(self):
+        user = User.objects.create_superuser(
+            email=&#x27;sam@example.org&#x27;,
+            password=&#x27;correct horse&#x27;,
+            display_name=&#x27;Sam&#x27;,
+        )
+        saved = User.objects.get(pk=user.pk)
+        self.assertTrue(saved.is_staff)
+        self.assertTrue(saved.is_superuser)
+
+    def test_email_is_unique_in_the_database(self):
+        User.objects.create_user(
+            email=&#x27;raj@example.org&#x27;,
+            password=&#x27;correct horse&#x27;,
+            display_name=&#x27;Raj&#x27;,
+        )
+        with self.assertRaises(IntegrityError):
+            User.objects.create_user(
+                email=&#x27;raj@example.org&#x27;,
+                password=&#x27;another horse&#x27;,
+                display_name=&#x27;Raj K.&#x27;,
+            )</code></pre><p class="" data-block="102"><code>User.objects.get(pk=user.pk)</code> fetches the saved row again by its primary key. It is a one-line preview of Chapter 19’s queries, used here so that each test checks what the database holds, not only the object in memory. The first test completes Chapter 17’s manager contract: <code>create_user()</code> saves the email with its domain lowercased and its local part as typed, which says nothing yet about whether <code>Sai@</code> and <code>sai@</code> are one member; Chapter 21 decides that. The second checks that <code>create_superuser()</code> saves both flags. The third saves two accounts with the same email and expects the database itself to refuse the second with an <code>IntegrityError</code>, the error Django raises when a database rule is broken. <code>unique=True</code> was only a description in Chapter 17; once the table exists, it is a rule the database enforces.</p><p class="" data-block="103">The second new file guards every app at once. A model change committed without its migration is one of the most common mistakes in Django projects: the code expects a column that no database has. Create <code>config/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py</p><pre class="code-listing code-listing--file" data-block="104" tabindex="0"><code>from io import StringIO
+
+from django.core.management import call_command
+from django.test import TestCase
+
+
+class MigrationTests(TestCase):
+    def test_every_model_change_has_a_migration(self):
+        output = StringIO()
+        try:
+            call_command(
+                &#x27;makemigrations&#x27;, &#x27;--check&#x27;, &#x27;--dry-run&#x27;,
+                stdout=output,
+            )
+        except SystemExit:
+            self.fail(
+                &#x27;Missing migrations:\n&#x27; + output.getvalue()
+            )</code></pre><p class="" data-block="105"><code>call_command()</code> runs a management command from Python, as if you had typed it. <code>StringIO</code> collects what it prints, so the failure message can show it. When something is missing, <code>--check</code> ends the command with <code>SystemExit</code>, which the test turns into a failure naming the missing migrations. It lives in <code>config</code>, the project package, because the rule covers every app. It must be a <code>TestCase</code>, not a <code>SimpleTestCase</code>, because <code>makemigrations</code> reads the database’s applied migrations to check that they are consistent.</p><div class="callout callout--error"><p class="callout__title" data-block="106">Common Error: a database test written as SimpleTestCase</p><p class="" data-block="107">If either new class inherits from <code>SimpleTestCase</code>, its tests fail with <code>DatabaseOperationForbidden</code>, and the message says that database queries are not allowed in a <code>SimpleTestCase</code>. The guard test fails the same way, because <code>makemigrations</code> queries the applied migrations. Change the base class to <code>TestCase</code>, as in the listings.</p></div><p class="" data-block="108">Run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="109" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="110">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="111" tabindex="0"><code>Found 29 test(s).
+Creating test database for alias &#x27;default&#x27;...
+Traceback (most recent call last):
+...
+ValueError: Dependency on app with no migrations: accounts</code></pre><p class="" data-block="112">This red stage looks different from earlier ones. Django finds 29 tests, then stops while building the test database, before any test runs, with the same error <code>migrate</code> gave in Chapter 17. The test database is built from migrations, and there are none. The manager tests describe behaviour that needs tables; the guard test is different, because it cannot fail first in the usual way. It is a guard against future mistakes, and Step 7 makes it fail on purpose.</p><h4 data-block="113">Step 3: Generate and read the migrations</h4><p class="" data-block="114">Write the migrations, beside <code>manage.py</code>, in any of the three shells. With no app label, <code>makemigrations</code> writes what every installed app needs:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="115" tabindex="0"><code>uv run python manage.py makemigrations</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="116" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0001_initial.py
+    + Create model Event
+Migrations for &#x27;accounts&#x27;:
+  accounts\migrations\0001_initial.py
+    + Create model User</code></pre><p class="" data-block="117">Open <code>events/migrations/0001_initial.py</code>. Django wrote it in its own layout, with some lines over 150 characters wide, and its first line records the Django version and the moment you ran the command, so your file carries a different date. Keep it exactly as Django wrote it: generated files are not reformatted or edited by hand. This excerpt wraps the long lines and marks left-out parts with <code>...</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/migrations/0001_initial.py (excerpt)</p><pre class="code-listing code-listing--file" data-block="118" tabindex="0"><code># Generated by Django 6.1.2 on ...
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name=&#x27;Event&#x27;,
+            fields=[
+                (&#x27;id&#x27;, models.BigAutoField(
+                    auto_created=True, ...)),
+                (&#x27;title&#x27;, models.CharField(max_length=200)),
+                (&#x27;starts_at&#x27;, models.DateTimeField()),
+                (&#x27;ends_at&#x27;, models.DateTimeField()),
+                ...
+                (&#x27;status&#x27;, models.CharField(
+                    choices=[(&#x27;draft&#x27;, &#x27;Draft&#x27;), ...],
+                    default=&#x27;draft&#x27;, max_length=20)),
+            ],
+            options={
+                &#x27;ordering&#x27;: [&#x27;starts_at&#x27;],
+            },
+        ),
+    ]</code></pre><p class="" data-block="119"><code>initial = True</code> marks the app’s first migration. The event table needs nothing else first, so <code>dependencies</code> is empty. <code>CreateModel</code> repeats every field from Chapter 16’s model, including the <code>id</code> Django adds, and the <code>ordering</code> option. The migration keeps its own copy of the fields, so it still means the same thing after the model changes later. Now open <code>accounts/migrations/0001_initial.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/migrations/0001_initial.py (excerpt)</p><pre class="code-listing code-listing--file" data-block="120" tabindex="0"><code># Generated by Django 6.1.2 on ...
+
+import accounts.managers
+import django.utils.timezone
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        (&#x27;auth&#x27;, &#x27;0012_alter_user_first_name_max_length&#x27;),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name=&#x27;User&#x27;,
+            fields=[
+                ...
+                (&#x27;email&#x27;, models.EmailField(
+                    max_length=254, unique=True, ...)),
+                (&#x27;display_name&#x27;, models.CharField(
+                    max_length=100)),
+                ...
+                (&#x27;groups&#x27;, models.ManyToManyField(
+                    ..., to=&#x27;auth.group&#x27;, ...)),
+                (&#x27;user_permissions&#x27;, models.ManyToManyField(
+                    ..., to=&#x27;auth.permission&#x27;, ...)),
+            ],
+            ...
+            managers=[
+                (&#x27;objects&#x27;, accounts.managers.UserManager()),
+            ],
+        ),
+    ]</code></pre><p class="" data-block="121">This is the migration Chapter 17 prepared for. <code>User</code> is created in <code>accounts</code>’ first migration, as the swapped user model must be. It depends on <code>auth</code>’s latest migration because <code>groups</code> and <code>user_permissions</code> link to <code>auth</code>’s group and permission tables. The <code>managers</code> list records <code>UserManager</code>, because Chapter 17 marked it <code>use_in_migrations</code>, so a data migration that creates users could call <code>create_user()</code> on the historical model.</p><div class="callout callout--error"><p class="callout__title" data-block="122">Common Error: No changes detected</p><p class="" data-block="123">If <code>makemigrations</code> prints <code>No changes detected</code> here, either the migration files already exist, from an earlier run, or an app is missing from <code>INSTALLED_APPS</code>. Check both folders for <code>0001_initial.py</code>, and compare <code>INSTALLED_APPS</code> with Chapter 17’s listing. Never rename a generated migration, or edit its <code>dependencies</code>, to make it fit: other migrations refer to it by name.</p></div><h4 data-block="124">Step 4: Preview before applying</h4><p class="" data-block="125">Two commands show what <code>migrate</code> would do, without changing the database. <code>sqlmigrate</code> prints the SQL one migration would run on this database. Run it for the events app:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="126" tabindex="0"><code>uv run python manage.py sqlmigrate events 0001</code></pre><p class="" data-block="127">Expected result, with the long line shortened:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="128" tabindex="0"><code>BEGIN;
+--
+-- Create model Event
+--
+CREATE TABLE &quot;events_event&quot; (&quot;id&quot; integer NOT NULL ...
+COMMIT;</code></pre><p class="" data-block="129"><code>BEGIN;</code> and <code>COMMIT;</code> are the transaction from What You Need to Know: the whole migration takes effect, or none of it does. On your screen, the <code>CREATE TABLE</code> line continues with one column for each field. Near its end, the capacity column carries <code>CHECK (&quot;capacity&quot; &gt;= 0)</code>: the database rule behind <code>PositiveIntegerField</code>, which Chapter 16 predicted. The app label is <code>events</code>, plural; <code>sqlmigrate event 0001</code> stops with <code>CommandError: No installed app with label &#x27;event&#x27;.</code></p><p class="" data-block="130">Run the same command for <code>accounts 0001</code>. It prints three <code>CREATE TABLE</code> statements: <code>accounts_user</code>, with <code>&quot;email&quot; varchar(254) NOT NULL UNIQUE</code>, and two link tables, <code>accounts_user_groups</code> and <code>accounts_user_user_permissions</code>, which hold the many-to-many links, followed by <code>CREATE INDEX</code> statements that make those links fast to look up.</p><p class="" data-block="131"><code>migrate --plan</code> lists every migration <code>migrate</code> would apply, in order, with its operations:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="132" tabindex="0"><code>uv run python manage.py migrate --plan</code></pre><p class="" data-block="133">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="134" tabindex="0"><code>Planned operations:
+contenttypes.0001_initial
+    Create model ContentType
+...
+auth.0001_initial
+    Create model Permission
+    Create model Group
+    Create model User
+...
+auth.0012_alter_user_first_name_max_length
+    Alter field first_name on user
+accounts.0001_initial
+    Create model User
+admin.0001_initial
+    Create model LogEntry
+...
+events.0001_initial
+    Create model Event
+sessions.0001_initial
+    Create model Session</code></pre><p class="" data-block="135">Two details deserve a look. <code>accounts.0001_initial</code> comes after <code>auth.0012</code> and before <code>admin.0001</code>, exactly as the dependencies require. And <code>auth.0001_initial</code> still lists <code>Create model User</code>. That is Django’s built-in user, whose operation stays in <code>auth</code>’s history; because <code>AUTH_USER_MODEL</code> names <code>accounts.User</code>, the built-in model is swapped out, and Django skips creating its table.</p><h4 data-block="136">Step 5: Apply the migrations</h4><p class="" data-block="137">Apply every migration, beside <code>manage.py</code>, in any of the three shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="138" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="" data-block="139">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="140" tabindex="0"><code>Operations to perform:
+  Apply all migrations: accounts, admin, auth, ...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+...
+  Applying accounts.0001_initial... OK
+...
+  Applying events.0001_initial... OK
+  Applying sessions.0001_initial... OK</code></pre><p class="" data-block="141">With Django 6.1.2, <code>migrate</code> printed 20 <code>Applying</code> lines: Django’s own apps and Otahque’s two. The count is what this version printed, not something to check; what matters is that <code>accounts.0001_initial</code> and <code>events.0001_initial</code> both end in <code>OK</code>. Ask Django what it has recorded:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="142" tabindex="0"><code>uv run python manage.py showmigrations accounts events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="143" tabindex="0"><code>accounts
+ [X] 0001_initial
+events
+ [X] 0001_initial</code></pre><p class="" data-block="144"><code>[X]</code> means that <code>django_migrations</code> has a row for that migration in this database; <code>[ ]</code> would mean the file exists but has not been applied. Run <code>showmigrations</code> with no app label to see every app; no line should show <code>[ ]</code>.</p><p class="" data-block="145">Now list the tables. The Step 1 query would also list Django’s indexes, so this one asks only for tables. In PowerShell, beside <code>manage.py</code>:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="146" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 `
+    &quot;SELECT name FROM sqlite_schema WHERE type=&#x27;table&#x27;&quot;</code></pre><p class="" data-block="147">In a macOS shell or Linux/WSL Bash, beside <code>manage.py</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="148" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 \
+    &quot;SELECT name FROM sqlite_schema WHERE type=&#x27;table&#x27;&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="149" tabindex="0"><code>(&#x27;django_migrations&#x27;,)
+(&#x27;sqlite_sequence&#x27;,)
+(&#x27;django_content_type&#x27;,)
+(&#x27;auth_group_permissions&#x27;,)
+(&#x27;auth_permission&#x27;,)
+(&#x27;auth_group&#x27;,)
+(&#x27;accounts_user&#x27;,)
+(&#x27;accounts_user_groups&#x27;,)
+(&#x27;accounts_user_user_permissions&#x27;,)
+(&#x27;django_admin_log&#x27;,)
+(&#x27;events_event&#x27;,)
+(&#x27;django_session&#x27;,)</code></pre><p class="" data-block="150">SQLite lists tables in the order they were created, so the list follows the migration order: <code>django_migrations</code> first, because <code>migrate</code> creates it before anything else, then the tables of <code>contenttypes</code>, <code>auth</code>, <code>accounts</code>, <code>admin</code>, <code>events</code>, and <code>sessions</code>.</p><p class="" data-block="151">Table 18.2 explains what each group of tables is for.</p><figure class="table-figure" data-block="152"><figcaption>Table 18.2 — The tables after the first migrate</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 18.2 — The tables after the first migrate"><table><thead><tr><th scope="col">Tables</th>
+<th scope="col">Created by</th>
+<th scope="col">Holds</th>
+</tr></thead><tbody><tr><th scope="row">accounts_user, accounts_user_groups, accounts_user_user_permissions</th>
+<td data-label="Created by">accounts.0001</td>
+<td data-label="Holds">Otahque&#x27;s accounts and their links to groups and permissions</td>
+</tr>
+<tr><th scope="row">events_event</th>
+<td data-label="Created by">events.0001</td>
+<td data-label="Holds">Otahque&#x27;s events</td>
+</tr>
+<tr><th scope="row">auth_group, auth_group_permissions, auth_permission</th>
+<td data-label="Created by">auth</td>
+<td data-label="Holds">Django&#x27;s groups and permissions (Chapter 30)</td>
+</tr>
+<tr><th scope="row">django_admin_log</th>
+<td data-label="Created by">admin</td>
+<td data-label="Holds">The admin site&#x27;s change history (Chapter 23)</td>
+</tr>
+<tr><th scope="row">django_content_type</th>
+<td data-label="Created by">contenttypes</td>
+<td data-label="Holds">One row per model, used by permissions</td>
+</tr>
+<tr><th scope="row">django_session</th>
+<td data-label="Created by">sessions</td>
+<td data-label="Holds">Signed-in sessions (Chapter 27)</td>
+</tr>
+<tr><th scope="row">django_migrations</th>
+<td data-label="Created by">migrate</td>
+<td data-label="Holds">One row per applied migration</td>
+</tr>
+<tr><th scope="row">sqlite_sequence</th>
+<td data-label="Created by">SQLite</td>
+<td data-label="Holds">SQLite&#x27;s own record of the last id used in each table</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="153">There is no <code>auth_user</code> table: the built-in user is swapped out, as planned. Run every test again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="154" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="155">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="156" tabindex="0"><code>Found 29 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+.............................
+...
+Ran 29 tests in ...
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="157">The red stage is now green. <code>Creating test database</code> and <code>Destroying test database</code> mark the test database’s life: Django built it from the migrations you just wrote, ran the tests in it, and threw it away. The run takes several seconds, mostly spent hashing passwords with 1,500,000 PBKDF2 iterations for each saved user; Chapter 34 decides whether tests should use a faster hasher.</p><div class="callout callout--error"><p class="callout__title" data-block="158">Common Error: a migration that fails</p><p class="" data-block="159">If <code>migrate</code> stops with an error, read the last line of the message and fix its cause; do not delete <code>db.sqlite3</code> or any migration file. On SQLite, the failed migration was rolled back and the ones before it stay recorded, so running <code>migrate</code> again after the fix is safe: it skips what is applied and retries the rest. That advice holds for SQLite and PostgreSQL. On a database without transactional schema changes, check the failed migration and the database state before retrying; Chapter 64 covers recovery on a live system.</p></div><h4 data-block="160">Step 6: Create a superuser and commit</h4><p class="" data-block="161">A <strong>superuser</strong> is an account with <code>is_staff</code> and <code>is_superuser</code> set: Django treats it as holding every permission, and its admin site, in Chapter 23, lets it change everything. Create one for your own computer. The command asks for the fields <code>USERNAME_FIELD</code> and <code>REQUIRED_FIELDS</code> name, then a password twice; the password is not shown as you type. Use the fictional address below and a password of your own that you have not used anywhere else. Never write it in a file. Beside <code>manage.py</code>, in PowerShell, Git Bash, a macOS shell, or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="162" tabindex="0"><code>uv run python manage.py createsuperuser</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="163" tabindex="0"><code>Email address: sam@example.org
+Display name: Sam
+Password:
+Password (again):
+Superuser created successfully.</code></pre><p class="" data-block="164">The prompts come from Chapter 17’s model: <code>Email address</code> from <code>USERNAME_FIELD</code> and the field’s name, <code>Display name</code> from <code>REQUIRED_FIELDS</code>. The command then calls the manager’s <code>create_superuser()</code>, so the email is normalized and the password hashed as Step 2’s tests require.</p><p class="" data-block="165">The command also checks your answers before saving. Each refusal asks again, so you can carry on in the same run:</p><ul class="outcomes"><li data-block="166"><code>Error: That email address is already taken.</code> The account exists already, perhaps from an earlier attempt; keep it, and press Ctrl+C to stop, or enter a different address.</li><li data-block="167"><code>Error: This field cannot be blank.</code> The display name was left empty.</li><li data-block="168"><code>Error: Your passwords didn&#x27;t match.</code> Type the same password twice.</li><li data-block="169"><code>This password is too common.</code>, followed by <code>Bypass password validation and create user anyway? [y/N]:</code>. Answer <code>N</code>, then choose a stronger password. These checks are the password validators listed in <code>config/settings.py</code>, which Chapter 29 reviews.</li></ul><div class="callout callout--error"><p class="callout__title" data-block="170">Common Error: Superuser creation skipped</p><p class="" data-block="171"><code>createsuperuser</code> needs a terminal to read the password from. If its input is not a terminal, it prints <code>Superuser creation skipped due to not running in a TTY.</code> and creates nothing. In this book’s checks, Git for Windows 2.51 gave the command a terminal in Git Bash; an older Git Bash window may not. If you see the message there, run the same command in PowerShell, or start it with <code>winpty</code>, a helper that ships with Git for Windows: <code>winpty uv run python manage.py createsuperuser</code>.</p></div><p class="" data-block="172">For scripts, such as an automated check, the command also has a form that asks nothing: <code>--noinput</code> reads the email, display name, and password from environment variables named <code>DJANGO_SUPERUSER_EMAIL</code>, <code>DJANGO_SUPERUSER_DISPLAY_NAME</code>, and <code>DJANGO_SUPERUSER_PASSWORD</code>. This book’s verification uses that form; you do not need it.</p><p class="" data-block="173">Now create a short practice script that checks what was saved, without printing the hash:</p><p class="code-label code-label--file" aria-hidden="true">../practice/check_superuser.py</p><pre class="code-listing code-listing--file" data-block="174" tabindex="0"><code>import setup_django  # loads Otahque&#x27;s settings first
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+sam = User.objects.get(email=&#x27;sam@example.org&#x27;)
+print(sam.email, sam.display_name)
+print(sam.is_active, sam.is_staff, sam.is_superuser)
+print(sam.password.split(&#x27;$&#x27;)[0])</code></pre><p class="" data-block="175">Run it from the folder that holds <code>manage.py</code>, in any of the three shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="176" tabindex="0"><code>uv run python ../practice/check_superuser.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="177" tabindex="0"><code>sam@example.org Sam
+True True True
+pbkdf2_sha256</code></pre><p class="" data-block="178">The account is active, staff, and a superuser, and its password is stored as a PBKDF2 hash. It lives only in your <code>db.sqlite3</code>, which Git ignores. Now look at what Git sees:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="179" tabindex="0"><code>git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="180" tabindex="0"><code> M accounts/tests.py
+?? accounts/migrations/0001_initial.py
+?? config/tests.py
+?? events/migrations/0001_initial.py</code></pre><p class="" data-block="181">The two migrations and the two test files, and nothing else: no <code>db.sqlite3</code>, no superuser. If <code>db.sqlite3</code> appears, <code>.gitignore</code> has lost Chapter 8’s line; put it back rather than committing the database. Commit now, before the lab, so that Step 7 can copy a committed project. Commit each model change together with its migration, as here, so that every commit holds code and schema that match:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="182" tabindex="0"><code>git add accounts config events
+git commit -m &quot;Add the first migrations and database tests&quot;</code></pre><p class="" data-block="183"><code>git status --short</code> then prints nothing. Chapter 17’s Common Error asked you to move any early <code>0001_initial.py</code> files into <code>../practice</code>; if you did, compare them with the new files now, excluding the first line, and then you may keep or discard the old copies, which Git never saw.</p><h4 data-block="184">Step 7: Change a table with rows, in a lab copy</h4><p class="" data-block="185">This step is an experiment. Otahque’s design does not include a slug, so you make the change in a copy of the project and discard the copy afterwards. Run every command in this step inside the lab folder, never in your project.</p><p class="" data-block="186">From the folder that holds <code>manage.py</code>, clone the committed project into the practice folder. The same command works in PowerShell, a macOS shell, and Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="187" tabindex="0"><code>git clone . ../practice/migrations-lab</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="188" tabindex="0"><code>Cloning into &#x27;../practice/migrations-lab&#x27;...
+done.</code></pre><p class="" data-block="189"><code>git clone .</code> copies the repository in the current folder, with the commit you just made. It does not copy what Git ignores, so the lab has no <code>.env</code>, <code>.venv</code>, or <code>db.sqlite3</code>. Copy your <code>.env</code> into the lab. In PowerShell:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="190" tabindex="0"><code>Copy-Item .env ..\practice\migrations-lab\.env</code></pre><p class="" data-block="191">In a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="192" tabindex="0"><code>cp .env ../practice/migrations-lab/.env</code></pre><p class="" data-block="193">Then move into the lab, build its environment from the lock file, and create its tables, in any of the three shells:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="194" tabindex="0"><code>cd ../practice/migrations-lab
+uv sync --locked
+uv run python manage.py migrate</code></pre><p class="" data-block="195"><code>uv sync --locked</code> creates the lab’s own <code>.venv</code> with the same locked packages, and <code>migrate</code> applies the same 20 migrations to the lab’s new <code>db.sqlite3</code>. The lab is a separate project with a separate database: nothing here can reach your real <code>db.sqlite3</code>. Its Git remote points at your project, and Git refuses by default to push into a folder with the branch checked out; never push from the lab anyway.</p><p class="" data-block="196">A table change matters only when the table has rows. Create a helper that adds three events. It goes in the practice folder, beside <code>setup_django.py</code>. Like <code>Event.objects.create()</code> itself, which saves a new row in one call, it is a preview of Chapter 19:</p><p class="code-label code-label--file" aria-hidden="true">../practice/add_lab_events.py</p><pre class="code-listing code-listing--file" data-block="197" tabindex="0"><code>&quot;&quot;&quot;Add three sample events to the lab&#x27;s database.
+
+Run from the lab folder: uv run python ../add_lab_events.py
+&quot;&quot;&quot;
+from datetime import UTC, datetime
+
+import setup_django  # loads the lab&#x27;s settings first
+from events.models import Event
+
+for title, day in [(&#x27;Python meetup&#x27;, 12),
+                   (&#x27;Django sprint&#x27;, 19),
+                   (&#x27;Python meetup&#x27;, 26)]:
+    Event.objects.create(
+        title=title,
+        starts_at=datetime(2026, 11, day, 18, tzinfo=UTC),
+        ends_at=datetime(2026, 11, day, 20, tzinfo=UTC),
+        timezone=&#x27;Europe/London&#x27;,
+        location=&#x27;Virtual&#x27;,
+        capacity=40,
+    )
+print(Event.objects.count(), &#x27;events&#x27;)</code></pre><p class="" data-block="198">From the lab folder, the practice folder is one level up, so run it with <code>../</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="199" tabindex="0"><code>uv run python ../add_lab_events.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="200" tabindex="0"><code>3 events</code></pre><p class="" data-block="201">Two events share a title on purpose: their slugs must still differ. Figure 18.2 shows the three migrations you are about to write.</p><figure data-block="202"><a href="/assets/chapter18/figure-18-2-three-steps.png" aria-label="Open Figure 18.2 at full size"><img src="/assets/chapter18/figure-18-2-three-steps.png" alt="A timeline of three numbered orange migration cards from left to right, after a green card for the event table holding 3 rows. Card 1, 0002_event_slug, adds a slug column that allows NULL. Card 2, 0003_fill_slugs, runs Python that gives each row its own slug, such as python-meetup-3. Card 3, 0004_alter_event_slug, makes the slug required and unique. A blue arrow above the cards points forwards, labelled migrate events. A grey arrow below points backwards, labelled migrate events 0001, noting that clear_slugs() empties the column first. A green strip along the bottom says 3 rows at every step." width="1500" height="720" loading="lazy"></a><figcaption data-block="203">Figure 18.2 — Adding a required, unique column to a table that holds rows, in three reversible migrations.</figcaption></figure><p class="" data-block="204"><strong>Migration 0002: add the column, allowing empty values.</strong> In the lab’s <code>events/models.py</code>, add one line after <code>title</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (lab only, after title)</p><pre class="code-listing code-listing--file" data-block="205" tabindex="0"><code>    slug = models.SlugField(max_length=200, null=True)</code></pre><p class="" data-block="206">A <code>SlugField</code> holds letters, numbers, hyphens, and underscores, the characters that read well in an address. <code>null=True</code> lets the existing rows have no value yet. Before writing the migration, run the guard test from Step 2 on its own; <code>test config</code> runs the tests in the <code>config</code> package:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="207" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="" data-block="208">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="209" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+System check identified no issues (0 silenced).
+F
+...
+AssertionError: Missing migrations:
+Migrations for &#x27;events&#x27;:
+  events\migrations\0002_event_slug.py
+    + Add field slug to event
+...
+FAILED (failures=1)</code></pre><p class="" data-block="210">This is the mistake the guard exists for: a model change with no migration. The message says which migration is missing. Now write it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="211" tabindex="0"><code>uv run python manage.py makemigrations</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="212" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0002_event_slug.py
+    + Add field slug to event</code></pre><p class="" data-block="213">Apart from its first line, the new file is short enough to show in full, with its one long line wrapped:</p><p class="code-label code-label--file" aria-hidden="true">events/migrations/0002_event_slug.py (lab)</p><pre class="code-listing code-listing--file" data-block="214" tabindex="0"><code>from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        (&#x27;events&#x27;, &#x27;0001_initial&#x27;),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name=&#x27;event&#x27;,
+            name=&#x27;slug&#x27;,
+            field=models.SlugField(
+                max_length=200, null=True),
+        ),
+    ]</code></pre><p class="" data-block="215">It depends on the app’s previous migration, and its one operation adds the column.</p><p class="" data-block="216"><strong>Migration 0003: give each row its own value.</strong> Ask Django for an empty migration in the events app, with a name you choose. In PowerShell:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="217" tabindex="0"><code>uv run python manage.py makemigrations events --empty `
+    --name fill_slugs</code></pre><p class="" data-block="218">In a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="219" tabindex="0"><code>uv run python manage.py makemigrations events --empty \
+    --name fill_slugs</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="220" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0003_fill_slugs.py</code></pre><p class="" data-block="221">The file has a <code>dependencies</code> list naming <code>0002_event_slug</code> and an empty <code>operations</code> list. This is the one migration you write yourself, so replace its whole contents, header line included, with this:</p><p class="code-label code-label--file" aria-hidden="true">events/migrations/0003_fill_slugs.py (lab)</p><pre class="code-listing code-listing--file" data-block="222" tabindex="0"><code>from django.db import migrations
+from django.utils.text import slugify
+
+
+def fill_slugs(apps, schema_editor):
+    Event = apps.get_model(&#x27;events&#x27;, &#x27;Event&#x27;)
+    for event in Event.objects.all():
+        event.slug = f&#x27;{slugify(event.title)}-{event.pk}&#x27;
+        event.save(update_fields=[&#x27;slug&#x27;])
+
+
+def clear_slugs(apps, schema_editor):
+    Event = apps.get_model(&#x27;events&#x27;, &#x27;Event&#x27;)
+    Event.objects.update(slug=None)
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        (&#x27;events&#x27;, &#x27;0002_event_slug&#x27;),
+    ]
+
+    operations = [
+        migrations.RunPython(fill_slugs, clear_slugs),
+    ]</code></pre><p class="" data-block="223"><code>RunPython</code> takes the forward function and the reverse function. Both receive <code>apps</code>, the historical models, and <code>schema_editor</code>, which these functions do not need. <code>apps.get_model(&#x27;events&#x27;, &#x27;Event&#x27;)</code> returns the Event model as it stands after <code>0002</code>: with a nullable <code>slug</code>, and without the model’s own <code>__str__()</code>. <code>slugify()</code>, from Django’s text utilities, turns <code>Python meetup</code> into <code>python-meetup</code>, and adding the id makes each value distinct, even for the two meetups. <code>save(update_fields=[&#x27;slug&#x27;])</code> writes only that column. <code>Event.objects.update(slug=None)</code> changes every row in one statement; the reverse code puts the rows back as <code>0002</code> left them. As before, the queries are previews of Chapter 19.</p><div class="callout callout--error"><p class="callout__title" data-block="224">Common Error: importing the model in a migration</p><p class="" data-block="225">Writing <code>from events.models import Event</code> in a migration works on the day you write it, because the model and the table match. Later, when the model gains a field that a later migration adds, the import gives the newest model, and this older migration fails on a column that does not exist yet at its point in the history. Always use <code>apps.get_model()</code> inside <code>RunPython</code>.</p></div><p class="" data-block="226"><strong>Migration 0004: require a value and make it unique.</strong> Replace the slug line in the lab’s <code>events/models.py</code>, removing <code>null=True</code> and adding <code>unique=True</code> in one edit:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (lab only, after title)</p><pre class="code-listing code-listing--file" data-block="227" tabindex="0"><code>    slug = models.SlugField(max_length=200, unique=True)</code></pre><p class="" data-block="228">Run <code>makemigrations</code>. Django notices that a column which allowed empty values will no longer allow them, and asks what to do about rows that might hold one. Type <code>2</code> and press Enter:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="229" tabindex="0"><code>uv run python manage.py makemigrations</code></pre><p class="" data-block="230">Expected result, with long lines shortened:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="231" tabindex="0"><code>It is impossible to change a nullable field &#x27;slug&#x27; on ...
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all ...
+ 2) Ignore for now. Existing rows that contain NULL ...
+ 3) Quit and manually define a default value in models.py.
+Select an option: 2
+Migrations for &#x27;events&#x27;:
+  events\migrations\0004_alter_event_slug.py
+    ~ Alter field slug on event</code></pre><p class="" data-block="232">Option 2 tells Django that the existing rows are handled elsewhere, “with a RunPython or RunSQL operation”, as the full line says, and that is true: <code>0003</code> gives every row a slug before <code>0004</code> runs. Option 1 would ask for one value to put into every row still empty, which is the wrong tool for a unique column: one shared value is exactly what <code>unique=True</code> forbids. <code>~</code> marks an operation that changes something: the new file holds one <code>AlterField</code>, which makes the column required and unique.</p><div class="callout callout--error"><p class="callout__title" data-block="233">Common Error: adding a unique, required field in one step</p><p class="" data-block="234">Skipping <code>0002</code> and <code>0003</code>, and adding the final, unique field line straight away, makes <code>makemigrations</code> ask for a one-off default. Whatever you give it, every existing row receives the same value, and <code>migrate</code> stops with an <code>IntegrityError</code> that reports a failed <code>UNIQUE</code> constraint on the <code>slug</code> column. The failed migration is rolled back: <code>showmigrations</code> shows it unapplied, and the three rows are untouched. Fix it by removing that migration file, which no database has applied, and following the three steps. This was observed in a second, separate lab copy; you need not try it.</p></div><p class="" data-block="235"><strong>Run it forwards.</strong> Apply the three migrations to the lab’s database:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="236" tabindex="0"><code>uv run python manage.py migrate events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="237" tabindex="0"><code>Operations to perform:
+  Apply all migrations: events
+Running migrations:
+  Applying events.0002_event_slug... OK
+  Applying events.0003_fill_slugs... OK
+  Applying events.0004_alter_event_slug... OK</code></pre><p class="" data-block="238">Look at the slugs. In PowerShell, from the lab folder:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="239" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 `
+    &quot;SELECT id, title, slug FROM events_event&quot;</code></pre><p class="" data-block="240">In a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="241" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 \
+    &quot;SELECT id, title, slug FROM events_event&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="242" tabindex="0"><code>(1, &#x27;Python meetup&#x27;, &#x27;python-meetup-1&#x27;)
+(2, &#x27;Django sprint&#x27;, &#x27;django-sprint-2&#x27;)
+(3, &#x27;Python meetup&#x27;, &#x27;python-meetup-3&#x27;)</code></pre><p class="" data-block="243">Each row has its own slug, and the two meetups differ by their ids.</p><p class="" data-block="244"><strong>Run it backwards.</strong> Naming an app and a migration makes <code>migrate</code> move that app to exactly that point, unapplying everything after it, newest first:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="245" tabindex="0"><code>uv run python manage.py migrate events 0001</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="246" tabindex="0"><code>Operations to perform:
+  Target specific migration: 0001_initial, from events
+Running migrations:
+  Rendering model states... DONE
+  Unapplying events.0004_alter_event_slug... OK
+  Unapplying events.0003_fill_slugs... OK
+  Unapplying events.0002_event_slug... OK</code></pre><p class="" data-block="247"><code>0004</code> is undone first, making the column optional again; then <code>clear_slugs()</code> empties it; then the column is removed. Check the record:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="248" tabindex="0"><code>uv run python manage.py showmigrations events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="249" tabindex="0"><code>events
+ [X] 0001_initial
+ [ ] 0002_event_slug
+ [ ] 0003_fill_slugs
+ [ ] 0004_alter_event_slug</code></pre><p class="" data-block="250">The files are still there; only their rows in <code>django_migrations</code> are gone. Now check the table’s columns and its rows. <code>pragma_table_info()</code> is SQLite’s way of listing a table’s columns. In PowerShell:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="251" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 `
+    &quot;SELECT name FROM pragma_table_info(&#x27;events_event&#x27;)&quot;
+uv run python -m sqlite3 db.sqlite3 `
+    &quot;SELECT COUNT(*) FROM events_event&quot;</code></pre><p class="" data-block="252">In a macOS shell or Linux/WSL Bash:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="253" tabindex="0"><code>uv run python -m sqlite3 db.sqlite3 \
+    &quot;SELECT name FROM pragma_table_info(&#x27;events_event&#x27;)&quot;
+uv run python -m sqlite3 db.sqlite3 \
+    &quot;SELECT COUNT(*) FROM events_event&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="254" tabindex="0"><code>(&#x27;id&#x27;,)
+(&#x27;title&#x27;,)
+(&#x27;starts_at&#x27;,)
+(&#x27;ends_at&#x27;,)
+(&#x27;timezone&#x27;,)
+(&#x27;location&#x27;,)
+(&#x27;capacity&#x27;,)
+(&#x27;status&#x27;,)
+(3,)</code></pre><p class="" data-block="255">The <code>slug</code> column is gone, and all three events remain. The slug values themselves are gone too: reversing a migration that removes a column removes its data, which is why reverse code deserves as much care as forward code. Run <code>uv run python manage.py migrate events</code> again, and the three migrations reapply, recomputing the same slugs.</p><p class="" data-block="256"><strong>Optional: a migration with no way back.</strong> To see why the reverse function matters, change the operation in <code>0003_fill_slugs.py</code> to <code>migrations.RunPython(fill_slugs)</code>, leaving out <code>clear_slugs</code>, and run <code>uv run python manage.py migrate events 0001</code>. Django unapplies <code>0004</code>, then stops at <code>0003</code> with a traceback whose last line is an <code>IrreversibleError</code>, saying that this migration’s operation is not reversible. Run <code>showmigrations events</code>: <code>0002</code> and <code>0003</code> are still applied, and <code>0004</code> is not. The run stopped between two migrations, exactly as the transaction rule says. Put <code>clear_slugs</code> back, then run <code>migrate events</code> to return to the latest state. When a data migration truly has nothing to undo, pass <code>migrations.RunPython.noop</code> as the reverse function, so that it can still be unapplied.</p><p class="" data-block="257">When you have finished, you can delete the lab, the <code>migrations-lab</code> folder inside the practice folder; your project never saw any of it. If you ran a lab command in your project by mistake, <code>git status --short</code> in the project shows exactly which files changed. Check that each one is a lab change, such as <code>events/models.py</code> or a new <code>0002_event_slug.py</code>, before restoring it with <code>git restore events/models.py</code> or seeing which new files would be removed with <code>git clean -n</code>. Then remove only those. Your committed work is safe either way.</p><h3 class="" id="topic-258" data-block="258">When something goes wrong</h3><figure class="table-figure" data-block="259"><figcaption>Table 18.3 — Migration problems and safe recovery</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 18.3 — Migration problems and safe recovery"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Safe recovery</th>
+</tr></thead><tbody><tr><th scope="row">The Step 1 query lists tables</th>
+<td data-label="Likely cause">migrate ran in an earlier chapter</td>
+<td data-label="Safe recovery">Rename db.sqlite3 and keep it as a backup</td>
+</tr>
+<tr><th scope="row">ValueError: Dependency on app with no migrations: accounts</th>
+<td data-label="Likely cause">Tests or migrate run before Step 3</td>
+<td data-label="Safe recovery">Run makemigrations; nothing to undo</td>
+</tr>
+<tr><th scope="row">DatabaseOperationForbidden</th>
+<td data-label="Likely cause">A database test inherits SimpleTestCase</td>
+<td data-label="Safe recovery">Change the base class to TestCase</td>
+</tr>
+<tr><th scope="row">No changes detected (Step 3)</th>
+<td data-label="Likely cause">Files already exist, or an app is not installed</td>
+<td data-label="Safe recovery">Check both migrations folders and INSTALLED_APPS</td>
+</tr>
+<tr><th scope="row">CommandError: No installed app with label &#x27;event&#x27;</th>
+<td data-label="Likely cause">App label misspelled</td>
+<td data-label="Safe recovery">Use events, plural</td>
+</tr>
+<tr><th scope="row">A migrate run fails part-way</th>
+<td data-label="Likely cause">A migration&#x27;s operation failed</td>
+<td data-label="Safe recovery">Fix the cause and rerun migrate; keep the database and the files</td>
+</tr>
+<tr><th scope="row">That email address is already taken</th>
+<td data-label="Likely cause">The superuser exists already</td>
+<td data-label="Safe recovery">Keep it; press Ctrl+C or use another address</td>
+</tr>
+<tr><th scope="row">Superuser creation skipped ... not running in a TTY</th>
+<td data-label="Likely cause">Input is not a terminal</td>
+<td data-label="Safe recovery">Use PowerShell, or winpty in Git Bash</td>
+</tr>
+<tr><th scope="row">db.sqlite3 appears in git status</th>
+<td data-label="Likely cause">.gitignore line removed</td>
+<td data-label="Safe recovery">Restore the Chapter 8 line; never commit the database</td>
+</tr>
+<tr><th scope="row">Guard test fails: Missing migrations</th>
+<td data-label="Likely cause">A model changed without a migration</td>
+<td data-label="Safe recovery">Run makemigrations, read the file, commit both together</td>
+</tr>
+<tr><th scope="row">IntegrityError: UNIQUE constraint failed</th>
+<td data-label="Likely cause">A unique field added in one step</td>
+<td data-label="Safe recovery">Remove the unapplied file; use the three steps</td>
+</tr>
+<tr><th scope="row">IrreversibleError: ... is not reversible</th>
+<td data-label="Likely cause">RunPython has no reverse code</td>
+<td data-label="Safe recovery">Add a reverse function, or RunPython.noop</td>
+</tr>
+<tr><th scope="row">Lab command run in the project</th>
+<td data-label="Likely cause">Wrong folder</td>
+<td data-label="Safe recovery">git status, then git restore only the lab&#x27;s files</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2018%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter18/section-18-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter18/section-18-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter18/section-18-2/">← What You Need to Know</a><a href="/chapters/chapter18/section-18-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>
