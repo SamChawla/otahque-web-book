@@ -1,5 +1,6 @@
-<select name="{{ widget.name }}" class="select w-full"
-        {% include "django/forms/widgets/attrs.html" %}>
+{% load otahque_widgets %}
+<select name="{{ widget.name }}"
+        {{ widget.attrs|with_class:"select w-full" }}>
 {% spaceless %}
 {% for group, choices, index in widget.optgroups %}
   {% if group %}<optgroup label="{{ group }}">{% endif %}

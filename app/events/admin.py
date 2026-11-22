@@ -1,11 +1,17 @@
+"""Admin pages for events and their organizers."""
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from django.contrib import admin
+from django import forms
+from django.contrib import admin, messages
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+from audit.models import AuditEvent, record
 from registrations.models import Registration
 
-from .models import Event, OrganizerAssignment
+from .models import (
+    Event, OrganizerAssignment, organizer_problem,
+)
 
 UTC_HELP = "In UTC, not the event's own time zone."
 
@@ -21,47 +27,61 @@ class RegistrationInline(admin.TabularInline):
     can_delete = False
 
     def has_add_permission(self, request, obj=None):
+        """Members register on the site, not here."""
         return False
 
     def has_change_permission(self, request, obj=None):
+        """Registrations are history: never edited."""
         return False
 
     def get_queryset(self, request):
+        """Fetch each registration's member at once."""
         queryset = super().get_queryset(request)
         return queryset.select_related('member')
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
+    """Events, with local start times and places left."""
+
     list_display = ['title', 'status', 'start_utc',
                     'local_start', 'places', 'capacity']
     list_filter = ['status']
     search_fields = ['title', 'location']
     ordering = ['-starts_at']
-    fields = ['title', 'status', 'starts_at', 'ends_at',
+    fields = ['title', 'description', 'status',
+              'starts_at', 'ends_at',
               'timezone', 'local_start', 'location',
-              'capacity']
+              'capacity', 'registration_opens_at',
+              'registration_closes_at',
+              'cancellation_deadline', 'phone_required']
     readonly_fields = ['local_start']
     inlines = [RegistrationInline]
     actions = None
 
     def get_queryset(self, request):
+        """Count places left in the same query."""
         queryset = super().get_queryset(request)
         return queryset.with_places()
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['help_texts'] = {
-            'starts_at': UTC_HELP, 'ends_at': UTC_HELP,
-        }
+        """Say on the form that its times are in UTC."""
+        kwargs['help_texts'] = dict.fromkeys(
+            ['starts_at', 'ends_at', 'registration_opens_at',
+             'registration_closes_at',
+             'cancellation_deadline'], UTC_HELP,
+        )
         return super().get_form(request, obj, **kwargs)
 
     @admin.display(description='Start (UTC)',
                    ordering='starts_at')
     def start_utc(self, event):
+        """Return the start as stored, in UTC."""
         return event.starts_at
 
     @admin.display(description='Local start')
     def local_start(self, event):
+        """Return the start in the event's zone, or None."""
         try:
             zone = ZoneInfo(event.timezone)
         except (ValueError, ZoneInfoNotFoundError):
@@ -74,28 +94,89 @@ class EventAdmin(admin.ModelAdmin):
     @admin.display(description='Places left',
                    ordering='places_left')
     def places(self, event):
+        """Places left, counted by the queryset."""
         return event.places_left
+
+
+class AssignmentForm(forms.ModelForm):
+    """The admin's add form, with the page's rules."""
+
+    def clean_member(self):
+        """Refuse and record a member who cannot organize."""
+        member = self.cleaned_data['member']
+        problem = organizer_problem(member)
+        if problem:
+            event = self.cleaned_data.get('event')
+            record(self.request.user,
+                   AuditEvent.Action.ADD_ORGANIZER, event,
+                   AuditEvent.Outcome.REFUSED,
+                   member=member.pk)
+            raise ValidationError(problem)
+        return member
 
 
 @admin.register(OrganizerAssignment)
 class OrganizerAssignmentAdmin(admin.ModelAdmin):
+    """Assign organizers; revoke, but never delete."""
+
     list_display = ['event', 'member', 'assigned_at',
                     'revoked_at']
     list_filter = [
         ('revoked_at', admin.EmptyFieldListFilter),
     ]
     list_select_related = ['event', 'member']
+    form = AssignmentForm
+    actions = ['remove_selected']
 
     def get_fields(self, request, obj=None):
+        """Event and member to add; every field after."""
         if obj is None:
             return ['event', 'member']
         return ['event', 'member', 'assigned_at',
                 'revoked_at']
 
     def get_readonly_fields(self, request, obj=None):
+        """After adding, every field is read-only."""
         if obj is None:
             return []
-        return ['event', 'member', 'assigned_at']
+        return ['event', 'member', 'assigned_at',
+                'revoked_at']
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Give the form the request, for its record."""
+        form = super().get_form(request, obj, **kwargs)
+        form.request = request
+        return form
+
+    def save_model(self, request, obj, form, change):
+        """Record each organizer added here."""
+        super().save_model(request, obj, form, change)
+        if not change:
+            record(request.user,
+                   AuditEvent.Action.ADD_ORGANIZER,
+                   obj.event, member=obj.member_id)
 
     def has_delete_permission(self, request, obj=None):
+        """Revoke an assignment instead of deleting it."""
         return False
+
+    @admin.action(description='Remove selected organizers',
+                  permissions=['change'])
+    def remove_selected(self, request, queryset):
+        """Revoke each current assignment chosen."""
+        current = queryset.filter(revoked_at__isnull=True)
+        for assignment in current.select_related('event'):
+            try:
+                assignment.revoke(request.user)
+            except ValidationError as error:
+                self.message_user(
+                    request,
+                    f'{assignment}: {error.messages[0]}',
+                    messages.ERROR,
+                )
+            else:
+                self.log_change(request, assignment,
+                                'Removed.')
+                self.message_user(
+                    request, f'Removed: {assignment}.'
+                )

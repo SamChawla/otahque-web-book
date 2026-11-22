@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Your phone number | Otahque{% endblock %}
+
+{% block content %}
+  <h1>{{ event.title }} asks for a phone number</h1>
+  <p>Otahque keeps it on your profile, so you are asked
+     only once. You can change it there.</p>
+  {% include "registrations/sharing.html" %}
+  <form method="post" class="card space-y-4 border
+        border-base-300 bg-base-100 p-6">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">
+      Save and register</button>
+  </form>
+  <p>
+    <a href="{{ event.get_absolute_url }}">Back to the
+      event</a>
+  </p>
+{% endblock %}

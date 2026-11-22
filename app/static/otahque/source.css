@@ -2,6 +2,7 @@
 @import "tailwindcss" source(none);
 @source "../../templates";
 @source "../../events/templates";
+@source "../../registrations/templates";
 
 @plugin "daisyui" {
   themes: false;
@@ -64,7 +65,7 @@
 /* daisyUI styles form fields inside the utilities layer,
    so rules that change those fields sit there too. */
 @layer utilities {
-  .fieldset :is(.input, .select) {
+  .fieldset :is(.input, .select, .checkbox) {
     --input-color: #6b7686;
   }
 

@@ -12,20 +12,32 @@ erDiagram
     EVENT ||--o{ REGISTRATION : "has"
     MEMBER ||--o{ ORGANIZER_ASSIGNMENT : "holds"
     EVENT ||--o{ ORGANIZER_ASSIGNMENT : "is run through"
+    MEMBER ||--o| PROFILE : "has"
     MEMBER {
         int id PK
         text email UK
         text display_name
     }
+    PROFILE {
+        int id PK
+        int user_id FK
+        text timezone "IANA name, blank = not set"
+        text phone "E.164, blank = not given"
+    }
     EVENT {
         int id PK
         text title
+        text description "blank for a draft, needed to publish"
         datetime starts_at "an instant, in UTC"
         datetime ends_at "after starts_at, in UTC"
         text timezone "IANA name"
         text location
         int capacity "more than 0"
         text status "draft, published, cancelled"
+        datetime registration_opens_at "blank = on publication"
+        datetime registration_closes_at "needed to publish"
+        datetime cancellation_deadline "needed to publish"
+        bool phone_required
     }
     REGISTRATION {
         int id PK
@@ -63,6 +75,9 @@ erDiagram
 - A cancellation is never earlier than its registration,
   and a revocation never earlier than its assignment
   (CHECK constraints).
+- Registration opens before it closes; closing and the
+  cancellation deadline are no later than the start
+  (CHECK constraints, Chapter 31).
 - Email addresses are stored in lower case, so two
   that differ only in letter case are one member
   (CHECK constraint; decided in Chapter 21).
@@ -90,11 +105,14 @@ docs/adr/ADR-002-user-model.md.
 
 ## Open questions
 
-- Which contact details, beyond an email address?
 - Who appoints organizers, and must an event have one?
-- When registration opens and closes (Chapter 2 policy).
 - What happens to active registrations when an event
-  is cancelled?
+  is cancelled? (Chapter 26: they stay as they are;
+  Chapters 43-44 decide what members are told.)
+
+Answered in Chapter 31: contact details are the email
+and an optional phone number on the Profile, which an
+event may require; registration times are on Event.
 
 ## Out of scope for this release
 

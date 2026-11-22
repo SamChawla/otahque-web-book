@@ -1,4 +1,5 @@
+{% load otahque_widgets %}
 <input type="{{ widget.type }}" name="{{ widget.name }}"
-       class="input w-full"{% if widget.value != None %}
+       {% if widget.value != None %}
        value="{{ widget.value|stringformat:'s' }}"{% endif %}
-       {% include "django/forms/widgets/attrs.html" %}>
+       {{ widget.attrs|with_class:"input w-full" }}>

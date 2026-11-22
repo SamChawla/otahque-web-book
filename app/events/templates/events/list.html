@@ -1,10 +1,25 @@
 {% extends "base.html" %}
-{% load tz %}
 
 {% block title %}Events | Otahque{% endblock %}
 
 {% block content %}
   <h1>Events</h1>
+  <form method="get"
+        class="flex flex-wrap items-center gap-3">
+    <input type="hidden" name="places" value="0">
+    <label class="flex items-center gap-2">
+      <input type="checkbox" name="places" value="1"
+             class="checkbox"
+             {% if places_only %}checked{% endif %}>
+      Only events with places left
+    </label>
+    <button type="submit" class="btn btn-sm">Filter</button>
+  </form>
+  {% if places_only %}
+    <p class="filter-note text-sm">
+      Showing only events with places left.
+      <a href="?places=0">Show all</a></p>
+  {% endif %}
   <ul class="event-list space-y-3">
     {% for event in upcoming %}
       {% partialdef event-row inline %}
@@ -14,11 +29,9 @@
              href="{% url 'events:detail' event.id %}">
             {{ event.title }}
           </a>
-          {% timezone event.timezone %}
-            <span class="text-sm">
-              {{ event.starts_at|date:"D j M Y, H:i T" }}
-            </span>
-          {% endtimezone %}
+          <span class="text-sm">
+            {% include "events/when.html" %}
+          </span>
           {% if event.starts_at <= now %}
             {% if now < event.ends_at %}
               <span class="badge badge-primary">

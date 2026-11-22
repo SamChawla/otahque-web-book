@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Copy {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  <h1>Copy {{ event.title }}</h1>
+  <p>Otahque saves a new draft with the same title,
+     description, place, time zone, capacity, and length.
+     Registrations and other organizers are not copied.</p>
+  <form method="post" class="card space-y-4 border
+        border-base-300 bg-base-100 p-6">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">
+      Save copy as a draft</button>
+  </form>
+  <p>
+    <a href="{{ event.get_absolute_url }}">
+      Back to the event</a>
+  </p>
+{% endblock %}

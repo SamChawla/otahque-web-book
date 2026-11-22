@@ -1,0 +1,7 @@
+{% autoescape off %}Hello from Otahque.
+
+{% block content %}{% endblock content %}
+
+-- 
+Otahque, community events
+{% endautoescape %}

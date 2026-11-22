@@ -1,0 +1,5 @@
+{% load otahque_widgets %}
+<input type="{{ widget.type }}" name="{{ widget.name }}"
+       {% if widget.value != None %}
+       value="{{ widget.value|stringformat:'s' }}"{% endif %}
+       {{ widget.attrs|with_class:"checkbox" }}>

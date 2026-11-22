@@ -50,9 +50,9 @@ if ADMIN_URL.startswith('/') or not ADMIN_URL.endswith('/'):
         'with it; see .env.example.'
     )
 
-# Pages for signed-in people send everyone else here.
-# Chapter 27 points it at the members' sign-in page.
-LOGIN_URL = 'admin:login'
+# Pages for signed-in people send everyone else to the
+# members' sign-in page.
+LOGIN_URL = 'account_login'
 
 
 # Application definition
@@ -68,6 +68,14 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'events.apps.EventsConfig',
     'registrations.apps.RegistrationsConfig',
+    'audit.apps.AuditConfig',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
+    'allauth.mfa',
+    'phonenumber_field',
 ]
 
 # Otahque's own user model, set before the first migration.
@@ -80,8 +88,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'accounts.middleware.TimezoneMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -142,6 +152,8 @@ AUTH_PASSWORD_VALIDATORS = [
             'password_validation.'
             'MinimumLengthValidator'
         ),
+        # NIST SP 800-63B-4: 15 for a password used alone.
+        'OPTIONS': {'min_length': 15},
     },
     {
         'NAME': (
@@ -190,3 +202,85 @@ MAILERS = {
         ),
     },
 }
+
+
+# Accounts: django-allauth, with Otahque's email-only User.
+# See docs/adr/ADR-003-accounts-allauth.md.
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = [
+    'email*', 'password1*', 'password2*',
+]
+ACCOUNT_SIGNUP_FORM_CLASS = 'accounts.forms.SignupForm'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+
+# After signing in, members land on their own profile.
+LOGIN_REDIRECT_URL = 'accounts:profile'
+
+
+ACCOUNT_ADAPTER = 'accounts.adapter.AccountAdapter'
+
+# Domains accepted even when a disposable-address list
+# names them; separated by commas.
+EMAIL_DOMAINS_ALLOWED = config(
+    'DJANGO_EMAIL_DOMAINS_ALLOWED', default='', cast=Csv()
+)
+
+
+# A first sign-in with a provider still shows the sign-up
+# form, so every member gives a display name.
+SOCIALACCOUNT_AUTO_SIGNUP = False
+
+# Sign-in with Google and GitHub, only for the providers
+# whose client ID is in .env. Secrets never go in Git.
+SOCIALACCOUNT_PROVIDERS = {}
+for provider in ('google', 'github'):
+    client_id = config(
+        f'DJANGO_{provider.upper()}_CLIENT_ID', default=''
+    )
+    if client_id:
+        SOCIALACCOUNT_PROVIDERS[provider] = {'APPS': [{
+            'client_id': client_id,
+            'secret': config(
+                f'DJANGO_{provider.upper()}_SECRET'
+            ),
+        }]}
+
+
+# Passwords, sign-in codes, and two-factor sign-in
+# (Chapter 29). See docs/design/passwords-and-two-factor.md.
+
+# A reset link works for one hour (Django: three days), and
+# an address without an account gets no email.
+PASSWORD_RESET_TIMEOUT = 60 * 60
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
+
+# Otahque's subject line, and a notice when a password, an
+# email address, or two-factor sign-in changes.
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Otahque] '
+ACCOUNT_EMAIL_NOTIFICATIONS = True
+
+# Sign in with a code sent by email, typed in the same
+# browser; it works for ten minutes.
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 10 * 60
+
+# Two-factor sign-in: an authenticator app, recovery codes.
+MFA_SUPPORTED_TYPES = ['totp', 'recovery_codes']
+MFA_TOTP_ISSUER = 'Otahque'
+
+# The code typed to turn it on is used up too (NIST).
+MFA_FORMS = {
+    'activate_totp':
+        'accounts.forms.OneUseActivateTOTPForm',
+}
+
+# Phone numbers (Chapter 31): a number typed without a
+# country code is read as an Indian number.
+PHONENUMBER_DEFAULT_REGION = 'IN'

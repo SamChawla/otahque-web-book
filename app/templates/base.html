@@ -8,14 +8,23 @@
   <title>{% block title %}Otahque{% endblock %}</title>
   <link rel="stylesheet"
         href="{% static 'otahque/site.css' %}">
+  <script src="{% static 'otahque/site.js' %}"
+          defer></script>
 </head>
 <body>
   {% include "includes/site_nav.html" %}
   <main class="mx-auto max-w-2xl space-y-4 px-4 pt-6 pb-12">
     {% if messages %}
-      <div role="status">
+      <div role="status" class="space-y-2">
         {% for message in messages %}
-          <p class="alert alert-success">{{ message }}</p>
+          <div class="alert
+            {% if message.level_tag == 'error' %}alert-error
+            {% else %}alert-success{% endif %}">
+            <span>{{ message }}</span>
+            <button type="button" data-close
+                    class="btn btn-ghost btn-sm ml-auto">
+              Close</button>
+          </div>
         {% endfor %}
       </div>
     {% endif %}

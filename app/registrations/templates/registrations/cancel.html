@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Cancel your place | Otahque{% endblock %}
+
+{% block content %}
+  <h1>Cancel your place at {{ event.title }}?</h1>
+  {% if registration.status == 'cancelled' %}
+    <p>This place is already cancelled.</p>
+  {% elif started %}
+    <p>The event has started, so this place can no longer
+       be cancelled.</p>
+  {% else %}
+    <p>Your place is released for someone else. If
+       registration has closed, you cannot take it
+       back.</p>
+    {% if late %}
+      <p class="rounded-box border border-base-content
+                px-3 py-1 text-sm">
+        The cancellation deadline has passed, so this
+        counts as a late cancellation.</p>
+    {% endif %}
+    <form method="post" class="card space-y-4 border
+          border-base-300 bg-base-100 p-6">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-error">
+        Cancel my place</button>
+    </form>
+  {% endif %}
+  <p>
+    <a href="{% url 'registrations:mine' %}">Back to my
+      registrations</a>
+  </p>
+{% endblock %}

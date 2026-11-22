@@ -1,0 +1,15 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}A notice about your Otahque account:
+
+{% block notification_message %}
+{% endblock notification_message %}
+
+If this was not you, reset your password now and turn on
+two-factor sign-in from your profile. The change came
+from:
+
+- IP address: {{ ip }}
+- Browser: {{ user_agent }}
+- Time (UTC): {{ timestamp }}
+{% endblock content %}

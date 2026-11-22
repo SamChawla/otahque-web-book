@@ -1,0 +1,10 @@
+{% load allauth %}
+<form method="{{ attrs.method }}"
+      class="card space-y-4 border border-base-300
+             bg-base-100 p-6"
+      {% if attrs.action %}
+        action="{{ attrs.action }}"
+      {% endif %}>
+  {% slot body %}{% endslot %}
+  {% slot actions %}{% endslot %}
+</form>

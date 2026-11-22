@@ -1,0 +1,12 @@
+{% load allauth %}
+{% if attrs.href %}
+<p><a href="{{ attrs.href }}" class="link">
+  {% slot %}{% endslot %}</a></p>
+{% else %}
+<button class="btn btn-primary"
+  {% if attrs.form %}form="{{ attrs.form }}"{% endif %}
+  {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+  {% if attrs.value %}value="{{ attrs.value }}"{% endif %}
+  type="{{ attrs.type|default:'submit' }}">
+  {% slot %}{% endslot %}</button>
+{% endif %}

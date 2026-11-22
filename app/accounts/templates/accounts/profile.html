@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load tz %}
+
+{% block title %}Your profile | Otahque{% endblock %}
+
+{% block content %}
+  <h1>Your profile</h1>
+  <p>Signed in as {{ user.email }}. Your display name is
+     public on the pages of events you organize.</p>
+  {% get_current_timezone as zone %}
+  <p class="text-sm">Event times are shown to you in
+     {{ zone }}: your profile's zone if you chose one,
+     otherwise your browser's, otherwise UTC.</p>
+  <form method="post" class="card space-y-4 border
+        border-base-300 bg-base-100 p-6">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">
+      Save profile</button>
+  </form>
+  <h2 class="mt-8">Account security</h2>
+  <ul class="space-y-2">
+    <li>
+      {% if user.has_usable_password %}
+        <a href="{% url 'account_change_password' %}">
+          Change password</a>
+      {% else %}
+        You have no password yet.
+        <a href="{% url 'account_set_password' %}">
+          Set a password</a>
+      {% endif %}
+    </li>
+    <li>
+      <a href="{% url 'mfa_index' %}">Two-factor sign-in</a>:
+      <strong>{{ two_factor|yesno:"on,off" }}</strong>
+      {% if unconfirmed and not two_factor %}
+        <span class="block text-sm">
+          Confirm your email address first, from
+          <a href="{% url 'account_email' %}">Email
+            addresses</a>.</span>
+      {% endif %}
+    </li>
+    <li><a href="{% url 'account_email' %}">
+      Email addresses</a></li>
+    <li><a href="{% url 'socialaccount_connections' %}">
+      Connected accounts</a></li>
+  </ul>
+{% endblock %}

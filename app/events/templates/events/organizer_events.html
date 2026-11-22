@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Organizer access | Otahque{% endblock %}
+
+{% block content %}
+  <h1>Organizer access</h1>
+  <p>Every event, newest first, with its current
+     organizers. Open one to add or remove an organizer.</p>
+  <ul class="event-list space-y-3">
+    {% for event in events %}
+      <li class="event-row card border border-base-300
+                 bg-base-100 p-4">
+        <p>
+          <a class="font-semibold"
+             href="{% url 'events:organizers' event.pk %}">
+            {{ event.title }}</a>
+          <span class="badge badge-outline">
+            {{ event.get_status_display }}</span>
+        </p>
+        <p class="text-sm">
+          {% for organizer in event.current_organizers %}
+            {% if not forloop.first %}·{% endif %}
+            {{ organizer.member.display_name }}
+          {% empty %}
+            No current organizer
+          {% endfor %}
+        </p>
+      </li>
+    {% empty %}
+      <li class="event-empty card border border-base-300
+                 bg-base-100 p-4">
+        There are no events yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

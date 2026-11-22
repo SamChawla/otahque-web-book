@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Organizers of {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  {% url 'events:remove_organizer' event.pk as remove_url %}
+  <h1>Organizers of {{ event.title }}</h1>
+  <p><a href="{% url 'events:organizer_events' %}">
+    All events</a></p>
+  <ul class="space-y-3">
+    {% for assignment in assignments %}
+      <li class="card border border-base-300 bg-base-100
+                 p-4">
+        <p class="font-semibold">
+          {{ assignment.member.display_name }}</p>
+        <p class="text-sm">{{ assignment.member.email }}</p>
+        {% if assignment.revoked_at %}
+          <p class="text-sm">Removed
+            {{ assignment.revoked_at|date:"j M Y, H:i" }}</p>
+        {% else %}
+          <form method="post" action="{{ remove_url }}">
+            {% csrf_token %}
+            <button type="submit" name="assignment"
+                    value="{{ assignment.pk }}"
+                    class="btn btn-outline btn-sm">
+              Remove</button>
+          </form>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="card border border-base-300 bg-base-100
+                 p-4">This event has no organizers.</li>
+    {% endfor %}
+  </ul>
+  <h2>Add an organizer</h2>
+  <p>The member must be active and in the Organizers
+     group, which the admin site sets.</p>
+  <form method="post" class="card space-y-4 border
+        border-base-300 bg-base-100 p-6">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">
+      Add organizer</button>
+  </form>
+{% endblock %}

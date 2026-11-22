@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Attendees of {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  <h1>Attendees of {{ event.title }}</h1>
+  <p>{{ places|length }} of {{ event.capacity }} places
+     taken. Cancellations: {{ counts.cancelled }}, of
+     which late: {{ counts.late }}.</p>
+  <p class="text-sm">Contact details are for running this
+     event only. Do not copy them elsewhere.</p>
+  {% if places %}
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Registered</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for place in places %}
+            {% with person=place.member %}
+            <tr>
+              <td>{{ person.display_name }}</td>
+              <td>{{ person.email }}</td>
+              {% with phone=person.profile.phone %}
+              <td>
+                {{ phone.as_international|default:"Not given" }}
+              </td>
+              {% endwith %}
+              <td>{{ place.registered_at|date:"j M Y, H:i" }}
+              </td>
+            </tr>
+            {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>Nobody has a place yet.</p>
+  {% endif %}
+  <p>
+    <a href="{{ event.get_absolute_url }}">Back to the
+      event</a>
+  </p>
+{% endblock %}

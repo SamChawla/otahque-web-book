@@ -1,0 +1,44 @@
+<section class="space-y-3 border-t border-base-300 pt-4"
+         aria-label="Registration">
+  {% if place %}
+    <p><span class="badge badge-success">You have a
+      place</span> Registered
+      {{ place.registered_at|date:"j M Y, H:i" }}.</p>
+    <p><a href="{% url 'registrations:cancel' place.pk %}">
+      Cancel my place</a></p>
+  {% elif reasons %}
+    <ul class="list-disc pl-5">
+      {% for reason in reasons %}
+        <li>{{ reason }}</li>
+      {% endfor %}
+    </ul>
+    {% if unverified %}
+      <p><a href="{% url 'account_email' %}">Confirm your
+        email address</a>, then come back.</p>
+    {% endif %}
+  {% elif not user.is_authenticated %}
+    {% url 'account_login' as sign_in %}
+    {% with back=event.get_absolute_url|urlencode %}
+      <a class="btn btn-primary"
+         href="{{ sign_in }}?next={{ back }}">
+        Sign in to register</a>
+    {% endwith %}
+  {% elif needs_phone %}
+    <a class="btn btn-primary"
+       href="{% url 'registrations:phone' event.pk %}">
+      Register</a>
+    {% include "registrations/sharing.html" %}
+  {% else %}
+    <form method="post"
+          action="{% url 'registrations:register' event.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">
+        Register</button>
+    </form>
+    {% include "registrations/sharing.html" %}
+  {% endif %}
+  {% if can_see_attendees %}
+    <p><a href="{% url 'registrations:attendees' event.pk %}">
+      Attendee list</a></p>
+  {% endif %}
+</section>

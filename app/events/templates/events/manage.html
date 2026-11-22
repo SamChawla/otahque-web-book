@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}My events | Otahque{% endblock %}
+
+{% block content %}
+  <h1>My events</h1>
+  <ul class="event-list space-y-3">
+    {% for event in events %}
+      <li class="event-row card border border-base-300
+                 bg-base-100 p-4">
+        <p>
+          <a class="font-semibold"
+             href="{{ event.get_absolute_url }}">
+            {{ event.title }}</a>
+          {% if event.status == 'draft' %}
+            <span class="badge badge-outline">Draft</span>
+          {% elif event.status == 'published' %}
+            <span class="badge badge-primary">
+              Published</span>
+          {% else %}
+            <span class="badge badge-error">Cancelled</span>
+          {% endif %}
+        </p>
+        <p class="text-sm">
+          {% include "events/when.html" %}</p>
+        <p class="flex flex-wrap items-center gap-4 text-sm">
+          <a href="{% url 'events:edit' event.pk %}">Edit</a>
+          <a href="{% url 'events:copy' event.pk %}">Copy</a>
+          {% if event.status == 'draft' %}
+            <a href="{% url 'events:delete' event.pk %}">
+              Delete</a>
+          {% endif %}
+        </p>
+      </li>
+    {% empty %}
+      <li class="event-empty card border border-base-300
+                 bg-base-100 p-4">
+        You do not organize any events yet.</li>
+    {% endfor %}
+  </ul>
+  <p><a href="{% url 'events:create' %}">New event</a></p>
+{% endblock %}

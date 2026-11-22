@@ -1,0 +1,18 @@
+<li class="space-y-1">
+  <a href="{{ place.event.get_absolute_url }}">
+    {{ place.event.title }}</a>
+  <span class="block text-sm">
+    {% include "events/when.html" with event=place.event %}
+  </span>
+  {% if place.event.status == 'cancelled' %}
+    <span class="badge badge-error">Event cancelled</span>
+  {% endif %}
+  {% if place.status == 'cancelled' and place.is_late %}
+    <span class="badge">Cancelled late</span>
+  {% elif place.status == 'cancelled' %}
+    <span class="badge">Cancelled</span>
+  {% elif now < place.event.starts_at %}
+    <a href="{% url 'registrations:cancel' place.pk %}">
+      Cancel my place</a>
+  {% endif %}
+</li>

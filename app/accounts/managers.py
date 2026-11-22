@@ -1,3 +1,4 @@
+"""How Otahque creates members and superusers."""
 from django.contrib.auth.base_user import BaseUserManager
 
 
@@ -12,12 +13,14 @@ class UserManager(BaseUserManager):
         return super().normalize_email(email).lower()
 
     def get_by_natural_key(self, email):
+        """Find the member with this email, in any case."""
         return super().get_by_natural_key(
             self.normalize_email(email)
         )
 
     def create_user(self, email, password=None,
                     **extra_fields):
+        """Create and save a member with this email."""
         if not email:
             raise ValueError('An email address is required.')
         email = self.normalize_email(email)
@@ -28,6 +31,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None,
                          **extra_fields):
+        """Create and save a member with every permission."""
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         for flag in ('is_staff', 'is_superuser'):

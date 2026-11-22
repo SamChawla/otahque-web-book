@@ -1,0 +1,4 @@
+{% load otahque_widgets %}
+<textarea name="{{ widget.name }}"
+          {{ widget.attrs|with_class:"textarea w-full" }}>
+{% if widget.value %}{{ widget.value }}{% endif %}</textarea>

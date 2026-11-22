@@ -1,0 +1,12 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}Your Otahque sign-in code:
+
+{{ code }}
+
+Type it in the browser window where you asked for it,
+within ten minutes. It does not work anywhere else.
+
+If you did not ask, ignore this email; nobody can sign in
+without the code.
+{% endblock content %}

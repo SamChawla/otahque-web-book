@@ -1,6 +1,6 @@
 # Application code
 
-Chapter 24 checkpoint, 15 November 2026; complete chapter draft for review.
+Chapter 28 checkpoint, 17 November 2026; complete chapter draft for review.
 This folder is the continuous project source: the Django 6.1.2 project
 configuration, manage.py, the environment-check helper, installed
 accounts, events, and registrations apps, the uv project files (pyproject.toml and uv.lock), and the npm
@@ -66,7 +66,33 @@ shown to current organizers and view_event holders only), a messages block in ba
 New event link for add_event holders, config/renderers.py (TemplatesSetting) with
 templates/forms/field.html and widget templates under templates/django/forms/widgets/, theme
 error and success colours, static/otahque/event-zone.js, and docs/design/event-draft-form.md
-(97 tests). Running migrate creates the
+(97 tests). Chapter 25 adds the Edit event page, with no migration: events/<id>/edit/ (named
+events:edit) for current organizers who hold events.change_event (Event.has_organizer() and
+can_be_edited_by(); 404 when the event is hidden, 403 when refused); EventForm with an instance
+showing saved times in the event's zone (with a line of both readings), keeping untouched times,
+and asking for a tick box before a new zone moves the event; clean_capacity() and
+Event.clean() (capacity never below the active registrations, in the page and the admin;
+CAPACITY_MESSAGE shared with the constraint); a places-taken notice; an Edit event link;
+templates/django/forms/widgets/checkbox.html; wrapping help in templates/forms/field.html; and
+the design note extended (124 tests). Chapter 26 adds publishing, cancelling, and deleting: Event.description
+(events/0004_event_description, blank for a draft), get_absolute_url(), readiness_problems(), publish(),
+cancel(), delete_draft() and copy_as_draft(); the organized_by() query; the My events page at
+events/manage/; POST-only publish and cancel views, a delete page that confirms on GET and deletes on
+POST, and a copy page; cancelled events show a Cancelled tag and leave the lists; a textarea widget
+template; error messages styled; and docs/design/event-states.md (165 tests). Chapter 27 adds member accounts with django-allauth 65.22.1
+(ADR-003): sign-up asking a display name and an optional time zone (accounts/forms.py), refusing
+disposable addresses with disposable-email-domains (accounts/adapter.py), sign-in by email in any case,
+sign-out by POST, Google and GitHub from .env, no linking by email alone; accounts.Profile
+(accounts/0003_profile) and the profile page at accounts/profile/; LOGIN_URL = account_login;
+allauth templates in Otahque style under templates/allauth/; "Organized by" on event pages; and
+docs/design/sign-in.md (190 tests). Chapter 28 adds no package and no migration: the event list
+remembers "Only events with places left" in the session (saved only when changed; cleared at sign-out);
+messages explained, with a close button in static/otahque/site.js; site.js also writes the browser's
+zone to the otahque_tz cookie; accounts/timezones.py (resolve_timezone: profile, then a real-zone cookie,
+then UTC; to_user_time) and accounts/middleware.py (TimezoneMiddleware after AuthenticationMiddleware,
+skipping the admin, which stays in UTC); EventForm and CopyForm clean under UTC (UtcCleaning);
+Event.differs_for() and events/templates/events/when.html show the venue's time and the viewer's; and
+docs/design/sessions-and-time-zones.md (224 tests). Running migrate creates the
 tables in each reader's own db.sqlite3, which Git ignores; this folder
 holds no database, saved users or events, or public server. docs/design/erd.md holds
 the proposed first-release data model from Chapter 15 (status Proposed;

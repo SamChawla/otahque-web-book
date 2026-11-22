@@ -1,0 +1,12 @@
+{% load tz %}
+{% with moment=at|default:event.starts_at %}
+{% with shape=format|default:"D j M Y, H:i T" %}
+  {% timezone event.timezone %}
+    {{ moment|date:shape }}
+  {% endtimezone %}
+  {% if event.differs_for %}
+    <span class="your-time block text-sm">
+      Your time: {{ moment|date:shape }}</span>
+  {% endif %}
+{% endwith %}
+{% endwith %}

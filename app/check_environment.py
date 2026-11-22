@@ -1,3 +1,4 @@
+"""Show which Python, environment, and Django run here."""
 import sys
 
 import django
