@@ -40,6 +40,34 @@ class RegistrationInline(admin.TabularInline):
         return queryset.select_related('member')
 
 
+class EventAdminForm(forms.ModelForm):
+    """The admin's event form, with the version check."""
+
+    seen_version = forms.IntegerField(
+        widget=forms.HiddenInput, required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        """Send the version the page is opened at."""
+        super().__init__(*args, **kwargs)
+        self.fields['seen_version'].initial = (
+            self.instance.version
+        )
+
+    def clean(self):
+        """Refuse a save from an out-of-date page."""
+        cleaned = super().clean()
+        if (self.instance.pk is not None
+                and cleaned.get('seen_version')
+                != self.instance.version):
+            raise ValidationError(
+                'This event was changed after you opened '
+                'this page. Reload it and make your changes '
+                'again.', code='stale',
+            )
+        return cleaned
+
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     """Events, with local start times and places left."""
@@ -54,8 +82,10 @@ class EventAdmin(admin.ModelAdmin):
               'timezone', 'local_start', 'location',
               'capacity', 'registration_opens_at',
               'registration_closes_at',
-              'cancellation_deadline', 'phone_required']
+              'cancellation_deadline', 'phone_required',
+              'seen_version']
     readonly_fields = ['local_start']
+    form = EventAdminForm
     inlines = [RegistrationInline]
     actions = None
 
@@ -72,6 +102,26 @@ class EventAdmin(admin.ModelAdmin):
              'cancellation_deadline'], UTC_HELP,
         )
         return super().get_form(request, obj, **kwargs)
+
+    def get_object(self, request, object_id, from_field=None):
+        """Lock the event while a change is saved.
+
+        The admin saves inside a transaction, so the lock
+        lasts until the save is committed.
+        """
+        event = super().get_object(request, object_id,
+                                   from_field)
+        if event is not None and request.method == 'POST':
+            return Event.objects.select_for_update().get(
+                pk=event.pk
+            )
+        return event
+
+    def save_model(self, request, obj, form, change):
+        """Count this save as a new version of the event."""
+        if change:
+            obj.version += 1
+        super().save_model(request, obj, form, change)
 
     @admin.display(description='Start (UTC)',
                    ordering='starts_at')

@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 33: Transactions, concurrency, and the last available seat. Give the last place to exactly one member: what a transaction does...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter33/section-33-3/">
+<title>How We Build It · Chapter 33 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter33/">← Chapter 33 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-33-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-52">The Custom Way</a></li><li><a href="#topic-64">The Django Way</a></li><li><a href="#topic-201">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 7 figures · 4 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter33:33.3" data-progress-title="Section 33.3" data-reader-prev="section-33-2.html" data-reader-next="section-33-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 33.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter33/">Chapter 33 · Transactions, concurrency, and the last available seat</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter33/section-33-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter33/section-33-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter33/section-33-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter33/section-33-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter33/section-33-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-33-3" data-block="50">How We Build It</h2><p class="" data-block="51">Start from Chapter 32, in the folder containing <code>manage.py</code>, with Otahque on PostgreSQL 18, 343 passing tests, every migration applied, and the work committed. No package is added. The changed files are <code>events/models.py</code>, <code>events/views.py</code>, <code>events/forms.py</code>, <code>events/admin.py</code>, <code>events/templates/events/edit.html</code>, <code>events/tests.py</code>, and <code>registrations/tests.py</code>, plus one migration, two templates, the stylesheet source, and three design notes. The visible result: a full event stays full however many people press Register, a stale edit is refused with a message, and the “full” and “closed” states are easier to read. The chapter’s checks ran in Windows PowerShell 5.1 and Git Bash, against PostgreSQL 18.3.</p><h3 class="" id="topic-52" data-block="52">The Custom Way</h3><p class="" data-block="53">Before Django does it for you, see a row lock with your own eyes, in two psql windows. Open two terminals and, in each, sign in as Otahque’s role:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="54" tabindex="0"><code>psql -h localhost -U otahque -d otahque</code></pre><p class="" data-block="55">In the first window, start a transaction and lock the first event’s row:</p><p class="code-label code-label--file" aria-hidden="true">psql, window 1</p><pre class="code-listing code-listing--file" data-block="56" tabindex="0"><code>BEGIN;
+SELECT id, title FROM events_event WHERE id = 1 FOR UPDATE;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="57" tabindex="0"><code>BEGIN
+ id |     title
+----+---------------
+  1 | Python meetup
+(1 row)</code></pre><p class="" data-block="58">In the second window, type the same two lines. psql answers <code>BEGIN</code> and then nothing more: the <code>SELECT</code> is waiting for the row. Go back to the first window and type <code>COMMIT;</code>. At once the second window shows the row:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="59" tabindex="0"><code>BEGIN
+ id |     title
+----+---------------
+  1 | Python meetup
+(1 row)</code></pre><p class="" data-block="60">Type <code>COMMIT;</code> in the second window too. Now try a time limit. Lock the row again in the first window, then run this in the second:</p><p class="code-label code-label--file" aria-hidden="true">psql, window 2</p><pre class="code-listing code-listing--file" data-block="61" tabindex="0"><code>BEGIN;
+SET LOCAL lock_timeout = &#x27;2s&#x27;;
+SELECT id, title FROM events_event WHERE id = 1 FOR UPDATE;
+ROLLBACK;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="62" tabindex="0"><code>BEGIN
+SET
+ERROR:  canceling statement due to lock timeout
+CONTEXT:  while locking tuple (0,1) in relation
+    &quot;events_event&quot;
+ROLLBACK</code></pre><p class="" data-block="63">After two seconds the second window gives up with an error, and <code>ROLLBACK;</code> ends its failed transaction. Type <code>COMMIT;</code> in the first window and <code>\q</code> in both. Every part of the Django Way is here already: <code>FOR UPDATE</code> locks, the other session waits, and <code>lock_timeout</code> ends the wait. Django adds the transaction around the request, the query, and a test that proves it.</p><h3 class="" id="topic-64" data-block="64">The Django Way</h3><h4 data-block="65">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="66" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="67" tabindex="0"><code>Found 343 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 343 tests in ...s
+
+OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="68" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="69" tabindex="0"><code>... Move to PostgreSQL</code></pre><h4 data-block="70">Step 2: Picture the race</h4><p class="" data-block="71">Before code, read Figure 33.1 again and name the two moments in <code>register()</code>: the count (<code>places_taken()</code>, inside <code>registration_problems()</code>) and the insert (<code>registrations.create()</code>). The race lives between them. Everything this chapter changes either closes that gap or makes it visible in a test.</p><h4 data-block="72">Step 3: A test that makes the race happen</h4><p class="" data-block="73">Tests first, and this test must fail every time without the fix. At the top of <code>registrations/tests.py</code>, the imports change in three places:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (replace the first two imports)</p><pre class="code-listing code-listing--file" data-block="74" tabindex="0"><code>import threading
+from datetime import UTC, datetime, timedelta
+from unittest import mock</code></pre><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (replace the TestCase import)</p><pre class="code-listing code-listing--file" data-block="75" tabindex="0"><code>from django.contrib.auth.models import Permission
+from django.test import (
+    TestCase, TransactionTestCase, skipUnlessDBFeature,
+)</code></pre><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (replace the events.models import)</p><pre class="code-listing code-listing--file" data-block="76" tabindex="0"><code>from events.models import (
+    ORGANIZERS, Event, OrganizerAssignment,
+)
+from events.tests import as_sent</code></pre><p class="" data-block="77">Then three helpers at the end of the file. <code>at_once()</code> runs actions in threads, each with its own connection, closed at the end. <code>meet_after_counting()</code> patches <code>Event.places_taken</code> so that each request waits for the other right after counting. <code>organizer()</code> makes Sam an organizer without any group, because <code>TransactionTestCase</code> empties every table after each test, including the groups Chapter 30’s migration made:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="78" tabindex="0"><code>def at_once(*actions):
+    &quot;&quot;&quot;Run each action in its own thread; return outcomes.
+
+    An outcome is what the action returned, or the codes
+    of the ValidationError it raised. Each thread has its
+    own database connection, closed at the end, as two
+    requests would.
+    &quot;&quot;&quot;
+    outcomes = [None] * len(actions)
+
+    def run(n, action):
+        try:
+            outcomes[n] = action()
+        except ValidationError as error:
+            outcomes[n] = [e.code for e in error.error_list]
+        finally:
+            connection.close()
+
+    threads = [threading.Thread(target=run, args=(n, act))
+               for n, act in enumerate(actions)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    return outcomes
+
+
+def meet_after_counting(timeout=2):
+    &quot;&quot;&quot;Make each request wait, after counting, for the other.
+
+    Without a lock both count before either inserts, so
+    the race happens every time. With the lock the other
+    request is still waiting for the event row, so the
+    meeting times out and the requests take turns.
+    &quot;&quot;&quot;
+    barrier = threading.Barrier(2, timeout=timeout)
+    count = Event.places_taken
+
+    def counted(event):
+        taken = count(event)
+        try:
+            barrier.wait()
+        except threading.BrokenBarrierError:
+            pass
+        return taken
+
+    return mock.patch.object(Event, &#x27;places_taken&#x27;, counted)
+
+
+def organizer(event):
+    &quot;&quot;&quot;Create Sam, who may edit event, without any group.
+
+    TransactionTestCase empties every table after a test,
+    including the groups Chapter 30&#x27;s migration made, so
+    the permission is given to Sam directly.
+    &quot;&quot;&quot;
+    sam = User.objects.create_user(&#x27;sam@example.org&#x27;,
+                                   display_name=&#x27;Sam&#x27;)
+    sam.user_permissions.add(
+        Permission.objects.get(codename=&#x27;change_event&#x27;)
+    )
+    OrganizerAssignment.objects.create(event=event,
+                                       member=sam)
+    return sam</code></pre><p class="" data-block="79">Now the test. <code>skipUnlessDBFeature(&#x27;has_select_for_update&#x27;)</code> skips it on a database that cannot lock rows, such as SQLite when <code>DB_ENGINE</code> is empty:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="80" tabindex="0"><code>@skipUnlessDBFeature(&#x27;has_select_for_update&#x27;)
+class RaceTests(TransactionTestCase):
+    &quot;&quot;&quot;Requests for one event at the same moment.
+
+    PostgreSQL only. Each test commits its rows, so other
+    threads see them, and the tables are emptied after it.
+    &quot;&quot;&quot;
+
+    def setUp(self):
+        self.event = soon(capacity=1)
+        self.now = timezone.now()
+
+    def register(self, member):
+        &quot;&quot;&quot;Return an action that registers, as a request does.&quot;&quot;&quot;
+        def action():
+            event = Event.objects.get(pk=self.event.pk)
+            event.register(member, self.now)
+            return &#x27;place&#x27;
+        return action
+
+    def test_the_last_place_goes_to_one_member(self):
+        sai = verified(&#x27;sai@example.org&#x27;)
+        raj = verified(&#x27;raj@example.org&#x27;)
+        with meet_after_counting():
+            outcomes = at_once(self.register(sai),
+                               self.register(raj))
+        self.assertCountEqual(outcomes, [&#x27;place&#x27;, [&#x27;full&#x27;]])
+        self.assertEqual(self.event.places_taken(), 1)</code></pre><figure data-block="81"><a href="/assets/chapter33/figure-33-3-barrier.png" aria-label="Open Figure 33.3 at full size"><img src="/assets/chapter33/figure-33-3-barrier.png" alt="Two grey zones of three numbered cards. Left, without the lock: 1 both count, each sees 0 taken; 2 both reach the meeting point, the barrier opens; 3, red, both insert, two places, the test fails. Right, with the lock: 1 one counts and one waits for the row; 2 the meeting times out after 2 seconds and the barrier breaks; 3, green, turns, one place then full, the test passes." width="1500" height="810" loading="lazy"></a><figcaption data-block="82">Figure 33.3 — Where the test’s meeting point sits, and what it does with and without the lock.</figcaption></figure><p class="" data-block="83">Run only these tests while you work on them:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="84" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="85" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: Element counts were not equal:
+Ran 1 test in ...s
+
+FAILED (failures=1)</code></pre><p class="" data-block="86">The assertion names both outcomes:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="87" tabindex="0"><code>AssertionError: Element counts were not equal:
+First has 2, Second has 1:  &#x27;place&#x27;
+First has 0, Second has 1:  [&#x27;full&#x27;]</code></pre><p class="" data-block="88">Two places for a capacity of one: the race, on demand. The test emptied its tables afterwards, so your own data is untouched.</p><div class="callout callout--error"><p class="callout__title" data-block="89">Common Error: the race test passes, or cannot see its own event</p><p class="" data-block="90">Written as a <code>TestCase</code>, the same test either fails with <code>Event.DoesNotExist</code> inside a thread, because the thread’s connection cannot see rows that were never committed, or, if both calls run in one thread, passes every time. Neither proves anything. Race tests use <code>TransactionTestCase</code>, and one connection per thread.</p></div><h4 data-block="91">Step 4: Lock the event row</h4><p class="" data-block="92">In <code>events/models.py</code>, add a method above <code>register()</code> and replace <code>register()</code> with this version:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (replace register())</p><pre class="code-listing code-listing--file" data-block="93" tabindex="0"><code>    def locked(self):
+        &quot;&quot;&quot;Return this event&#x27;s row, locked until commit.
+
+        Another request that asks for the row waits until
+        this transaction ends. Call it inside atomic().
+        &quot;&quot;&quot;
+        return Event.objects.select_for_update().get(
+            pk=self.pk
+        )
+
+    def register(self, member, now):
+        &quot;&quot;&quot;Give member a place, or raise ValidationError.
+
+        The event row is locked first, so requests for it
+        take turns, and every check reads the locked row,
+        not this copy, which may be out of date. The unique
+        rule is still the backstop for the same member.
+        &quot;&quot;&quot;
+        with transaction.atomic():
+            event = self.locked()
+            problems = event.registration_problems(member,
+                                                   now)
+            if problems:
+                raise refusal(problems)
+            try:
+                with transaction.atomic():
+                    return event.registrations.create(
+                        member=member, registered_at=now
+                    )
+            except IntegrityError:
+                # Only the one-active-place rule means a
+                # repeat; any other failure is re-raised.
+                if event.place_of(member) is None:
+                    raise
+            raise refusal([&#x27;already_registered&#x27;])</code></pre><p class="" data-block="94">Two changes matter. <code>self.locked()</code> asks for the row and its lock, so a second request for the same event waits here. And every check after it reads <code>event</code>, the row the lock returned, not <code>self</code>, the copy the view loaded: the problems, the count, the insert, and the repeat check. Run the test again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="95" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="96" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...s
+
+OK</code></pre><p class="" data-block="97">It passes, and takes about two seconds longer: that is the meeting point timing out while the second request waits for the lock, exactly as Figure 33.3 shows.</p><div class="callout callout--error"><p class="callout__title" data-block="98">Common Error: select_for_update cannot be used outside of a transaction</p><p class="" data-block="99">Called in autocommit, outside <code>transaction.atomic()</code>, <code>select_for_update()</code> raises <code>TransactionManagementError</code>, because a lock would end the moment the query did. <code>locked()</code> is only called inside <code>atomic()</code>. Inside a <code>TestCase</code> the error does not appear, because the whole test is one transaction: one more reason to test locks with <code>TransactionTestCase</code>.</p></div><h4 data-block="100">Step 5: The same member twice</h4><p class="" data-block="101">Chapter 31’s double click, now with two real requests. Add this method to <code>RaceTests</code>, after the first test:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (in RaceTests, at the end)</p><pre class="code-listing code-listing--file" data-block="102" tabindex="0"><code>    def test_the_same_member_twice_gets_one_place(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            capacity=5
+        )
+        sai = verified(&#x27;sai@example.org&#x27;)
+        with meet_after_counting():
+            outcomes = at_once(self.register(sai),
+                               self.register(sai))
+        self.assertCountEqual(
+            outcomes, [&#x27;place&#x27;, [&#x27;already_registered&#x27;]]
+        )
+        self.assertEqual(self.event.places_taken(), 1)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="103" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="104" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK</code></pre><p class="" data-block="105">It passes without any new code. With five places free, the lock would not even be needed: the one-active-place rule from Chapter 21 and the inner <code>atomic()</code> from Chapter 31 refuse the second insert, and <code>register()</code> recognizes the repeat. This is the first time that backstop has been proved under real concurrency.</p><h4 data-block="106">Step 6: A time limit, and “busy”</h4><p class="" data-block="107">A request that waits for a lock should not wait for ever. The test holds the row in one thread, the way a slow request would, and expects the other to be told Otahque is busy. Add it to <code>RaceTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (in RaceTests, at the end)</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>    def test_busy_while_another_request_holds_it(self):
+        sai = verified(&#x27;sai@example.org&#x27;)
+        held, finished = threading.Event(), threading.Event()
+
+        def hold():
+            with transaction.atomic():
+                Event.objects.select_for_update().get(
+                    pk=self.event.pk
+                )
+                held.set()
+                finished.wait(5)
+
+        def try_to_register():
+            held.wait(5)
+            try:
+                return self.register(sai)()
+            finally:
+                finished.set()
+
+        with mock.patch(&#x27;events.models.LOCK_TIMEOUT&#x27;,
+                        &#x27;100ms&#x27;, create=True):
+            outcomes = at_once(hold, try_to_register)
+        self.assertEqual(outcomes[1], [&#x27;busy&#x27;])
+        self.assertEqual(self.event.places_taken(), 0)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="109" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="110" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: &#x27;place&#x27; != [&#x27;busy&#x27;]
+Ran 3 tests in ...s
+
+FAILED (failures=1)</code></pre><p class="" data-block="111">Without a limit, the request waited until the holder gave up after five seconds, and then got a place. In <code>events/models.py</code>, the imports grow:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (replace the django.db import)</p><pre class="code-listing code-listing--file" data-block="112" tabindex="0"><code>from django.db import (
+    IntegrityError, OperationalError, connection, models,
+    transaction,
+)</code></pre><p class="" data-block="113">The new reason and the limit go at the end of <code>REASONS</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (the end of REASONS, and after it)</p><pre class="code-listing code-listing--file" data-block="114" tabindex="0"><code>    &#x27;phone_missing&#x27;: &#x27;This event asks for your phone &#x27;
+                     &#x27;number.&#x27;,
+    &#x27;busy&#x27;: &#x27;Otahque is busy. Please try again.&#x27;,
+}
+
+# How long a request waits for an event row that another
+# request has locked, before Otahque says it is busy.
+LOCK_TIMEOUT = &#x27;3s&#x27;
+# PostgreSQL&#x27;s error code for &quot;lock not available&quot;.
+LOCK_NOT_AVAILABLE = &#x27;55P03&#x27;</code></pre><p class="" data-block="115">And <code>locked()</code> gets its final form:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (replace locked())</p><pre class="code-listing code-listing--file" data-block="116" tabindex="0"><code>    def locked(self):
+        &quot;&quot;&quot;Return this event&#x27;s row, locked until commit.
+
+        Another request that asks for the row waits until
+        this transaction ends, for at most LOCK_TIMEOUT;
+        then it is told Otahque is busy. Call it inside
+        atomic(). SQLite ignores both.
+        &quot;&quot;&quot;
+        if connection.vendor == &#x27;postgresql&#x27;:
+            with connection.cursor() as cursor:
+                cursor.execute(&#x27;SET LOCAL lock_timeout = %s&#x27;,
+                               [LOCK_TIMEOUT])
+        try:
+            return Event.objects.select_for_update().get(
+                pk=self.pk
+            )
+        except OperationalError as error:
+            # Only the lock timeout means busy; any other
+            # database error is raised again.
+            code = getattr(error.__cause__, &#x27;sqlstate&#x27;, None)
+            if code != LOCK_NOT_AVAILABLE:
+                raise
+            raise refusal([&#x27;busy&#x27;]) from None</code></pre><p class="" data-block="117"><code>SET LOCAL</code> limits the wait for this transaction only. If the wait runs out, psycopg raises an error whose code is <code>55P03</code>, which Django passes on as an <code>OperationalError</code> with psycopg’s error as its cause. Only that code becomes “busy”; a lost connection, for example, is still an error. The test patches <code>LOCK_TIMEOUT</code> to a tenth of a second so that it does not wait three:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="118" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="119" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK</code></pre><h4 data-block="120">Step 7: Publish and cancel read the event again</h4><p class="" data-block="121">The view that cancels an event loaded its copy at the start of the request. If Raj cancelled the event a moment before Sam pressed Publish on a stale page, or two organizers cancel at once, the copy is out of date. Tests at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="122" tabindex="0"><code>class StaleCopyTests(TestCase):
+    &quot;&quot;&quot;Actions read the event again, not the page&#x27;s copy.&quot;&quot;&quot;
+
+    def setUp(self):
+        self.event = soon()
+        # The copy a view loaded before someone else acted.
+        self.copy = Event.objects.get(pk=self.event.pk)
+
+    def test_register_sees_a_cancel_made_since(self):
+        Event.objects.get(pk=self.event.pk).cancel()
+        with self.assertRaises(ValidationError) as caught:
+            self.copy.register(verified(&#x27;sai@example.org&#x27;),
+                               timezone.now())
+        self.assertEqual(
+            [e.code for e in caught.exception.error_list],
+            [&#x27;not_published&#x27;],
+        )
+
+    def test_cancel_sees_a_cancel_made_since(self):
+        Event.objects.get(pk=self.event.pk).cancel()
+        with self.assertRaises(ValidationError):
+            self.copy.cancel()
+
+    def test_publish_sees_a_publish_made_since(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            status=Event.Status.DRAFT, description=&#x27;Notes.&#x27;
+        )
+        organizer(self.event)
+        draft = Event.objects.get(pk=self.event.pk)
+        Event.objects.get(pk=self.event.pk).publish()
+        with self.assertRaises(ValidationError):
+            draft.publish()</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="123" tabindex="0"><code>uv run python manage.py test registrations -k StaleCopy</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="124" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: ValidationError not raised
+Ran 3 tests in ...s
+
+FAILED (failures=2)</code></pre><p class="" data-block="125">The register test already passes, because Step 4 made <code>register()</code> read the locked row. Publish and cancel still trust their copy. In <code>events/models.py</code>, replace both:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (replace publish() and cancel())</p><pre class="code-listing code-listing--file" data-block="126" tabindex="0"><code>    def publish(self):
+        &quot;&quot;&quot;Draft to published, or ValidationError.
+
+        Reads the status under the lock, so a copy loaded
+        earlier cannot publish twice or publish a change.
+        &quot;&quot;&quot;
+        with transaction.atomic():
+            event = self.locked()
+            if event.status != self.Status.DRAFT:
+                raise ValidationError(
+                    &#x27;Only a draft can be published.&#x27;
+                )
+            problems = event.readiness_problems()
+            if problems:
+                raise ValidationError(problems)
+            event.status = self.Status.PUBLISHED
+            event.save(update_fields=[&#x27;status&#x27;])
+        self.status = event.status
+
+    def cancel(self):
+        &quot;&quot;&quot;Cancel if published, or raise ValidationError.
+
+        Reads the status under the lock, like publish().
+        &quot;&quot;&quot;
+        with transaction.atomic():
+            event = self.locked()
+            if event.status != self.Status.PUBLISHED:
+                raise ValidationError(
+                    &#x27;Only a published event can be &#x27;
+                    &#x27;cancelled.&#x27;
+                )
+            event.status = self.Status.CANCELLED
+            event.save(update_fields=[&#x27;status&#x27;])
+        self.status = event.status</code></pre><p class="" data-block="127">Each locks, checks the locked row, saves it, and then updates <code>self</code> so the caller sees the new status.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="128" tabindex="0"><code>uv run python manage.py test registrations -k StaleCopy</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="129" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK</code></pre><h4 data-block="130">Step 8: The capacity floor under the lock</h4><p class="" data-block="131">Chapter 25’s capacity floor refuses a capacity below the places taken. It counts when the form is checked, and the save happens afterwards, so a registration in between slips past it. The test lowers the capacity from two to one while Sai’s registration is in flight, with Raj already holding a place. It uses the same meeting point: the capacity floor counts the places too, so the registration and the edit each count and then wait for each other. Add it to <code>RaceTests</code>, after the busy test:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (in RaceTests, at the end)</p><pre class="code-listing code-listing--file" data-block="132" tabindex="0"><code>    def test_capacity_edit_counts_a_place_being_made(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            capacity=2
+        )
+        verified(&#x27;raj@example.org&#x27;).registrations.create(
+            event=self.event, registered_at=self.now
+        )
+        sam = organizer(self.event)
+        sai = verified(&#x27;sai@example.org&#x27;)
+
+        def lower_capacity():
+            client = self.client_class()
+            client.force_login(sam)
+            event = Event.objects.get(pk=self.event.pk)
+            return client.post(
+                reverse(&#x27;events:edit&#x27;, args=[event.pk]),
+                as_sent(event, capacity=&#x27;1&#x27;),
+            ).status_code
+
+        # The edit&#x27;s capacity floor counts too, so it meets
+        # the registration right after both have counted.
+        with meet_after_counting():
+            at_once(self.register(sai), lower_capacity)
+        self.event.refresh_from_db()
+        # Either order is fair: Sai&#x27;s place, then the edit
+        # refused; or the edit, then &quot;full&quot;. Never both.
+        self.assertLessEqual(self.event.places_taken(),
+                             self.event.capacity)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="133" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="134" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 2 not less than or equal to 1
+Ran 4 tests in ...s
+
+FAILED (failures=1)</code></pre><p class="" data-block="135">The form saw one place taken and allowed a capacity of one; then Sai’s place arrived, and the event ended with two places for a capacity of one. No database rule catches it, because a count is not a column. The edit must lock the row before it checks the form. In <code>events/views.py</code>, replace <code>event_edit</code> with a helper and the view:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_edit)</p><pre class="code-listing code-listing--file" data-block="136" tabindex="0"><code>def save_edit(request, event):
+    &quot;&quot;&quot;Save the edit form under the event&#x27;s lock.
+
+    Return None once saved, or the form to show again.
+    The lock makes the capacity floor count the places
+    taken now, not when the page was opened.
+    &quot;&quot;&quot;
+    with transaction.atomic():
+        event = event.locked()
+        before = model_to_dict(event)
+        form = EventForm(request.POST, instance=event)
+        if not form.is_valid():
+            return form
+        form.save()
+        after = model_to_dict(event)
+        changed = [name for name in form.fields
+                   if before[name] != after[name]]
+        record(request.user, Action.EDIT_EVENT, event,
+               fields=changed)
+    return None
+
+
+@login_required
+def event_edit(request, event_id):
+    &quot;&quot;&quot;Edit the event, for those who may change it.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id,
+                            Action.EDIT_EVENT)
+    title = event.title
+    if request.method == &#x27;POST&#x27;:
+        try:
+            form = save_edit(request, event)
+        except ValidationError as error:
+            refuse(request, error)
+            form = EventForm(request.POST, instance=event)
+        if form is None:
+            messages.success(request, &#x27;Changes saved.&#x27;)
+            return redirect(event)
+    else:
+        form = EventForm(instance=event)
+    return render(request, &#x27;events/edit.html&#x27;, {
+        &#x27;form&#x27;: form,
+        &#x27;title&#x27;: title,
+        &#x27;event_id&#x27;: event.pk,
+        &#x27;taken&#x27;: event.places_taken(),
+    })</code></pre><p class="" data-block="137"><code>save_edit()</code> opens the transaction, locks the event, builds the form on the locked row, and only then validates and saves. Now the two requests take turns, in whichever order they reach the lock. If the registration goes first, the edit counts two places and is refused; if the edit goes first, the capacity becomes one and Sai is told the event is full. Both are fair, so the test checks the rule itself: never more places than capacity. A “busy” refusal shows the message and the form with what was typed.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="138" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="139" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK</code></pre><h4 data-block="140">Step 9: A version for the edit page</h4><p class="" data-block="141">Now Sam and Raj’s lost edit. Tests first, in <code>events/tests.py</code>. The two helpers that build what the pages send must also send the version: <code>as_sent()</code> for the edit page and <code>event_form()</code> for the admin. At the end of <code>as_sent()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (the end of as_sent())</p><pre class="code-listing code-listing--file" data-block="142" tabindex="0"><code>    # The version the page was opened at (Chapter 33).
+    data[&#x27;version&#x27;] = event.version
+    return data | changes</code></pre><p class="" data-block="143">In <code>event_form()</code>, after the <code>INITIAL_FORMS</code> line:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (in event_form())</p><pre class="code-listing code-listing--file" data-block="144" tabindex="0"><code>        &#x27;registrations-INITIAL_FORMS&#x27;: 0,
+        &#x27;seen_version&#x27;: event.version,
+    }</code></pre><p class="" data-block="145">And the tests, at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="146" tabindex="0"><code>class EditVersionTests(TestCase):
+    &quot;&quot;&quot;A save from an out-of-date page is refused.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.clinic = save_clinic(cls.sam)
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+        self.url = reverse(&#x27;events:edit&#x27;,
+                           args=[self.clinic.pk])
+
+    def test_the_page_sends_the_version(self):
+        response = self.client.get(self.url)
+        self.assertContains(
+            response, &#x27;&lt;input type=&quot;hidden&quot; name=&quot;version&quot; &#x27;
+            &#x27;value=&quot;1&quot;&gt;&#x27;, html=True,
+        )
+
+    def test_a_save_counts_a_new_version(self):
+        self.client.post(self.url, as_sent(
+            self.clinic, title=&#x27;Clinic, room 2&#x27;))
+        self.clinic.refresh_from_db()
+        self.assertEqual(self.clinic.title, &#x27;Clinic, room 2&#x27;)
+        self.assertEqual(self.clinic.version, 2)
+
+    def test_a_save_from_an_old_page_is_refused(self):
+        title = self.clinic.title
+        opened = as_sent(self.clinic, title=&#x27;Clinic, room 2&#x27;)
+        # Raj saves the event after Sam opened the page.
+        Event.objects.filter(pk=self.clinic.pk).update(
+            capacity=60, version=2
+        )
+        response = self.client.post(self.url, opened)
+        self.assertContains(response, &#x27;your changes were not &#x27;
+                                      &#x27;saved&#x27;)
+        self.clinic.refresh_from_db()
+        self.assertEqual(self.clinic.title, title)
+        self.assertEqual(self.clinic.capacity, 60)
+
+    def test_the_admin_refuses_an_old_page_too(self):
+        admin = User.objects.create_superuser(
+            &#x27;admin@example.org&#x27;, display_name=&#x27;Admin&#x27;
+        )
+        self.client.force_login(admin)
+        opened = event_form(self.clinic, location=&#x27;Room 2&#x27;)
+        Event.objects.filter(pk=self.clinic.pk).update(
+            version=2
+        )
+        response = self.client.post(
+            admin_url(Event, &#x27;change&#x27;, self.clinic.pk), opened
+        )
+        self.assertContains(response, &#x27;Reload it&#x27;)
+        self.clinic.refresh_from_db()
+        self.assertNotEqual(self.clinic.location, &#x27;Room 2&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="147" tabindex="0"><code>uv run python manage.py test events -k EditVersion</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="148" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute &#x27;version&#x27;
+Ran 4 tests in ...s
+
+FAILED (failures=1, errors=3)</code></pre><p class="" data-block="149">In <code>events/models.py</code>, add the field above <code>phone_required</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in Event, before phone_required)</p><pre class="code-listing code-listing--file" data-block="150" tabindex="0"><code>    # Counts saves of the edit page and the admin, so a
+    # save from an out-of-date page is refused (Chapter 33).
+    version = models.PositiveIntegerField(
+        default=1, editable=False
+    )
+    phone_required = models.BooleanField(</code></pre><p class="" data-block="151"><code>editable=False</code> keeps it out of every model form: nobody types a version. Make and apply the migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="152" tabindex="0"><code>uv run python manage.py makemigrations events --name version
+uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="153" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0008_version.py
+    + Add field version to event
+Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying events.0008_version... OK</code></pre><p class="" data-block="154">Existing events start at version 1. At the end of <code>events/forms.py</code>, a small form reads the version the page sent:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="155" tabindex="0"><code>class VersionForm(forms.Form):
+    &quot;&quot;&quot;The event version the edit page was opened at.&quot;&quot;&quot;
+
+    version = forms.IntegerField(min_value=1,
+                                 widget=forms.HiddenInput)</code></pre><p class="" data-block="156">In <code>events/views.py</code>, import it:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace the .forms import)</p><pre class="code-listing code-listing--file" data-block="157" tabindex="0"><code>from .forms import (
+    CopyForm, EventForm, OrganizerForm, RemoveOrganizerForm,
+    VersionForm,
+)</code></pre><p class="" data-block="158">Then give <code>save_edit()</code> its final form, with the message above it:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace save_edit())</p><pre class="code-listing code-listing--file" data-block="159" tabindex="0"><code>STALE = (&#x27;This event was changed after you opened this &#x27;
+         &#x27;page, so your changes were not saved. The form &#x27;
+         &#x27;now shows the event as it is: make them again.&#x27;)
+
+
+def save_edit(request, event):
+    &quot;&quot;&quot;Save the edit form under the event&#x27;s lock.
+
+    Return None once saved, or the form to show again.
+    The lock makes the capacity floor count the places
+    taken now; the version shows whether anyone saved the
+    event after this page was opened.
+    &quot;&quot;&quot;
+    with transaction.atomic():
+        event = event.locked()
+        seen = VersionForm(request.POST)
+        if (not seen.is_valid()
+                or seen.cleaned_data[&#x27;version&#x27;]
+                != event.version):
+            messages.error(request, STALE)
+            return EventForm(instance=event)
+        before = model_to_dict(event)
+        form = EventForm(request.POST, instance=event)
+        if not form.is_valid():
+            return form
+        event.version += 1
+        form.save()
+        after = model_to_dict(event)
+        changed = [name for name in form.fields
+                   if before[name] != after[name]]
+        record(request.user, Action.EDIT_EVENT, event,
+               fields=changed)
+    return None</code></pre><p class="" data-block="160">The version is compared under the lock, so nobody can save between the comparison and the save. A mismatch saves nothing and shows the event as it is now, with a message. The edit page sends the version it was opened at; in <code>events/templates/events/edit.html</code>, under <code>{% csrf_token %}</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/edit.html (after csrf_token)</p><pre class="code-listing code-listing--file" data-block="161" tabindex="0"><code>    {% csrf_token %}
+    &lt;input type=&quot;hidden&quot; name=&quot;version&quot;
+           value=&quot;{{ form.instance.version }}&quot;&gt;</code></pre><p class="" data-block="162">The admin edits the same fields, so it checks the same version. In <code>events/admin.py</code>, add a form above <code>EventAdmin</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (above EventAdmin)</p><pre class="code-listing code-listing--file" data-block="163" tabindex="0"><code>class EventAdminForm(forms.ModelForm):
+    &quot;&quot;&quot;The admin&#x27;s event form, with the version check.&quot;&quot;&quot;
+
+    seen_version = forms.IntegerField(
+        widget=forms.HiddenInput, required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        &quot;&quot;&quot;Send the version the page is opened at.&quot;&quot;&quot;
+        super().__init__(*args, **kwargs)
+        self.fields[&#x27;seen_version&#x27;].initial = (
+            self.instance.version
+        )
+
+    def clean(self):
+        &quot;&quot;&quot;Refuse a save from an out-of-date page.&quot;&quot;&quot;
+        cleaned = super().clean()
+        if (self.instance.pk is not None
+                and cleaned.get(&#x27;seen_version&#x27;)
+                != self.instance.version):
+            raise ValidationError(
+                &#x27;This event was changed after you opened &#x27;
+                &#x27;this page. Reload it and make your changes &#x27;
+                &#x27;again.&#x27;, code=&#x27;stale&#x27;,
+            )
+        return cleaned</code></pre><p class="" data-block="164">In <code>EventAdmin</code>, use it, add <code>&#x27;seen_version&#x27;</code> at the end of <code>fields</code>, and add two methods:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (in EventAdmin)</p><pre class="code-listing code-listing--file" data-block="165" tabindex="0"><code>    readonly_fields = [&#x27;local_start&#x27;]
+    form = EventAdminForm
+    inlines = [RegistrationInline]</code></pre><p class="code-label code-label--file" aria-hidden="true">events/admin.py (in EventAdmin, before start_utc)</p><pre class="code-listing code-listing--file" data-block="166" tabindex="0"><code>    def get_object(self, request, object_id, from_field=None):
+        &quot;&quot;&quot;Lock the event while a change is saved.
+
+        The admin saves inside a transaction, so the lock
+        lasts until the save is committed.
+        &quot;&quot;&quot;
+        event = super().get_object(request, object_id,
+                                   from_field)
+        if event is not None and request.method == &#x27;POST&#x27;:
+            return Event.objects.select_for_update().get(
+                pk=event.pk
+            )
+        return event
+
+    def save_model(self, request, obj, form, change):
+        &quot;&quot;&quot;Count this save as a new version of the event.&quot;&quot;&quot;
+        if change:
+            obj.version += 1
+        super().save_model(request, obj, form, change)</code></pre><p class="" data-block="167">The admin already saves each change inside a transaction, so locking in <code>get_object()</code> holds the row until the save is committed, and the form’s check compares with the locked row.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="168" tabindex="0"><code>uv run python manage.py test events -k EditVersion</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="169" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK</code></pre><h4 data-block="170">Step 10: The design notes</h4><p class="" data-block="171">Record what the code now promises. In <code>docs/design/registration.md</code>, delete the line “Two requests at the same moment: Chapter 33.” under “Not here”, and add above that heading:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/registration.md (before Not here)</p><pre class="code-listing code-listing--file" data-block="172" tabindex="0"><code>## Requests at the same moment (Chapter 33)
+
+- register(), publish(), cancel(), and the edit save
+  lock the event row (Event.locked(): select_for_update
+  inside atomic) and check the locked row, never the
+  copy a view loaded.
+- Requests for one event take turns; requests for
+  different events do not wait for each other.
+- A request waits at most LOCK_TIMEOUT (3 s), then is
+  told &quot;Otahque is busy. Please try again.&quot; with
+  nothing changed. Only PostgreSQL&#x27;s lock-not-available
+  error (55P03) means busy; no automatic retry.
+- The same member twice: the one-active-place rule and
+  the inner atomic() (Chapter 31) give one place.
+- Cancelling a place does not lock the event: a count
+  made while a place is being given back may still see
+  it. That can only refuse a place, never oversell.
+- Proved by RaceTests (TransactionTestCase, threads,
+  PostgreSQL only; skipped on SQLite).</code></pre><p class="" data-block="173">In <code>docs/design/event-states.md</code>, add above “Open”:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md (before Open)</p><pre class="code-listing code-listing--file" data-block="174" tabindex="0"><code>## Two organizers at once (Chapter 33)
+
+- Event.version starts at 1 and grows by one on each
+  save of the edit page or the admin&#x27;s event form.
+- The edit page sends the version it was opened at.
+  The save locks the row and compares: a different
+  version is refused, nothing is saved, and the form
+  shows the event as it is now.
+- Publishing and cancelling do not change the version:
+  the edit form has no status field, so they cannot be
+  undone by an edit.</code></pre><p class="" data-block="175">and mark the open item done:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md (in Open)</p><pre class="code-listing code-listing--file" data-block="176" tabindex="0"><code>- Done (Chapter 33): a version check for two
+  organizers acting at once.</code></pre><p class="" data-block="177">In <code>docs/design/erd.md</code>, the event gains its new column:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (in EVENT)</p><pre class="code-listing code-listing--file" data-block="178" tabindex="0"><code>        bool phone_required
+        int version &quot;grows by one on each edit&quot;
+    }
+    REGISTRATION {</code></pre><h4 data-block="179">Step 11: Clearer full and closed states</h4><p class="" data-block="180">A member who cannot register saw a plain list of reasons, and the places left were a line of small text. In <code>registrations/templates/registrations/panel.html</code>, replace the list of reasons with an alert:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/panel.html (the reasons)</p><pre class="code-listing code-listing--file" data-block="181" tabindex="0"><code>  {% elif reasons %}
+    &lt;div class=&quot;alert alert-warning items-start&quot;
+         role=&quot;status&quot;&gt;
+      &lt;div&gt;
+        &lt;p class=&quot;font-semibold&quot;&gt;You cannot register now&lt;/p&gt;
+        &lt;ul class=&quot;list-disc pl-5&quot;&gt;
+          {% for reason in reasons %}
+            &lt;li&gt;{{ reason }}&lt;/li&gt;
+          {% endfor %}
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;</code></pre><p class="" data-block="182">The heading says what happened in words, so the yellow is never the only signal. Replace <code>events/templates/events/places.html</code> with a meter:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/places.html</p><pre class="code-listing code-listing--file" data-block="183" tabindex="0"><code>{% if event.places_left &gt; 0 %}
+&lt;span class=&quot;places inline-flex items-center gap-2 text-sm&quot;&gt;
+  &lt;progress class=&quot;progress progress-primary w-20&quot;
+            value=&quot;{{ event.places_left }}&quot;
+            max=&quot;{{ event.capacity }}&quot;
+            aria-hidden=&quot;true&quot;&gt;&lt;/progress&gt;
+  {{ event.places_left }} of {{ event.capacity }} places left
+&lt;/span&gt;
+{% else %}
+&lt;span class=&quot;places badge badge-warning&quot;&gt;Full&lt;/span&gt;
+{% endif %}</code></pre><p class="" data-block="184">The meter is decoration (<code>aria-hidden</code>); the sentence beside it carries the number for every reader. Otahque’s theme needs a warning colour for both, with dark text on a light background. In <code>static/otahque/source.css</code>, after the error colours:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (in the otahque theme)</p><pre class="code-listing code-listing--file" data-block="185" tabindex="0"><code>  --color-error: #b42318;
+  --color-error-content: #ffffff;
+  --color-warning: #fdf0d2;
+  --color-warning-content: #5b3a00;</code></pre><p class="" data-block="186">One earlier test checked the exact markup of the places line. It now checks the words, so the meter’s look can keep improving. In <code>events/tests.py</code>, in <code>test_pages_show_places_left</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (in test_pages_show_places_left)</p><pre class="code-listing code-listing--file" data-block="187" tabindex="0"><code>        # The words, not the markup: the meter&#x27;s look may
+        # change from chapter to chapter (Chapter 33).
+        self.assertContains(response, &#x27;1 of 2 places left&#x27;)
+        self.assertContains(
+            response, &#x27;&lt;span class=&quot;places badge &#x27;
+            &#x27;badge-warning&quot;&gt;Full&lt;/span&gt;&#x27;, html=True,
+        )</code></pre><p class="" data-block="188">Rebuild the stylesheet and run the two apps’ tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="189" tabindex="0"><code>npm run build
+uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="190" tabindex="0"><code>Found 250 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 250 tests in ...s
+
+OK</code></pre><p class="" data-block="191">Open a full event at full width and at 390 pixels: the alert reads “You cannot register now” with “This event is full.” under it. The events list shows a short meter beside each “places left”.</p><h4 data-block="192">Step 12: Check everything and commit</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="193" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="194" tabindex="0"><code>Found 354 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 354 tests in ...s
+
+OK</code></pre><p class="" data-block="195">All 354 tests pass. On SQLite, the race tests are skipped with their reason, and everything else still passes:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="196" tabindex="0"><code># PowerShell
+$env:DB_ENGINE = &#x27;django.db.backends.sqlite3&#x27;
+uv run python manage.py test registrations -k RaceTests
+Remove-Item Env:DB_ENGINE</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="197" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+DB_ENGINE=django.db.backends.sqlite3 \
+  uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="198" tabindex="0"><code>Found 4 test(s).
+Ran 4 tests in 0.000s
+OK (skipped=4)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="199" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run
+git add .
+git status --short
+git commit -m &quot;Lock the last place; refuse stale edits&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="200" tabindex="0"><code>No changes detected
+M  docs/design/erd.md
+M  docs/design/event-states.md
+M  docs/design/registration.md
+M  events/admin.py
+M  events/forms.py
+A  events/migrations/0008_version.py
+M  events/models.py
+M  events/templates/events/edit.html
+M  events/templates/events/places.html
+M  events/tests.py
+M  events/views.py
+M  registrations/templates/registrations/panel.html
+M  registrations/tests.py
+M  static/otahque/site.css
+M  static/otahque/source.css
+[master 3e9c903] Lock the last place; refuse stale edits
+ 15 files changed, 625 insertions(+), 53 deletions(-)
+ create mode 100644 events/migrations/0008_version.py</code></pre><h3 class="" id="topic-201" data-block="201">When something goes wrong</h3><figure class="table-figure" data-block="202"><figcaption>Table 33.1 — Diagnosing locks and race tests</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 33.1 — Diagnosing locks and race tests"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">Race test passes without the lock</th>
+<td data-label="Likely cause">Written as a TestCase, or no meeting point after the count</td>
+<td data-label="Recovery">Use TransactionTestCase and meet_after_counting()</td>
+</tr>
+<tr><th scope="row">DoesNotExist inside a thread</th>
+<td data-label="Likely cause">TestCase: the rows were never committed</td>
+<td data-label="Recovery">TransactionTestCase</td>
+</tr>
+<tr><th scope="row">TransactionManagementError</th>
+<td data-label="Likely cause">select_for_update outside atomic()</td>
+<td data-label="Recovery">Call locked() inside transaction.atomic()</td>
+</tr>
+<tr><th scope="row">A test hangs</th>
+<td data-label="Likely cause">A thread waits on something never set</td>
+<td data-label="Recovery">Every wait has a timeout; check finished.set() in finally</td>
+</tr>
+<tr><th scope="row">Test database cannot be removed</th>
+<td data-label="Likely cause">A thread kept its connection open</td>
+<td data-label="Recovery">connection.close() in the thread&#x27;s finally</td>
+</tr>
+<tr><th scope="row">Groups missing in a race test</th>
+<td data-label="Likely cause">TransactionTestCase emptied the tables</td>
+<td data-label="Recovery">Give permissions directly, as organizer() does</td>
+</tr>
+<tr><th scope="row">Everyone is told &quot;busy&quot;</th>
+<td data-label="Likely cause">A transaction holds the row for long</td>
+<td data-label="Recovery">Keep work inside locked() short; nothing slow under the lock</td>
+</tr>
+<tr><th scope="row">Stale-edit message on every save</th>
+<td data-label="Likely cause">The page does not send version</td>
+<td data-label="Recovery">The hidden input in edit.html</td>
+</tr>
+<tr><th scope="row">Race tests skipped</th>
+<td data-label="Likely cause">DB_ENGINE is empty: SQLite</td>
+<td data-label="Recovery">check_environment.py; set the DB_* lines</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="203">No recovery here touches your data: the race tests create and empty their own tables in the test database.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2033%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter33/section-33-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter33/section-33-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter33/section-33-2/">← What You Need to Know</a><a href="/chapters/chapter33/section-33-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

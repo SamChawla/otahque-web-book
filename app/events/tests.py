@@ -581,13 +581,12 @@ class PlacesLeftTests(TestCase):
     def test_pages_show_places_left(self):
         with self.assertNumQueries(2):
             response = self.client.get('/events/')
+        # The words, not the markup: the meter's look may
+        # change from chapter to chapter (Chapter 33).
+        self.assertContains(response, '1 of 2 places left')
         self.assertContains(
-            response, '<span class="places text-sm">'
-            '1 of 2 places left</span>', html=True,
-        )
-        self.assertContains(
-            response, '<span class="places badge">'
-            'Full</span>', html=True,
+            response, '<span class="places badge '
+            'badge-warning">Full</span>', html=True,
         )
         self.assertNotContains(response, 'of 5 places left')
         # The registration panel counts places again.
@@ -612,6 +611,7 @@ def event_form(event, **changes):
         'capacity': event.capacity,
         'registrations-TOTAL_FORMS': 0,
         'registrations-INITIAL_FORMS': 0,
+        'seen_version': event.version,
     }
     data.update(changes)
     return data
@@ -1169,6 +1169,8 @@ def as_sent(event, **changes):
             value = f'{value:%Y-%m-%dT%H:%M}'
         # A blank time is sent as an empty box.
         data[name] = '' if value is None else value
+    # The version the page was opened at (Chapter 33).
+    data['version'] = event.version
     return data | changes
 
 
@@ -2829,3 +2831,76 @@ class WindowFormTests(TestCase):
         self.assertEqual(form.non_field_errors(),
                          ['Registration must close by the '
                           'start.'])
+
+
+class SortOrderTests(TestCase):
+    """Text sorts the same way on every database and computer."""
+
+    def test_titles_sort_by_code_point(self):
+        for title in ('apple day', 'Zebra talk', 'Émile meets'):
+            save_event(title=title)
+        titles = Event.objects.order_by('title').values_list(
+            'title', flat=True
+        )
+        self.assertEqual(
+            list(titles),
+            ['Zebra talk', 'apple day', 'Émile meets'],
+        )
+
+
+class EditVersionTests(TestCase):
+    """A save from an out-of-date page is refused."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.clinic = save_clinic(cls.sam)
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+        self.url = reverse('events:edit',
+                           args=[self.clinic.pk])
+
+    def test_the_page_sends_the_version(self):
+        response = self.client.get(self.url)
+        self.assertContains(
+            response, '<input type="hidden" name="version" '
+            'value="1">', html=True,
+        )
+
+    def test_a_save_counts_a_new_version(self):
+        self.client.post(self.url, as_sent(
+            self.clinic, title='Clinic, room 2'))
+        self.clinic.refresh_from_db()
+        self.assertEqual(self.clinic.title, 'Clinic, room 2')
+        self.assertEqual(self.clinic.version, 2)
+
+    def test_a_save_from_an_old_page_is_refused(self):
+        title = self.clinic.title
+        opened = as_sent(self.clinic, title='Clinic, room 2')
+        # Raj saves the event after Sam opened the page.
+        Event.objects.filter(pk=self.clinic.pk).update(
+            capacity=60, version=2
+        )
+        response = self.client.post(self.url, opened)
+        self.assertContains(response, 'your changes were not '
+                                      'saved')
+        self.clinic.refresh_from_db()
+        self.assertEqual(self.clinic.title, title)
+        self.assertEqual(self.clinic.capacity, 60)
+
+    def test_the_admin_refuses_an_old_page_too(self):
+        admin = User.objects.create_superuser(
+            'admin@example.org', display_name='Admin'
+        )
+        self.client.force_login(admin)
+        opened = event_form(self.clinic, location='Room 2')
+        Event.objects.filter(pk=self.clinic.pk).update(
+            version=2
+        )
+        response = self.client.post(
+            admin_url(Event, 'change', self.clinic.pk), opened
+        )
+        self.assertContains(response, 'Reload it')
+        self.clinic.refresh_from_db()
+        self.assertNotEqual(self.clinic.location, 'Room 2')

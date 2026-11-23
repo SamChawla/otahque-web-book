@@ -74,9 +74,28 @@ one UPDATE: a repeat changes nothing.
   administrator. Members are told at registration.
 - No public attendee list; contacts on no other page.
 
+## Requests at the same moment (Chapter 33)
+
+- register(), publish(), cancel(), and the edit save
+  lock the event row (Event.locked(): select_for_update
+  inside atomic) and check the locked row, never the
+  copy a view loaded.
+- Requests for one event take turns; requests for
+  different events do not wait for each other.
+- A request waits at most LOCK_TIMEOUT (3 s), then is
+  told "Otahque is busy. Please try again." with
+  nothing changed. Only PostgreSQL's lock-not-available
+  error (55P03) means busy; no automatic retry.
+- The same member twice: the one-active-place rule and
+  the inner atomic() (Chapter 31) give one place.
+- Cancelling a place does not lock the event: a count
+  made while a place is being given back may still see
+  it. That can only refuse a place, never oversell.
+- Proved by RaceTests (TransactionTestCase, threads,
+  PostgreSQL only; skipped on SQLite).
+
 ## Not here
 
-- Two requests at the same moment: Chapter 33.
 - Emails to members: Chapters 43-44.
 - Waitlist and check-in: Chapter 46.
 - Registration questions: Chapter 38; download: 41.

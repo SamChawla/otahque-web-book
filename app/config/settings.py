@@ -126,13 +126,38 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+# SQLite until DB_ENGINE names another backend, such as
+# PostgreSQL from Chapter 32 (docs/adr/ADR-005-postgresql.md).
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+SQLITE = 'django.db.backends.sqlite3'
+# An empty DB_ENGINE line in .env also means SQLite.
+DB_ENGINE = config('DB_ENGINE', default='') or SQLITE
+if DB_ENGINE == SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': SQLITE,
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    try:
+        DATABASES = {
+            'default': {
+                'ENGINE': DB_ENGINE,
+                'NAME': config('DB_NAME'),
+                'USER': config('DB_USER'),
+                'PASSWORD': config('DB_PASSWORD'),
+                'HOST': config('DB_HOST', default='localhost'),
+                'PORT': config('DB_PORT', default='5432'),
+                # Tests copy this empty database, so they sort
+                # text as Otahque's own database does.
+                'TEST': {'TEMPLATE': 'otahque_template'},
+            }
+        }
+    except UndefinedValueError as error:
+        raise ImproperlyConfigured(
+            f'{error} See .env.example.'
+        ) from None
 
 
 # Password validation

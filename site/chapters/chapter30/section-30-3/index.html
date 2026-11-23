@@ -1,0 +1,1953 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 30: Permissions, ownership, and roles. Decide who may do what, and prove it: a permission matrix with a test for every row...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter30/section-30-3/">
+<title>How We Build It · Chapter 30 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter30/">← Chapter 30 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-30-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-77">The Custom Way</a></li><li><a href="#topic-82">The Django Way</a></li></ul></li><li><a href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 8 figures · 4 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter30:30.3" data-progress-title="Section 30.3" data-reader-prev="section-30-2.html" data-reader-next="section-30-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 30.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter30/">Chapter 30 · Permissions, ownership, and roles</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter30/section-30-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter30/section-30-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter30/section-30-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter30/section-30-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter30/section-30-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-30-3" data-block="74">How We Build It</h2><p class="" data-block="75">Start from Chapter 29, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 257 passing tests, every migration applied, and Sam’s superuser password from Chapter 18. No package is added. The new files are the <code>audit</code> app, three migrations, two templates, a template filter, <code>docs/design/permissions.md</code>, and <code>docs/adr/ADR-004-access-rules.md</code>. The commands are written the same for Windows PowerShell, Git Bash, macOS, Linux, and WSL; the chapter’s checks ran in the first two. Each step with new behaviour writes its tests first and runs them to see them fail. Steps 5 and 6 prove behaviour that already exists, so most of their checks pass at once.</p><p class="" data-block="76">The tests share one new helper from Step 5: <code>in_group()</code> makes a member with a password and puts them in a group. Earlier helpers keep their jobs: <code>member()</code> makes a member holding named permissions, <code>future_draft()</code> a complete draft that starts next week, and <code>action_url()</code> the address of an event action.</p><h3 class="" id="topic-77" data-block="77">The Custom Way</h3><p class="" data-block="78">Many tutorials check ownership inside each view, with an <code>if</code> that compares the event with the signed-in user. Save this practice file as <code>s_idor.py</code> beside <code>manage.py</code>, run it with <code>uv run python manage.py shell -c &quot;exec(open(&#x27;s_idor.py&#x27;).read())&quot;</code>, and delete it. It makes demo members and a draft inside a transaction it rolls back, so your rows are unchanged:</p><p class="code-label code-label--file" aria-hidden="true">s_idor.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="79" tabindex="0"><code>from datetime import timedelta
+
+from django.db import transaction
+from django.http import Http404, HttpResponse
+from django.test import RequestFactory
+from django.utils import timezone
+
+from accounts.models import User
+from events.models import Event
+
+
+def edit_by_hand(request, event_id):
+    &quot;&quot;&quot;Check access inside the view, by hand.&quot;&quot;&quot;
+    event = Event.objects.get(pk=event_id)
+    if not event.organizer_assignments.filter(
+            member=request.user,
+            revoked_at__isnull=True).exists():
+        raise Http404
+    return HttpResponse(f&#x27;Edit form for {event.title}&#x27;)
+
+
+def copy_by_hand(request, event_id):
+    &quot;&quot;&quot;Show the copy form; its author forgot the check.&quot;&quot;&quot;
+    event = Event.objects.get(pk=event_id)
+    return HttpResponse(f&#x27;Copy form for {event.title}&#x27;)
+
+
+with transaction.atomic():
+    sam = User.objects.create_user(
+        &#x27;sam.demo@example.org&#x27;, display_name=&#x27;Sam demo&#x27;)
+    raj = User.objects.create_user(
+        &#x27;raj.demo@example.org&#x27;, display_name=&#x27;Raj demo&#x27;)
+    start = timezone.now() + timedelta(days=7)
+    draft = Event.objects.create(
+        title=&#x27;Sam demo draft&#x27;, starts_at=start,
+        ends_at=start + timedelta(hours=2),
+        timezone=&#x27;UTC&#x27;, location=&#x27;Leeds&#x27;, capacity=20)
+    draft.add_organizer(sam)
+    request = RequestFactory().get(&#x27;/&#x27;)
+    request.user = raj
+    try:
+        edit_by_hand(request, draft.pk)
+    except Http404:
+        print(&#x27;edit, checked by hand: 404&#x27;)
+    page = copy_by_hand(request, draft.pk)
+    print(&#x27;copy, check forgotten:&#x27;, page.status_code,
+          page.content.decode())
+    transaction.set_rollback(True)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="80" tabindex="0"><code>edit, checked by hand: 404
+copy, check forgotten: 200 Copy form for Sam demo draft</code></pre><p class="" data-block="81">The first view checks, and Raj gets 404. The second, written later by someone in a hurry, does not, and Raj sees Sam’s draft: an IDOR. Nothing in the code looks wrong; the check is simply missing, and no test asked. The Django Way keeps the rule in one model method that every view calls through one shared helper, <code>event_to_manage()</code>, and writes a test for every row of the matrix, so a new page that forgets is caught by the tests, not by Raj.</p><h3 class="" id="topic-82" data-block="82">The Django Way</h3><h4 data-block="83">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="84" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="85" tabindex="0"><code>Found 257 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 257 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="86" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="87" tabindex="0"><code>... Add password reset, codes, and two factors</code></pre><h4 data-block="88">Step 2: An app for the audit trail</h4><p class="" data-block="89">The audit trail will hold records about events, accounts, and later registrations, so it gets its own app rather than living inside one of them, for the same reason Chapter 20 gave registrations their own. Create it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="90" tabindex="0"><code>uv run python manage.py startapp audit</code></pre><p class="" data-block="91">Give the generated <code>audit/apps.py</code> its two docstrings, as Chapter 7 did for <code>events/apps.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">audit/apps.py</p><pre class="code-listing code-listing--file" data-block="92" tabindex="0"><code>&quot;&quot;&quot;Configuration Django reads to load the audit app.&quot;&quot;&quot;
+from django.apps import AppConfig
+
+
+class AuditConfig(AppConfig):
+    &quot;&quot;&quot;The audit app: who did what, and whether allowed.&quot;&quot;&quot;
+
+    name = &#x27;audit&#x27;</code></pre><p class="" data-block="93">In <code>config/settings.py</code>, add it to <code>INSTALLED_APPS</code>, after the registrations line:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (in INSTALLED_APPS)</p><pre class="code-listing code-listing--file" data-block="94" tabindex="0"><code>    &#x27;audit.apps.AuditConfig&#x27;,</code></pre><p class="" data-block="95">Tests first. Replace the generated <code>audit/tests.py</code> with:</p><p class="code-label code-label--file" aria-hidden="true">audit/tests.py</p><pre class="code-listing code-listing--file" data-block="96" tabindex="0"><code>&quot;&quot;&quot;Tests for the audit app.&quot;&quot;&quot;
+from django.contrib.auth.models import AnonymousUser
+from django.db import IntegrityError, transaction
+from django.test import TestCase
+from django.urls import reverse
+
+from accounts.models import User
+
+from .models import AuditEvent, record
+
+Action = AuditEvent.Action
+
+
+class AuditEventTests(TestCase):
+    &quot;&quot;&quot;Audit rows: what they hold, and that they stay.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = User.objects.create_superuser(
+            &#x27;sam@example.org&#x27;, display_name=&#x27;Sam&#x27;
+        )
+
+    def test_a_row_names_actor_action_and_target(self):
+        row = record(self.sam, Action.JOIN_ORGANIZERS,
+                     self.sam, note=&#x27;by hand&#x27;)
+        self.assertEqual(
+            (row.actor, row.action, row.outcome,
+             row.target_type, row.target_id, row.detail),
+            (self.sam, &#x27;join_organizers&#x27;, &#x27;allowed&#x27;,
+             &#x27;user&#x27;, self.sam.pk, {&#x27;note&#x27;: &#x27;by hand&#x27;}),
+        )
+
+    def test_visitors_and_scripts_have_no_actor(self):
+        for actor in (AnonymousUser(), None):
+            with self.subTest(actor=actor):
+                row = record(actor, Action.VIEW_EVENT)
+                self.assertIsNone(row.actor)
+                self.assertEqual(row.target_type, &#x27;&#x27;)
+
+    def test_outcome_is_allowed_or_refused(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                AuditEvent.objects.create(
+                    action=Action.VIEW_EVENT,
+                    outcome=&#x27;maybe&#x27;,
+                )
+
+    def test_the_admin_page_is_view_only(self):
+        row = record(self.sam, Action.VIEW_EVENT)
+        self.client.force_login(self.sam)
+        name = &#x27;admin:audit_auditevent&#x27;
+        listing = self.client.get(
+            reverse(f&#x27;{name}_changelist&#x27;)
+        )
+        self.assertContains(listing, &#x27;View an event&#x27;)
+        add = self.client.get(reverse(f&#x27;{name}_add&#x27;))
+        self.assertEqual(add.status_code, 403)
+        change = reverse(f&#x27;{name}_change&#x27;, args=[row.pk])
+        self.assertNotContains(self.client.get(change),
+                               &#x27;name=&quot;_save&quot;&#x27;)
+        delete = reverse(f&#x27;{name}_delete&#x27;, args=[row.pk])
+        response = self.client.post(delete, {&#x27;post&#x27;: &#x27;yes&#x27;})
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(AuditEvent.objects.count(), 1)</code></pre><p class="" data-block="97">The four tests say what a record holds, that a visitor or a script has no actor, that the outcome is only “allowed” or “refused”, and that the admin page cannot add, change, or delete a record, even for a superuser.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="98" tabindex="0"><code>uv run python manage.py test audit</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="99" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+ImportError: Failed to import test module: audit.tests
+Ran 1 test in ...s
+
+FAILED (errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="100">Now the model. Replace <code>audit/models.py</code> with:</p><p class="code-label code-label--file" aria-hidden="true">audit/models.py</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>&quot;&quot;&quot;The audit trail: who did what, and whether allowed.&quot;&quot;&quot;
+from django.conf import settings
+from django.db import models
+from django.utils import timezone
+
+
+class AuditEvent(models.Model):
+    &quot;&quot;&quot;Who did what to which record, and whether allowed.
+
+    Rows are added, never changed.
+    &quot;&quot;&quot;
+
+    class Action(models.TextChoices):
+        &quot;&quot;&quot;What the person tried to do.&quot;&quot;&quot;
+
+        CREATE_EVENT = &#x27;create_event&#x27;, &#x27;Create an event&#x27;
+        VIEW_EVENT = &#x27;view_event&#x27;, &#x27;View an event&#x27;
+        EDIT_EVENT = &#x27;edit_event&#x27;, &#x27;Edit an event&#x27;
+        PUBLISH_EVENT = &#x27;publish_event&#x27;, &#x27;Publish an event&#x27;
+        CANCEL_EVENT = &#x27;cancel_event&#x27;, &#x27;Cancel an event&#x27;
+        DELETE_EVENT = &#x27;delete_event&#x27;, &#x27;Delete a draft&#x27;
+        COPY_EVENT = &#x27;copy_event&#x27;, &#x27;Copy an event&#x27;
+        MANAGE_ORGANIZERS = (
+            &#x27;manage_organizers&#x27;, &#x27;Open organizer access&#x27;
+        )
+        ADD_ORGANIZER = &#x27;add_organizer&#x27;, &#x27;Add an organizer&#x27;
+        REMOVE_ORGANIZER = (
+            &#x27;remove_organizer&#x27;, &#x27;Remove an organizer&#x27;
+        )
+        JOIN_ORGANIZERS = (
+            &#x27;join_organizers&#x27;, &#x27;Join the Organizers group&#x27;
+        )
+        LEAVE_ORGANIZERS = (
+            &#x27;leave_organizers&#x27;, &#x27;Leave the Organizers group&#x27;
+        )
+
+    class Outcome(models.TextChoices):
+        &quot;&quot;&quot;Whether Otahque allowed it.&quot;&quot;&quot;
+
+        ALLOWED = &#x27;allowed&#x27;, &#x27;Allowed&#x27;
+        REFUSED = &#x27;refused&#x27;, &#x27;Refused&#x27;
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name=&#x27;audit_events&#x27;,
+    )
+    action = models.CharField(max_length=40, choices=Action)
+    outcome = models.CharField(
+        max_length=10, choices=Outcome,
+        default=Outcome.ALLOWED,
+    )
+    target_type = models.CharField(max_length=40, blank=True)
+    target_id = models.BigIntegerField(null=True, blank=True)
+    detail = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = [&#x27;-created_at&#x27;, &#x27;-id&#x27;]
+        default_permissions = [&#x27;view&#x27;]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(outcome__in=[
+                    &#x27;allowed&#x27;, &#x27;refused&#x27;,
+                ]),
+                name=&#x27;audit_outcome_valid&#x27;,
+                violation_error_message=(
+                    &#x27;Outcome must be allowed or refused.&#x27;
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return f&#x27;{self.get_action_display()}: {self.outcome}&#x27;
+
+
+def record(actor, action, target=None,
+           outcome=AuditEvent.Outcome.ALLOWED, **detail):
+    &quot;&quot;&quot;Add one audit row.
+
+    Call it inside the action&#x27;s own transaction, so a failed
+    action leaves no row.
+    &quot;&quot;&quot;
+    if actor is not None and not actor.is_authenticated:
+        actor = None
+    return AuditEvent.objects.create(
+        actor=actor,
+        action=action,
+        outcome=outcome,
+        target_type=(target._meta.model_name
+                     if target is not None else &#x27;&#x27;),
+        target_id=target.pk if target is not None else None,
+        detail=detail,
+    )</code></pre><p class="" data-block="102"><code>Action</code> lists every action the trail knows, with words an administrator can read. The target is two plain fields, a type such as <code>event</code> and a number, not a foreign key: when a draft is deleted, its records stay, pointing at a number that no longer exists. Chapter 55 shows the generic relation that could replace them, and its costs. <code>default_permissions = [&#x27;view&#x27;]</code> gives the model only a view permission, so there is no add, change, or delete permission to grant by mistake. <code>record()</code> is the one way the rest of Otahque writes a row; it turns a signed-out visitor into no actor.</p><p class="" data-block="103">Replace <code>audit/admin.py</code> with a page that can only be read:</p><p class="code-label code-label--file" aria-hidden="true">audit/admin.py</p><pre class="code-listing code-listing--file" data-block="104" tabindex="0"><code>&quot;&quot;&quot;Admin pages for the audit trail.&quot;&quot;&quot;
+from django.contrib import admin
+
+from .models import AuditEvent
+
+
+@admin.register(AuditEvent)
+class AuditEventAdmin(admin.ModelAdmin):
+    &quot;&quot;&quot;The audit trail, read-only.&quot;&quot;&quot;
+
+    list_display = [&#x27;created_at&#x27;, &#x27;actor&#x27;, &#x27;action&#x27;,
+                    &#x27;outcome&#x27;, &#x27;target_type&#x27;, &#x27;target_id&#x27;]
+    list_filter = [&#x27;outcome&#x27;, &#x27;action&#x27;]
+    list_select_related = [&#x27;actor&#x27;]
+    search_fields = [&#x27;actor__email&#x27;]
+
+    def has_add_permission(self, request):
+        &quot;&quot;&quot;Only Otahque&#x27;s own code adds audit rows.&quot;&quot;&quot;
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        &quot;&quot;&quot;Audit rows are never edited.&quot;&quot;&quot;
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        &quot;&quot;&quot;Audit rows are never deleted.&quot;&quot;&quot;
+        return False</code></pre><p class="" data-block="105">The three <code>has_*_permission</code> methods return False even for a superuser, because a superuser holds every permission, including ones a model does not define. Make the migration and apply it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="106" tabindex="0"><code>uv run python manage.py makemigrations audit</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="107" tabindex="0"><code>Migrations for &#x27;audit&#x27;:
+  audit/migrations/0001_initial.py
+    + Create model AuditEvent</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="108" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="109" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying audit.0001_initial... OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="110" tabindex="0"><code>uv run python manage.py test audit</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="111" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="112">Step 3: A permission for organizer access</h4><p class="" data-block="113">In <code>events/models.py</code>, add a custom permission to <code>OrganizerAssignment</code>’s <code>Meta</code>, after its <code>ordering</code> line:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (OrganizerAssignment.Meta, after ordering)</p><pre class="code-listing code-listing--file" data-block="114" tabindex="0"><code>        permissions = [
+            (&#x27;manage_organizers&#x27;,
+             &#x27;Can manage organizer access&#x27;),
+        ]</code></pre><p class="" data-block="115">Each entry is a code name and a label. Django adds the permission row when the migration runs, as <code>events.manage_organizers</code>. A change to <code>Meta.permissions</code> needs a migration, like any other model change:</p><p class="" data-block="116">PowerShell. The command is long, so it is split. The backtick continues the command onto the next line; put no spaces after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="117" tabindex="0"><code>uv run python manage.py makemigrations events `
+  --name manage_organizers</code></pre><p class="" data-block="118">Git Bash, macOS, Linux, or WSL. The backslash continues the command; put no spaces after it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="119" tabindex="0"><code>uv run python manage.py makemigrations events \
+  --name manage_organizers</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="120" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events/migrations/0005_manage_organizers.py
+    ~ Change Meta options on organizerassignment</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="121" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="122" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying events.0005_manage_organizers... OK</code></pre><p class="" data-block="123">Step 9 checks this permission before the Organizer access page opens.</p><h4 data-block="124">Step 4: Two groups, made by a migration</h4><p class="" data-block="125">Name the Organizers group once, in <code>events/models.py</code>, after the <code>CAPACITY_MESSAGE</code> line:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (after CAPACITY_MESSAGE)</p><pre class="code-listing code-listing--file" data-block="126" tabindex="0"><code>ORGANIZERS = &#x27;Organizers&#x27;</code></pre><p class="" data-block="127">Tests first. In <code>accounts/tests.py</code>, change the <code>AnonymousUser</code> import to:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (the AnonymousUser import)</p><pre class="code-listing code-listing--file" data-block="128" tabindex="0"><code>from django.contrib.auth.models import AnonymousUser, Group</code></pre><p class="" data-block="129">and add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="130" tabindex="0"><code># Chapter 30: the two groups the migration creates.
+GROUPS = {
+    &#x27;Administrators&#x27;: [
+        &#x27;accounts.change_user&#x27;, &#x27;accounts.view_user&#x27;,
+        &#x27;admin.view_logentry&#x27;, &#x27;audit.view_auditevent&#x27;,
+        &#x27;events.change_event&#x27;,
+        &#x27;events.add_organizerassignment&#x27;,
+        &#x27;events.change_organizerassignment&#x27;,
+        &#x27;events.view_organizerassignment&#x27;,
+        &#x27;events.delete_event&#x27;, &#x27;events.manage_organizers&#x27;,
+        &#x27;events.view_event&#x27;,
+        &#x27;registrations.view_registration&#x27;,
+    ],
+    &#x27;Organizers&#x27;: [
+        &#x27;events.add_event&#x27;, &#x27;events.change_event&#x27;,
+    ],
+}
+
+
+class GroupTests(TestCase):
+    &quot;&quot;&quot;The two groups and the permissions they hold.&quot;&quot;&quot;
+
+    def test_two_groups_with_exactly_these_permissions(self):
+        found = {
+            group.name: sorted(
+                f&#x27;{p.content_type.app_label}.{p.codename}&#x27;
+                for p in group.permissions.all()
+            )
+            for group in Group.objects.all()
+        }
+        expected = {name: sorted(perms)
+                    for name, perms in GROUPS.items()}
+        self.assertEqual(found, expected)</code></pre><p class="" data-block="131">The test lists each group’s permissions exactly: none missing, and none extra. An extra permission would quietly widen a role, so the test fails on that too.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="132" tabindex="0"><code>uv run python manage.py test accounts.tests.GroupTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="133" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: {} != {&#x27;Administrators&#x27;:
+    [&#x27;accounts.change_user&#x27;[362 chars]nt&#x27;]}
+Ran 1 test in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="134">A <strong>data migration</strong> changes rows rather than tables; Chapter 18 wrote one. Make an empty one in <code>accounts</code>:</p><p class="" data-block="135">PowerShell. As in Step 3, the command is split. The backtick continues the command onto the next line; put no spaces after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="136" tabindex="0"><code>uv run python manage.py makemigrations accounts `
+  --empty --name groups</code></pre><p class="" data-block="137">Git Bash, macOS, Linux, or WSL. The backslash continues the command; put no spaces after it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="138" tabindex="0"><code>uv run python manage.py makemigrations accounts \
+  --empty --name groups</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="139" tabindex="0"><code>Migrations for &#x27;accounts&#x27;:
+  accounts/migrations/0004_groups.py</code></pre><p class="" data-block="140">Keep the file’s first line, the comment with your date, and replace everything below it with:</p><p class="code-label code-label--file" aria-hidden="true">accounts/migrations/0004_groups.py (below the first line)</p><pre class="code-listing code-listing--file" data-block="141" tabindex="0"><code>from django.contrib.auth.management import create_permissions
+from django.db import migrations
+
+GROUPS = {
+    &#x27;Organizers&#x27;: [
+        &#x27;events.add_event&#x27;, &#x27;events.change_event&#x27;,
+    ],
+    &#x27;Administrators&#x27;: [
+        &#x27;accounts.view_user&#x27;, &#x27;accounts.change_user&#x27;,
+        &#x27;admin.view_logentry&#x27;, &#x27;audit.view_auditevent&#x27;,
+        &#x27;events.view_event&#x27;, &#x27;events.change_event&#x27;,
+        &#x27;events.delete_event&#x27;,
+        &#x27;events.view_organizerassignment&#x27;,
+        &#x27;events.add_organizerassignment&#x27;,
+        &#x27;events.change_organizerassignment&#x27;,
+        &#x27;events.manage_organizers&#x27;,
+        &#x27;registrations.view_registration&#x27;,
+    ],
+}
+
+
+def create_groups(apps, schema_editor):
+    &quot;&quot;&quot;Create both groups with their permissions.&quot;&quot;&quot;
+    # Django adds permissions after the last migration, so
+    # a new database has none yet: create them first.
+    for config in apps.get_app_configs():
+        config.models_module = True
+        create_permissions(config, apps=apps, verbosity=0)
+        config.models_module = None
+    Group = apps.get_model(&#x27;auth&#x27;, &#x27;Group&#x27;)
+    Permission = apps.get_model(&#x27;auth&#x27;, &#x27;Permission&#x27;)
+    for name, perms in GROUPS.items():
+        group, _ = Group.objects.get_or_create(name=name)
+        group.permissions.set([
+            Permission.objects.get(
+                content_type__app_label=perm.split(&#x27;.&#x27;)[0],
+                codename=perm.split(&#x27;.&#x27;)[1],
+            )
+            for perm in perms
+        ])
+
+
+def remove_groups(apps, schema_editor):
+    &quot;&quot;&quot;Delete both groups again.&quot;&quot;&quot;
+    Group = apps.get_model(&#x27;auth&#x27;, &#x27;Group&#x27;)
+    Group.objects.filter(name__in=GROUPS).delete()
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        (&#x27;accounts&#x27;, &#x27;0003_profile&#x27;),
+        (&#x27;admin&#x27;, &#x27;0003_logentry_add_action_flag_choices&#x27;),
+        (&#x27;audit&#x27;, &#x27;0001_initial&#x27;),
+        (&#x27;events&#x27;, &#x27;0005_manage_organizers&#x27;),
+        (&#x27;registrations&#x27;, &#x27;0002_rules&#x27;),
+    ]
+
+    operations = [
+        migrations.RunPython(create_groups, remove_groups),
+    ]</code></pre><p class="" data-block="142"><code>GROUPS</code> is the whole design of the two roles in twenty lines. Organizers hold the two permissions Chapters 24 and 25 asked for. Administrators hold what the admin pages need and the new <code>manage_organizers</code>, but not <code>add_event</code>: an administrator who also organizes joins Organizers too. <code>create_groups()</code> first asks Django to create the permission rows, for the reason the Common Error below explains, then creates each group or finds it, and sets its permissions to exactly the list. <code>remove_groups()</code> makes the migration reversible. The <code>dependencies</code> list each migration whose permissions it needs, so Django runs them first.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="143" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="144" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying accounts.0004_groups... OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="145" tabindex="0"><code>uv run python manage.py test accounts.tests.GroupTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="146" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="147">Common Error: “Permission matching query does not exist”</p><p class="" data-block="148">Leave out the <code>create_permissions()</code> loop, and <code>migrate</code> still succeeds on your own database, because your earlier migrations already left the permission rows behind. The tests then fail with <code>Permission matching query does not exist</code>, and so would every new database, including the one Chapter 63 deploys: Django creates permissions only after the last migration, and a new database has none yet. Keep the loop. The <code>models_module</code> lines are needed because the app configurations a migration sees are historical copies with no models module, and Django skips those.</p></div><p class="" data-block="149">Make an administrator. In a private window, sign up at <a href="http://127.0.0.1:8000/accounts/signup/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/signup/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/signup/</code></a> as <code>admin@example.org</code>, with the display name “Community admin” and a password of 15 characters or more, and close the window. Then, signed in to the admin as Sam, open Users, choose <code>admin@example.org</code>, tick <strong>Staff status</strong>, select <strong>Administrators</strong> in the Groups list, and save. For now the list is a plain one, so to keep a group that is already selected, hold Ctrl (Cmd on a Mac) while you click; Step 8 finds out why and brings back Django’s two-box picker. This is the superuser’s one remaining job: setting up the accounts that do the daily work. Sign up <code>soni@example.org</code>, display name “Soni”, the same way; Step 8 gives her the Organizers group.</p><h4 data-block="150">Step 5: The permission cache</h4><p class="" data-block="151">Before writing tests that add members to groups, watch the behaviour that catches such tests. In <code>events/tests.py</code>, change the <code>Permission</code> import and the <code>.models</code> import to:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (two imports)</p><pre class="code-listing code-listing--file" data-block="152" tabindex="0"><code>from django.contrib.auth.models import Group, Permission
+from .models import ORGANIZERS, Event, OrganizerAssignment</code></pre><p class="" data-block="153">and add at the end:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>def in_group(email, group, **flags):
+    &quot;&quot;&quot;Add a member with SAI_PASSWORD to the named group.&quot;&quot;&quot;
+    name = email.split(&#x27;@&#x27;)[0].title()
+    user = User.objects.create_user(
+        email, SAI_PASSWORD, display_name=name, **flags
+    )
+    user.groups.add(Group.objects.get(name=group))
+    return user
+
+
+class PermissionCacheTests(TestCase):
+    &quot;&quot;&quot;A user&#x27;s permissions are cached until refetched.&quot;&quot;&quot;
+
+    def test_a_new_group_needs_a_fresh_user(self):
+        soni = member(&#x27;soni@example.org&#x27;)
+        self.assertFalse(soni.has_perm(&#x27;events.add_event&#x27;))
+        soni.groups.add(Group.objects.get(name=ORGANIZERS))
+        self.assertFalse(soni.has_perm(&#x27;events.add_event&#x27;))
+        soni.refresh_from_db()
+        self.assertFalse(soni.has_perm(&#x27;events.add_event&#x27;))
+        soni = User.objects.get(pk=soni.pk)
+        self.assertTrue(soni.has_perm(&#x27;events.add_event&#x27;))</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="155" tabindex="0"><code>uv run python manage.py test events.tests.PermissionCacheTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="156" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="157">The test passes at once: it records Django’s behaviour rather than changing it. After <code>groups.add()</code>, the same object still says no, and so does <code>refresh_from_db()</code>; only a freshly fetched user says yes.</p><div class="callout callout--error"><p class="callout__title" data-block="158">Common Error: a group added, and still 403</p><p class="" data-block="159">A test adds Soni to Organizers, then calls <code>soni.has_perm()</code> on the same object and gets False, or signs her in with <code>force_login(soni)</code> after asking <code>has_perm()</code> once, and is puzzled by a refusal that should not happen. Fetch the user again with <code>User.objects.get(pk=soni.pk)</code> before asking. A request through the test client always fetches the user afresh, so <code>self.client.get()</code> sees the new group.</p></div><h4 data-block="160">Step 6: The matrix, row by row</h4><p class="" data-block="161">Turn Figure 30.3 into a test. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="162" tabindex="0"><code>class ActiveOrganizerTests(TestCase):
+    &quot;&quot;&quot;Only active, current organizers count.&quot;&quot;&quot;
+
+    def test_an_inactive_organizer_sees_no_draft(self):
+        sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        draft = future_draft(sam)
+        self.assertTrue(draft.is_visible_to(sam))
+        sam.is_active = False
+        sam.save()
+        self.assertFalse(draft.has_organizer(sam))
+        self.assertFalse(draft.is_visible_to(sam))
+
+
+# What each person gets on Sam&#x27;s draft (Chapter 30).
+MATRIX = [
+    # person, view, edit, publish, create
+    (&#x27;visitor&#x27;, &#x27;404&#x27;, &#x27;sign in&#x27;, &#x27;sign in&#x27;, &#x27;sign in&#x27;),
+    (&#x27;member&#x27;, &#x27;404&#x27;, &#x27;404&#x27;, &#x27;404&#x27;, &#x27;403&#x27;),
+    (&#x27;staff only&#x27;, &#x27;404&#x27;, &#x27;404&#x27;, &#x27;404&#x27;, &#x27;403&#x27;),
+    (&#x27;other organizer&#x27;, &#x27;404&#x27;, &#x27;404&#x27;, &#x27;404&#x27;, &#x27;ok&#x27;),
+    (&#x27;administrator&#x27;, &#x27;ok&#x27;, &#x27;403&#x27;, &#x27;403&#x27;, &#x27;403&#x27;),
+    (&#x27;superuser&#x27;, &#x27;ok&#x27;, &#x27;403&#x27;, &#x27;403&#x27;, &#x27;ok&#x27;),
+    # Last: this row publishes the draft.
+    (&#x27;organizer&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+]
+
+
+def outcome(response):
+    &quot;&quot;&quot;Name a response as the matrix names it.&quot;&quot;&quot;
+    code = response.status_code
+    if code == 302 and response.url.startswith(
+            reverse(&#x27;account_login&#x27;)):
+        return &#x27;sign in&#x27;
+    return {200: &#x27;ok&#x27;, 302: &#x27;ok&#x27;}.get(code, str(code))
+
+
+class PermissionMatrixTests(TestCase):
+    &quot;&quot;&quot;Each person against each page: the full matrix.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        raj = in_group(&#x27;raj@example.org&#x27;, ORGANIZERS)
+        cls.draft = future_draft(sam)
+        future_draft(raj, title=&#x27;Delhi clinic&#x27;)
+        cls.people = {
+            &#x27;visitor&#x27;: None,
+            &#x27;member&#x27;: member(&#x27;sai@example.org&#x27;),
+            &#x27;staff only&#x27;: User.objects.create_user(
+                &#x27;staff@example.org&#x27;, display_name=&#x27;Staff&#x27;,
+                is_staff=True,
+            ),
+            &#x27;other organizer&#x27;: raj,
+            &#x27;administrator&#x27;: in_group(
+                &#x27;admin@example.org&#x27;, &#x27;Administrators&#x27;,
+                is_staff=True,
+            ),
+            &#x27;superuser&#x27;: User.objects.create_superuser(
+                &#x27;root@example.org&#x27;, display_name=&#x27;Root&#x27;
+            ),
+            &#x27;organizer&#x27;: sam,
+        }
+
+    def answers(self):
+        &quot;&quot;&quot;List this person&#x27;s outcomes, page by page.&quot;&quot;&quot;
+        draft = self.draft
+        return [
+            outcome(self.client.get(
+                draft.get_absolute_url())),
+            outcome(self.client.get(edit_url(draft))),
+            outcome(self.client.post(
+                action_url(&#x27;publish&#x27;, draft))),
+            outcome(self.client.get(
+                reverse(&#x27;events:create&#x27;))),
+        ]
+
+    def test_every_row(self):
+        for person, *expected in MATRIX:
+            self.client.logout()
+            if self.people[person]:
+                self.client.force_login(self.people[person])
+            with self.subTest(person=person):
+                self.assertEqual(self.answers(), expected)</code></pre><p class="" data-block="163"><code>MATRIX</code> is the figure as data: one row per person, one column per action. <code>outcome()</code> names a response the way the matrix does, and <code>test_every_row()</code> signs each person in, makes the four requests, and compares the answers with the row, inside <code>subTest()</code>, so a failure names the person. The organizer’s row comes last because publishing changes the draft. <code>ActiveOrganizerTests</code> asks one more question: what happens when an organizer’s account is made inactive?</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="164" tabindex="0"><code>uv run python manage.py test events -k Matrix -k Active</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="165" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: True is not false
+Ran 2 tests in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="166">Every matrix row already passes: Chapters 24 to 26 built these rules, and now each one is proved. The inactive organizer fails: <code>has_organizer()</code> never looked at <code>is_active</code>, so <code>is_visible_to()</code> still shows such an organizer the draft. Signing in already refuses inactive accounts, so this is not an open door today, but a rule should not depend on another layer to hold. In <code>events/models.py</code>, replace <code>has_organizer()</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (replace has_organizer)</p><pre class="code-listing code-listing--file" data-block="167" tabindex="0"><code>    def has_organizer(self, user):
+        &quot;&quot;&quot;Return True for an active, current organizer.&quot;&quot;&quot;
+        if not (user.is_authenticated and user.is_active):
+            return False
+        return self.organizer_assignments.filter(
+            member=user, revoked_at__isnull=True
+        ).exists()</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="168" tabindex="0"><code>uv run python manage.py test events -k Matrix -k Active</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="169" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="170"><code>-k</code> runs every test whose name contains the text after it, and two <code>-k</code> options run the tests matching either.</p><h4 data-block="171">Step 7: One rule for adding and removing organizers</h4><p class="" data-block="172">Organizers will be added and removed in two places, the admin and a page of Otahque’s own. Both must refuse the same cases, so the rule goes in the models, where both can call it. Tests first. Add the audit import after the <code>.models</code> import of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (after the .models import)</p><pre class="code-listing code-listing--file" data-block="173" tabindex="0"><code>from audit.models import AuditEvent</code></pre><p class="" data-block="174">and at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="175" tabindex="0"><code>class OrganizerRuleTests(TestCase):
+    &quot;&quot;&quot;Granting and revoking organizers, with records.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = in_group(
+            &#x27;admin@example.org&#x27;, &#x27;Administrators&#x27;,
+            is_staff=True,
+        )
+        cls.sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        cls.soni = in_group(&#x27;soni@example.org&#x27;, ORGANIZERS)
+        cls.event = future_draft(cls.sam)
+
+    def test_an_organizer_is_added_and_recorded(self):
+        self.event.grant_organizer(self.soni, self.admin)
+        self.assertTrue(self.event.has_organizer(self.soni))
+        row = AuditEvent.objects.get()
+        self.assertEqual(
+            (row.actor, row.action, row.outcome,
+             row.target_id, row.detail),
+            (self.admin, &#x27;add_organizer&#x27;, &#x27;allowed&#x27;,
+             self.event.pk, {&#x27;member&#x27;: self.soni.pk}),
+        )
+
+    def test_only_the_organizers_group_may_organize(self):
+        sai = member(&#x27;sai@example.org&#x27;)
+        with self.assertRaisesMessage(
+                ValidationError,
+                &#x27;Only members of the Organizers group&#x27;):
+            self.event.grant_organizer(sai, self.admin)
+        self.assertFalse(self.event.has_organizer(sai))
+        self.assertEqual(AuditEvent.objects.get().outcome,
+                         &#x27;refused&#x27;)
+
+    def test_an_inactive_member_is_refused(self):
+        self.soni.is_active = False
+        self.soni.save()
+        with self.assertRaisesMessage(
+                ValidationError, &#x27;account is not active&#x27;):
+            self.event.grant_organizer(self.soni, self.admin)
+
+    def test_the_last_organizer_stays(self):
+        for status in (&#x27;draft&#x27;, &#x27;published&#x27;):
+            event = future_draft(self.sam, status=status)
+            place = event.organizer_assignments.get()
+            with self.subTest(status=status):
+                with self.assertRaisesMessage(
+                        ValidationError,
+                        &#x27;Assign another organizer&#x27;):
+                    place.revoke(self.admin)
+                place.refresh_from_db()
+                self.assertIsNone(place.revoked_at)
+
+    def test_a_cancelled_event_may_lose_them_all(self):
+        event = future_draft(self.sam, status=&#x27;cancelled&#x27;)
+        place = event.organizer_assignments.get()
+        place.revoke(self.admin)
+        self.assertIsNotNone(place.revoked_at)
+
+    def test_one_of_two_may_go_and_is_refused_next(self):
+        self.event.grant_organizer(self.soni, self.admin)
+        self.client.force_login(self.sam)
+        url = edit_url(self.event)
+        self.assertEqual(
+            self.client.get(url).status_code, 200
+        )
+        place = self.event.organizer_assignments.get(
+            member=self.sam
+        )
+        place.revoke(self.admin)
+        self.assertEqual(
+            self.client.get(url).status_code, 404
+        )</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="176" tabindex="0"><code>uv run python manage.py test events.tests.OrganizerRuleTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="177" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;OrganizerAssignment&#x27; object has no attribute
+    &#x27;revoke&#x27;
+Ran 6 tests in ...s
+
+FAILED (errors=7)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="178">In <code>events/models.py</code>, add the import after <code>from django.utils import timezone</code>, with a blank line before it:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (after the timezone import)</p><pre class="code-listing code-listing--file" data-block="179" tabindex="0"><code>from audit.models import AuditEvent, record</code></pre><p class="" data-block="180">then, after the <code>ORGANIZERS</code> line:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (after ORGANIZERS)</p><pre class="code-listing code-listing--file" data-block="181" tabindex="0"><code>ADDED = AuditEvent.Action.ADD_ORGANIZER
+REMOVED = AuditEvent.Action.REMOVE_ORGANIZER
+REFUSED = AuditEvent.Outcome.REFUSED
+
+
+def organizer_problem(member):
+    &quot;&quot;&quot;Why member cannot organize events, or None.&quot;&quot;&quot;
+    if not member.is_active:
+        return &#x27;This member’s account is not active.&#x27;
+    if not member.groups.filter(name=ORGANIZERS).exists():
+        return (&#x27;Only members of the Organizers group can &#x27;
+                &#x27;organize events.&#x27;)
+    return None</code></pre><p class="" data-block="182">and this method on <code>Event</code>, before <code>is_visible_to()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, before is_visible_to)</p><pre class="code-listing code-listing--file" data-block="183" tabindex="0"><code>    def grant_organizer(self, member, by):
+        &quot;&quot;&quot;Make member an organizer at by&#x27;s request.
+
+        Otherwise raise ValidationError. Both are recorded.
+        &quot;&quot;&quot;
+        problem = organizer_problem(member)
+        if problem:
+            record(by, ADDED, self, REFUSED,
+                   member=member.pk)
+            raise ValidationError(problem)
+        if self.has_organizer(member):
+            raise ValidationError(
+                &#x27;This member already organizes this event.&#x27;
+            )
+        with transaction.atomic():
+            assignment = self.add_organizer(member)
+            record(by, ADDED, self, member=member.pk)
+        return assignment</code></pre><p class="" data-block="184"><code>organizer_problem()</code> says why someone cannot organize, in words an administrator can act on, or None. <code>grant_organizer()</code> records a refusal before raising it, and adds the assignment and its record in one transaction. A duplicate is refused without a record: it is a slip, not an attempt at access. <code>add_organizer()</code> from Chapter 24 stays as it is: creating or copying an event makes its creator an organizer without these checks, because the creator already passed the page’s own.</p><p class="" data-block="185">Add this method to <code>OrganizerAssignment</code>, after <code>__str__()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (OrganizerAssignment, after __str__)</p><pre class="code-listing code-listing--file" data-block="186" tabindex="0"><code>    def revoke(self, by):
+        &quot;&quot;&quot;End this assignment now at by&#x27;s request.
+
+        Otherwise raise ValidationError. Both are recorded.
+        &quot;&quot;&quot;
+        event = self.event
+        others = event.organizer_assignments.filter(
+            revoked_at__isnull=True
+        ).exclude(pk=self.pk)
+        if (event.status != Event.Status.CANCELLED
+                and not others.exists()):
+            record(by, REMOVED, event, REFUSED,
+                   member=self.member_id)
+            raise ValidationError(
+                &#x27;Assign another organizer before removing &#x27;
+                &#x27;the last one.&#x27;
+            )
+        with transaction.atomic():
+            self.revoked_at = timezone.now()
+            self.save(update_fields=[&#x27;revoked_at&#x27;])
+            record(by, REMOVED, event, member=self.member_id)</code></pre><p class="" data-block="187"><code>revoke()</code> keeps the row and sets <code>revoked_at</code>, as Chapter 20 designed, and refuses to remove the last current organizer of a draft or published event: that event would have nobody able to cancel it or answer its members. A cancelled event may lose them all. Replacing an organizer still works: add the new one first.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="188" tabindex="0"><code>uv run python manage.py test events.tests.OrganizerRuleTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="189" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="190">Two administrators removing the two organizers of one event at the same moment could each see the other still there. Chapter 33 teaches the locking that closes such races; locally, with one person at a time, the rule holds.</p><h4 data-block="191">Step 8: The admin, made safe</h4><p class="" data-block="192">Until now, the admin added any member as an organizer, removed one by typing a date, and let anyone who may change users change their permissions. With an Administrators group, that last point matters: an administrator could tick every permission for themselves, or add anyone to Administrators. This is called <strong>privilege escalation</strong>, and the fix is that an administrator who is not a superuser may change only Organizers membership.</p><p class="" data-block="193">Tests first. In <code>events/tests.py</code>, replace Chapter 23’s <code>revoke_form()</code> helper with:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (replace revoke_form)</p><pre class="code-listing code-listing--file" data-block="194" tabindex="0"><code>def remove_selected(client, *assignments):
+    &quot;&quot;&quot;Run the admin&#x27;s Remove selected organizers action.&quot;&quot;&quot;
+    return client.post(
+        admin_url(OrganizerAssignment, &#x27;changelist&#x27;),
+        {&#x27;action&#x27;: &#x27;remove_selected&#x27;,
+         &#x27;_selected_action&#x27;: [a.pk for a in assignments]},
+        follow=True,
+    )</code></pre><p class="" data-block="195">In <code>OrganizerAssignmentAdminTests</code>, keep <code>setUpTestData()</code> up to Sai’s account, and replace the rest of the class, up to <code>test_list_runs_a_fixed_number_of_queries()</code>, with:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (OrganizerAssignmentAdminTests, after Sai&#x27;s account)</p><pre class="code-listing code-listing--file" data-block="196" tabindex="0"><code>        # Chapter 30: only the Organizers group organizes.
+        organizers = Group.objects.get(name=ORGANIZERS)
+        cls.sai.groups.add(organizers)
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+
+    def add(self, member=None):
+        &quot;&quot;&quot;Assign member, Sai by default, in the admin.&quot;&quot;&quot;
+        member = member or self.sai
+        return self.client.post(
+            admin_url(OrganizerAssignment, &#x27;add&#x27;),
+            {&#x27;event&#x27;: self.event.pk, &#x27;member&#x27;: member.pk},
+        )
+
+    def test_add_and_remove_but_never_delete(self):
+        self.event.add_organizer(self.sam)
+        self.add()
+        assignment = OrganizerAssignment.objects.get(
+            member=self.sai
+        )
+        remove_selected(self.client, assignment)
+        assignment.refresh_from_db()
+        self.assertIsNotNone(assignment.revoked_at)
+        response = self.client.post(
+            admin_url(OrganizerAssignment, &#x27;delete&#x27;,
+                      assignment.pk),
+            {&#x27;post&#x27;: &#x27;yes&#x27;},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            OrganizerAssignment.objects.count(), 2
+        )
+
+    def test_rule_messages_reach_the_page(self):
+        self.add()
+        self.assertContains(
+            self.add(),
+            &#x27;This member already organizes this event.&#x27;,
+        )
+        self.assertContains(
+            self.add(self.sam),
+            &#x27;Only members of the Organizers group can &#x27;
+            &#x27;organize events.&#x27;,
+        )</code></pre><p class="" data-block="197">Two of Chapter 23’s tests change in place: Sai joins Organizers before she is added, the event gets a second organizer so that Sai may be removed, and removing uses the action. The message about revoking before an assignment starts has gone from the admin, because nobody types the date any more; the constraint behind it stays.</p><p class="" data-block="198">In <code>config/tests.py</code>, remove <code>from datetime import timedelta</code> and <code>from django.utils import timezone</code>, add <code>Group</code> to the <code>Permission</code> import, replace <code>revoke_form</code> with <code>remove_selected</code> in the <code>events.tests</code> import, and replace the <code>events.models</code> import with:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (replace the events.models import)</p><pre class="code-listing code-listing--file" data-block="199" tabindex="0"><code>from audit.models import AuditEvent
+from events.models import (
+    ORGANIZERS, Event, OrganizerAssignment,
+)</code></pre><p class="" data-block="200">In <code>AuditLogTests.setUpTestData()</code>, after Sam’s assignment, add:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (AuditLogTests.setUpTestData, at the end)</p><pre class="code-listing code-listing--file" data-block="201" tabindex="0"><code>        # Chapter 30: the last organizer cannot be removed.
+        OrganizerAssignment.objects.create(
+            event=cls.event,
+            member=User.objects.create_user(
+                &#x27;raj@example.org&#x27;, display_name=&#x27;Raj&#x27;
+            ),
+        )</code></pre><p class="" data-block="202">replace its <code>test_admin_changes_are_logged()</code> with:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (replace the method)</p><pre class="code-listing code-listing--file" data-block="203" tabindex="0"><code>    def test_admin_changes_are_logged(self):
+        self.edit_location()
+        remove_selected(self.client, self.assignment)
+        self.assertEqual(
+            [(entry.user, entry.action_flag,
+              entry.get_change_message())
+             for entry in LogEntry.objects.order_by(&#x27;id&#x27;)],
+            [(self.sam, CHANGE, &#x27;Changed Location.&#x27;),
+             (self.sam, CHANGE, &#x27;Removed.&#x27;)],
+        )</code></pre><p class="" data-block="204">and add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="205" tabindex="0"><code>class AdministratorAdminTests(TestCase):
+    &quot;&quot;&quot;What an administrator may do in the admin.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = User.objects.create_user(
+            &#x27;admin@example.org&#x27;, display_name=&#x27;Admin&#x27;,
+            is_staff=True,
+        )
+        cls.admin.groups.add(
+            Group.objects.get(name=&#x27;Administrators&#x27;)
+        )
+        cls.soni = User.objects.create_user(
+            &#x27;soni@example.org&#x27;, display_name=&#x27;Soni&#x27;
+        )
+        cls.event = save_event()
+
+    def setUp(self):
+        self.client.force_login(self.admin)
+
+    def trail(self):
+        &quot;&quot;&quot;List the audit rows so far: action and outcome.&quot;&quot;&quot;
+        return list(AuditEvent.objects.order_by(&#x27;id&#x27;)
+                    .values_list(&#x27;action&#x27;, &#x27;outcome&#x27;))
+
+    def save_soni(self, *groups, **fields):
+        &quot;&quot;&quot;Save Soni&#x27;s admin page with these groups.&quot;&quot;&quot;
+        return self.client.post(
+            admin_url(User, &#x27;change&#x27;, self.soni.pk),
+            {&#x27;email&#x27;: self.soni.email,
+             &#x27;display_name&#x27;: &#x27;Soni&#x27;, &#x27;is_active&#x27;: &#x27;on&#x27;,
+             &#x27;groups&#x27;: [Group.objects.get(name=name).pk
+                        for name in groups]} | fields,
+        )
+
+    def test_organizers_membership_is_recorded(self):
+        self.save_soni(ORGANIZERS)
+        self.save_soni()
+        self.assertEqual(self.trail(), [
+            (&#x27;join_organizers&#x27;, &#x27;allowed&#x27;),
+            (&#x27;leave_organizers&#x27;, &#x27;allowed&#x27;),
+        ])
+
+    def test_an_administrator_cannot_promote_anyone(self):
+        response = self.save_soni(&#x27;Administrators&#x27;)
+        self.assertContains(
+            response,
+            &#x27;Only the Organizers group can be changed here.&#x27;,
+        )
+        perm = Permission.objects.get(codename=&#x27;add_event&#x27;)
+        self.save_soni(is_staff=&#x27;on&#x27;, user_permissions=[
+            perm.pk])
+        self.soni.refresh_from_db()
+        self.assertFalse(self.soni.is_staff)
+        self.assertFalse(self.soni.user_permissions.exists())
+
+    def test_adds_only_organizers_and_keeps_the_last(self):
+        add = admin_url(OrganizerAssignment, &#x27;add&#x27;)
+        form = {&#x27;event&#x27;: self.event.pk,
+                &#x27;member&#x27;: self.soni.pk}
+        self.assertContains(
+            self.client.post(add, form),
+            &#x27;Only members of the Organizers group&#x27;,
+        )
+        self.save_soni(ORGANIZERS)
+        self.client.post(add, form)
+        place = OrganizerAssignment.objects.get()
+        response = remove_selected(self.client, place)
+        self.assertContains(
+            response, &#x27;Assign another organizer before &#x27;
+                      &#x27;removing the last one.&#x27;,
+        )
+        self.assertEqual(self.trail(), [
+            (&#x27;add_organizer&#x27;, &#x27;refused&#x27;),
+            (&#x27;join_organizers&#x27;, &#x27;allowed&#x27;),
+            (&#x27;add_organizer&#x27;, &#x27;allowed&#x27;),
+            (&#x27;remove_organizer&#x27;, &#x27;refused&#x27;),
+        ])
+
+    def test_removal_is_an_action_not_a_typed_date(self):
+        place = OrganizerAssignment.objects.create(
+            event=self.event, member=self.soni
+        )
+        page = self.client.get(admin_url(
+            OrganizerAssignment, &#x27;change&#x27;, place.pk
+        ))
+        self.assertNotContains(page, &#x27;name=&quot;revoked_at_0&quot;&#x27;)
+        listing = self.client.get(
+            admin_url(OrganizerAssignment, &#x27;changelist&#x27;)
+        )
+        self.assertContains(listing,
+                            &#x27;Remove selected organizers&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="206" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="207" tabindex="0"><code>Found 12 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 302 != 200 : Couldn&#x27;t retrieve content:
+    Response code was 302 (expected 200)
+AssertionError: 1 != 0 :&#x27;name=&quot;revoked_at_0&quot;&#x27; unexpectedly
+    found in the following response
+Ran 12 tests in ...s
+
+FAILED (failures=5)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="208" tabindex="0"><code>uv run python manage.py test events -k AssignmentAdmin</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="209" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: unexpectedly None
+AssertionError: 302 != 200 : Couldn&#x27;t retrieve content:
+    Response code was 302 (expected 200)
+Ran 3 tests in ...s
+
+FAILED (failures=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="210">Now the admin. In <code>events/admin.py</code>, replace the imports below the <code>zoneinfo</code> line with:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (the imports below zoneinfo)</p><pre class="code-listing code-listing--file" data-block="211" tabindex="0"><code>from django import forms
+from django.contrib import admin, messages
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+from audit.models import AuditEvent, record
+from registrations.models import Registration
+
+from .models import (
+    Event, OrganizerAssignment, organizer_problem,
+)</code></pre><p class="" data-block="212">and replace everything from <code>@admin.register(OrganizerAssignment)</code> to the end with:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (replace OrganizerAssignmentAdmin)</p><pre class="code-listing code-listing--file" data-block="213" tabindex="0"><code>class AssignmentForm(forms.ModelForm):
+    &quot;&quot;&quot;The admin&#x27;s add form, with the page&#x27;s rules.&quot;&quot;&quot;
+
+    def clean_member(self):
+        &quot;&quot;&quot;Refuse and record a member who cannot organize.&quot;&quot;&quot;
+        member = self.cleaned_data[&#x27;member&#x27;]
+        problem = organizer_problem(member)
+        if problem:
+            event = self.cleaned_data.get(&#x27;event&#x27;)
+            record(self.request.user,
+                   AuditEvent.Action.ADD_ORGANIZER, event,
+                   AuditEvent.Outcome.REFUSED,
+                   member=member.pk)
+            raise ValidationError(problem)
+        return member
+
+
+@admin.register(OrganizerAssignment)
+class OrganizerAssignmentAdmin(admin.ModelAdmin):
+    &quot;&quot;&quot;Assign organizers; revoke, but never delete.&quot;&quot;&quot;
+
+    list_display = [&#x27;event&#x27;, &#x27;member&#x27;, &#x27;assigned_at&#x27;,
+                    &#x27;revoked_at&#x27;]
+    list_filter = [
+        (&#x27;revoked_at&#x27;, admin.EmptyFieldListFilter),
+    ]
+    list_select_related = [&#x27;event&#x27;, &#x27;member&#x27;]
+    form = AssignmentForm
+    actions = [&#x27;remove_selected&#x27;]
+
+    def get_fields(self, request, obj=None):
+        &quot;&quot;&quot;Event and member to add; every field after.&quot;&quot;&quot;
+        if obj is None:
+            return [&#x27;event&#x27;, &#x27;member&#x27;]
+        return [&#x27;event&#x27;, &#x27;member&#x27;, &#x27;assigned_at&#x27;,
+                &#x27;revoked_at&#x27;]
+
+    def get_readonly_fields(self, request, obj=None):
+        &quot;&quot;&quot;After adding, every field is read-only.&quot;&quot;&quot;
+        if obj is None:
+            return []
+        return [&#x27;event&#x27;, &#x27;member&#x27;, &#x27;assigned_at&#x27;,
+                &#x27;revoked_at&#x27;]
+
+    def get_form(self, request, obj=None, **kwargs):
+        &quot;&quot;&quot;Give the form the request, for its record.&quot;&quot;&quot;
+        form = super().get_form(request, obj, **kwargs)
+        form.request = request
+        return form
+
+    def save_model(self, request, obj, form, change):
+        &quot;&quot;&quot;Record each organizer added here.&quot;&quot;&quot;
+        super().save_model(request, obj, form, change)
+        if not change:
+            record(request.user,
+                   AuditEvent.Action.ADD_ORGANIZER,
+                   obj.event, member=obj.member_id)
+
+    def has_delete_permission(self, request, obj=None):
+        &quot;&quot;&quot;Revoke an assignment instead of deleting it.&quot;&quot;&quot;
+        return False
+
+    @admin.action(description=&#x27;Remove selected organizers&#x27;,
+                  permissions=[&#x27;change&#x27;])
+    def remove_selected(self, request, queryset):
+        &quot;&quot;&quot;Revoke each current assignment chosen.&quot;&quot;&quot;
+        current = queryset.filter(revoked_at__isnull=True)
+        for assignment in current.select_related(&#x27;event&#x27;):
+            try:
+                assignment.revoke(request.user)
+            except ValidationError as error:
+                self.message_user(
+                    request,
+                    f&#x27;{assignment}: {error.messages[0]}&#x27;,
+                    messages.ERROR,
+                )
+            else:
+                self.log_change(request, assignment,
+                                &#x27;Removed.&#x27;)
+                self.message_user(
+                    request, f&#x27;Removed: {assignment}.&#x27;
+                )</code></pre><p class="" data-block="214"><code>AssignmentForm</code> gives the admin’s add form the same <code>organizer_problem()</code> as the model, and records a refusal. A form has no request of its own, so <code>get_form()</code> gives it one. <code>revoked_at</code> is read-only; removal is the <strong>Remove selected organizers</strong> action, which calls <code>revoke()</code> for each chosen row and reports each refusal. <code>log_change()</code> keeps Chapter 23’s admin log complete, beside the audit record.</p><p class="" data-block="215">In <code>accounts/admin.py</code>, replace the imports with:</p><p class="code-label code-label--file" aria-hidden="true">accounts/admin.py (the imports)</p><pre class="code-listing code-listing--file" data-block="216" tabindex="0"><code>from django import forms
+from django.contrib import admin
+from django.contrib.admin.models import LogEntry
+from django.core.exceptions import ValidationError
+
+from audit.models import AuditEvent, record
+from events.models import ORGANIZERS
+
+from .models import User</code></pre><p class="" data-block="217">and replace the <code>UserAdmin</code> class with:</p><p class="code-label code-label--file" aria-hidden="true">accounts/admin.py (replace UserAdmin)</p><pre class="code-listing code-listing--file" data-block="218" tabindex="0"><code>class UserForm(forms.ModelForm):
+    &quot;&quot;&quot;The admin&#x27;s member form, with its group rule.
+
+    Only a superuser may change groups other than
+    Organizers, so no administrator can promote anyone.
+    &quot;&quot;&quot;
+
+    def clean_groups(self):
+        &quot;&quot;&quot;Keep every group but Organizers as it was.&quot;&quot;&quot;
+        groups = self.cleaned_data[&#x27;groups&#x27;]
+        if self.request.user.is_superuser:
+            return groups
+        kept = self.instance.groups.exclude(name=ORGANIZERS)
+        asked = groups.exclude(name=ORGANIZERS)
+        if set(kept) != set(asked):
+            raise ValidationError(
+                &#x27;Only the Organizers group can be changed &#x27;
+                &#x27;here.&#x27;
+            )
+        return groups
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    &quot;&quot;&quot;Members&#x27; details and access; never passwords.&quot;&quot;&quot;
+
+    form = UserForm
+    list_display = [&#x27;email&#x27;, &#x27;display_name&#x27;, &#x27;is_staff&#x27;,
+                    &#x27;is_active&#x27;]
+    list_filter = [&#x27;is_staff&#x27;, &#x27;is_active&#x27;]
+    search_fields = [&#x27;email&#x27;, &#x27;display_name&#x27;]
+    ordering = [&#x27;email&#x27;]
+    fields = [&#x27;email&#x27;, &#x27;display_name&#x27;, &#x27;is_active&#x27;,
+              &#x27;is_staff&#x27;, &#x27;groups&#x27;, &#x27;user_permissions&#x27;,
+              &#x27;last_login&#x27;, &#x27;date_joined&#x27;]
+    readonly_fields = [&#x27;last_login&#x27;, &#x27;date_joined&#x27;]
+    filter_horizontal = [&#x27;groups&#x27;, &#x27;user_permissions&#x27;]
+
+    def get_readonly_fields(self, request, obj=None):
+        &quot;&quot;&quot;Staff flag and permissions: superusers only.&quot;&quot;&quot;
+        if request.user.is_superuser:
+            return self.readonly_fields
+        return [*self.readonly_fields, &#x27;is_staff&#x27;,
+                &#x27;user_permissions&#x27;]
+
+    def get_form(self, request, obj=None, **kwargs):
+        &quot;&quot;&quot;Give the form the request, for its group rule.&quot;&quot;&quot;
+        form = super().get_form(request, obj, **kwargs)
+        form.request = request
+        return form
+
+    def has_add_permission(self, request):
+        &quot;&quot;&quot;Members sign up on the site, not here.&quot;&quot;&quot;
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        &quot;&quot;&quot;Deactivate members instead of deleting them.&quot;&quot;&quot;
+        return False
+
+    def save_related(self, request, form, formsets, change):
+        &quot;&quot;&quot;Record joining or leaving Organizers.&quot;&quot;&quot;
+        member = form.instance
+        organizers = member.groups.filter(name=ORGANIZERS)
+        before = organizers.exists()
+        super().save_related(request, form, formsets, change)
+        after = organizers.exists()
+        if before != after:
+            action = (AuditEvent.Action.JOIN_ORGANIZERS
+                      if after else
+                      AuditEvent.Action.LEAVE_ORGANIZERS)
+            record(request.user, action, member)</code></pre><p class="" data-block="219"><code>UserForm.clean_groups()</code> refuses any change to groups other than Organizers unless a superuser is saving. <code>get_readonly_fields()</code> shows staff status and permissions as plain text to everyone else. <code>save_related()</code> runs after the groups are saved, compares Organizers membership before and after, and records a join or a leave.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="220" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="221" tabindex="0"><code>Found 12 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 12 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="222" tabindex="0"><code>uv run python manage.py test events -k AssignmentAdmin</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="223" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="224">Try it: sign in to the admin as <code>admin@example.org</code>. Open Users and Soni, add her to Organizers, and save. Then try adding her to Administrators: the page says “Only the Organizers group can be changed here.” Staff status and permissions are shown but cannot be changed. Under Audit events, the join is the newest row.</p><p class="" data-block="225">While you are on Soni’s page, look at the Groups box. Django’s admin draws it as two boxes, the groups available and the groups chosen, with arrows between them, yet here it is one plain list. An event’s page in the admin has lost something too: the Today and Now shortcuts beside the start and end. The cause is Chapter 24. Its widget templates apply to every form in the project, the admin’s included. Each one writes <code>class=&quot;select w-full&quot;</code> (or <code>input</code>, <code>checkbox</code>, <code>textarea</code>) and then includes Django’s <code>attrs.html</code>, which writes the widget’s own <code>class</code> a second time. An element with two <code>class</code> attributes is invalid HTML, and browsers keep only the first, so the admin’s <code>selectfilter</code> class, and the <code>vDateField</code> and <code>vTimeField</code> classes behind the shortcuts, never arrive. A project-wide override reaches pages you did not write, and only a test that looks at those pages notices.</p><p class="" data-block="226">Tests first. Add at the end of <code>config/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="227" tabindex="0"><code>class WidgetClassTests(TestCase):
+    &quot;&quot;&quot;Otahque&#x27;s widget classes keep the admin&#x27;s own.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = User.objects.create_superuser(
+            &#x27;sam@example.org&#x27;, display_name=&#x27;Sam&#x27;
+        )
+        cls.event = save_event()
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+
+    def test_the_pickers_keep_selectfilter(self):
+        response = self.client.get(
+            admin_url(User, &#x27;change&#x27;, self.sam.pk)
+        )
+        self.assertContains(
+            response, &#x27;class=&quot;select w-full selectfilter&quot;&#x27;,
+            count=2,
+        )
+
+    def test_event_times_keep_their_shortcuts(self):
+        response = self.client.get(
+            admin_url(Event, &#x27;change&#x27;, self.event.pk)
+        )
+        for name in (&#x27;vDateField&#x27;, &#x27;vTimeField&#x27;):
+            self.assertContains(
+                response, f&#x27;class=&quot;input w-full {name}&quot;&#x27;,
+                count=2,
+            )</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="228" tabindex="0"><code>uv run python manage.py test config -k WidgetClass</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="229" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+FAILED (failures=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="230">The fix is one class attribute holding both: Otahque’s classes first, then the widget’s own. Django’s template language cannot merge two strings into an attribute, so a small <strong>template filter</strong> does it, a Python function that a template applies with <code>|</code>. Filters live in a <code>templatetags</code> package inside an app. Create an empty <code>events/templatetags/__init__.py</code>, then <code>events/templatetags/otahque_widgets.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templatetags/otahque_widgets.py</p><pre class="code-listing code-listing--file" data-block="231" tabindex="0"><code>&quot;&quot;&quot;Template filters for Otahque&#x27;s form widgets.&quot;&quot;&quot;
+from django import template
+from django.forms.utils import flatatt
+
+register = template.Library()
+
+
+@register.filter
+def with_class(attrs, classes):
+    &quot;&quot;&quot;Render a widget&#x27;s attributes with one class attribute.
+
+    Otahque&#x27;s classes come first, then the widget&#x27;s own, so
+    the admin keeps selectfilter, vDateField, and the rest.
+    &quot;&quot;&quot;
+    own = attrs.get(&#x27;class&#x27;)
+    merged = dict(attrs)
+    merged[&#x27;class&#x27;] = f&#x27;{classes} {own}&#x27; if own else classes
+    return flatatt(merged)</code></pre><p class="" data-block="232"><code>flatatt()</code> is the function Django’s own forms use to write a dictionary of attributes: it escapes every value, writes <code>True</code> as a bare attribute such as <code>required</code>, and leaves out <code>False</code> and <code>None</code>, as <code>attrs.html</code> does. <code>{% load otahque_widgets %}</code> makes the filter available in a template. Replace <code>templates/django/forms/widgets/input.html</code> with:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/input.html</p><pre class="code-listing code-listing--file" data-block="233" tabindex="0"><code>{% load otahque_widgets %}
+&lt;input type=&quot;{{ widget.type }}&quot; name=&quot;{{ widget.name }}&quot;
+       {% if widget.value != None %}
+       value=&quot;{{ widget.value|stringformat:&#x27;s&#x27; }}&quot;{% endif %}
+       {{ widget.attrs|with_class:&quot;input w-full&quot; }}&gt;</code></pre><p class="" data-block="234"><code>templates/django/forms/widgets/checkbox.html</code> with:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/checkbox.html</p><pre class="code-listing code-listing--file" data-block="235" tabindex="0"><code>{% load otahque_widgets %}
+&lt;input type=&quot;{{ widget.type }}&quot; name=&quot;{{ widget.name }}&quot;
+       {% if widget.value != None %}
+       value=&quot;{{ widget.value|stringformat:&#x27;s&#x27; }}&quot;{% endif %}
+       {{ widget.attrs|with_class:&quot;checkbox&quot; }}&gt;</code></pre><p class="" data-block="236">and <code>templates/django/forms/widgets/textarea.html</code> with:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/textarea.html</p><pre class="code-listing code-listing--file" data-block="237" tabindex="0"><code>{% load otahque_widgets %}
+&lt;textarea name=&quot;{{ widget.name }}&quot;
+          {{ widget.attrs|with_class:&quot;textarea w-full&quot; }}&gt;
+{% if widget.value %}{{ widget.value }}{% endif %}&lt;/textarea&gt;</code></pre><p class="" data-block="238">In <code>templates/django/forms/widgets/select.html</code>, replace the first two lines, up to the <code>&gt;</code> that closes the <code>select</code> tag, with:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/select.html (the opening tag)</p><pre class="code-listing code-listing--file" data-block="239" tabindex="0"><code>{% load otahque_widgets %}
+&lt;select name=&quot;{{ widget.name }}&quot;
+        {{ widget.attrs|with_class:&quot;select w-full&quot; }}&gt;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="240" tabindex="0"><code>uv run python manage.py test config -k WidgetClass</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="241" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="242">Otahque’s own pages look exactly as before, because none of their widgets sets a class; Chapter 24’s markup tests still count <code>class=&quot;input w-full&quot;</code>. Reload Soni’s page in the admin: Groups is two boxes again, and an event’s page has its shortcuts. Finally, add at the end of <code>docs/design/event-draft-form.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-draft-form.md (add at the end)</p><pre class="code-listing code-listing--file" data-block="243" tabindex="0"><code>- Fixed in Chapter 30: each widget writes one class
+  attribute, Otahque&#x27;s classes first, then the widget&#x27;s
+  own (the with_class filter), so the admin keeps its
+  selectfilter and date and time shortcuts.</code></pre><h4 data-block="244">Step 9: The Organizer access page</h4><p class="" data-block="245">Administrators also get a page of Otahque’s own, where each event’s organizers are listed, added, and removed, without the admin’s general tools. It must open for nobody else. Tests first. Add after the <code>finders</code> import of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (after the finders import)</p><pre class="code-listing code-listing--file" data-block="246" tabindex="0"><code>from django.core.cache import cache</code></pre><p class="" data-block="247">and at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="248" tabindex="0"><code>class OrganizerPageTests(TestCase):
+    &quot;&quot;&quot;The organizers page: who may use it, and rules.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = in_group(
+            &#x27;admin@example.org&#x27;, &#x27;Administrators&#x27;,
+            is_staff=True,
+        )
+        cls.sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        cls.soni = in_group(&#x27;soni@example.org&#x27;, ORGANIZERS)
+        cls.event = future_draft(cls.sam)
+        cls.url = action_url(&#x27;organizers&#x27;, cls.event)
+        cls.remove = action_url(&#x27;remove_organizer&#x27;,
+                                cls.event)
+
+    def setUp(self):
+        cache.clear()
+
+    def confirm(self, user):
+        &quot;&quot;&quot;Sign in, then confirm the password.
+
+        allauth asks for it before a change on this page.
+        &quot;&quot;&quot;
+        self.client.force_login(user)
+        self.client.post(reverse(&#x27;account_reauthenticate&#x27;),
+                         {&#x27;password&#x27;: SAI_PASSWORD})
+
+    def place(self, user, event=None):
+        &quot;&quot;&quot;Return user&#x27;s assignment to event, or to ours.&quot;&quot;&quot;
+        event = event or self.event
+        return event.organizer_assignments.get(member=user)
+
+    def test_a_visitor_is_sent_to_sign_in(self):
+        self.assertRedirects(
+            self.client.get(self.url),
+            f&quot;{reverse(&#x27;account_login&#x27;)}?next={self.url}&quot;,
+            fetch_redirect_response=False,
+        )
+
+    def test_others_get_403_and_are_recorded(self):
+        for user in (self.sam, member(&#x27;sai@example.org&#x27;)):
+            self.client.force_login(user)
+            with self.subTest(user=user.email):
+                for response in (
+                    self.client.get(self.url),
+                    self.client.get(
+                        reverse(&#x27;events:organizer_events&#x27;)),
+                    self.client.post(self.remove, {}),
+                ):
+                    self.assertEqual(
+                        response.status_code, 403
+                    )
+        refused = AuditEvent.objects.filter(
+            action=&#x27;manage_organizers&#x27;, outcome=&#x27;refused&#x27;
+        )
+        self.assertEqual(refused.count(), 6)
+
+    def test_changes_need_a_recent_sign_in(self):
+        self.client.force_login(self.admin)
+        self.assertContains(self.client.get(self.url),
+                            &#x27;Add an organizer&#x27;)
+        response = self.client.post(
+            self.url, {&#x27;email&#x27;: self.soni.email}
+        )
+        self.assertTrue(response.url.startswith(
+            reverse(&#x27;account_reauthenticate&#x27;)))
+        self.assertFalse(self.event.has_organizer(self.soni))
+
+    def test_an_administrator_adds_an_organizer(self):
+        self.confirm(self.admin)
+        response = self.client.post(
+            self.url, {&#x27;email&#x27;: &#x27;SONI@example.org&#x27;}
+        )
+        self.assertRedirects(response, self.url)
+        self.assertTrue(self.event.has_organizer(self.soni))
+
+    def test_the_page_refuses_what_the_rules_refuse(self):
+        member(&#x27;sai@example.org&#x27;)
+        self.confirm(self.admin)
+        for email, message in [
+            (&#x27;sai@example.org&#x27;, &#x27;Only members of the &#x27;
+                                &#x27;Organizers group&#x27;),
+            (&#x27;nobody@example.org&#x27;, &#x27;No member has this&#x27;),
+            (&#x27;sam@example.org&#x27;, &#x27;already organizes&#x27;),
+        ]:
+            with self.subTest(email=email):
+                self.assertContains(self.client.post(
+                    self.url, {&#x27;email&#x27;: email}), message)
+
+    def test_remove_one_but_keep_the_last(self):
+        self.event.grant_organizer(self.soni, self.admin)
+        self.confirm(self.admin)
+        for user, message in [
+            (self.soni, &#x27;Organizer removed.&#x27;),
+            (self.sam, &#x27;Assign another organizer before &#x27;
+                       &#x27;removing the last one.&#x27;),
+        ]:
+            response = self.client.post(self.remove, {
+                &#x27;assignment&#x27;: self.place(user).pk,
+            }, follow=True)
+            self.assertContains(response, message)
+        self.assertTrue(self.event.has_organizer(self.sam))
+
+    def test_another_events_organizer_is_not_a_choice(self):
+        swap = future_draft(self.soni, title=&#x27;Book swap&#x27;)
+        self.confirm(self.admin)
+        response = self.client.post(self.remove, {
+            &#x27;assignment&#x27;: self.place(self.soni, swap).pk,
+        })
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(swap.has_organizer(self.soni))
+
+    def test_the_list_runs_a_fixed_number_of_queries(self):
+        for title in (&#x27;Book swap&#x27;, &#x27;Delhi clinic&#x27;):
+            future_draft(self.soni, title=title)
+        self.client.force_login(self.admin)
+        url = reverse(&#x27;events:organizer_events&#x27;)
+        with self.assertNumQueries(7):
+            self.client.get(url)</code></pre><p class="" data-block="249"><code>confirm()</code> signs in and then confirms the password on allauth’s re-authentication page, because a change here asks for it. <code>cache.clear()</code> resets allauth’s rate limits between tests, as Chapter 29 explained.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="250" tabindex="0"><code>uv run python manage.py test events.tests.OrganizerPageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="251" tabindex="0"><code>Found 8 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 0 tests in ...s
+
+FAILED (errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="252">The one error is in <code>setUpTestData()</code>, before any test runs: <code>NoReverseMatch: Reverse for &#x27;organizers&#x27; not found</code>, because the page has no address yet. Two forms first. In <code>events/forms.py</code>, add <code>from django.contrib.auth import get_user_model</code> after <code>from django import forms</code>, and at the end:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="253" tabindex="0"><code>class OrganizerForm(forms.Form):
+    &quot;&quot;&quot;An administrator names a member by email.&quot;&quot;&quot;
+
+    email = forms.EmailField(
+        label=&#x27;Member’s email address&#x27;
+    )
+
+    def clean_email(self):
+        &quot;&quot;&quot;Find the member with this email, or refuse.&quot;&quot;&quot;
+        email = self.cleaned_data[&#x27;email&#x27;].lower()
+        User = get_user_model()
+        try:
+            self.member = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise ValidationError(
+                &#x27;No member has this email address.&#x27;
+            ) from None
+        return email
+
+
+class RemoveOrganizerForm(forms.Form):
+    &quot;&quot;&quot;Which current organizer of this event to remove.
+
+    Choices from other events are not valid.
+    &quot;&quot;&quot;
+
+    assignment = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, *args, event, **kwargs):
+        &quot;&quot;&quot;Offer only this event&#x27;s current organizers.&quot;&quot;&quot;
+        super().__init__(*args, **kwargs)
+        current = event.organizer_assignments.filter(
+            revoked_at__isnull=True
+        )
+        self.fields[&#x27;assignment&#x27;].queryset = current</code></pre><p class="" data-block="254"><code>OrganizerForm</code> finds a member by email, in lower case, as Chapter 21 stores them. <code>RemoveOrganizerForm</code> accepts only a current assignment <strong>of this event</strong>: its choices come from the event’s own assignments, so a number belonging to another event is not a valid choice and the page answers 404. That is OWASP’s advice against IDOR, a lookup scoped to what the request may touch, built into the form.</p><p class="" data-block="255">In <code>events/views.py</code>, replace the imports with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace the imports)</p><pre class="code-listing code-listing--file" data-block="256" tabindex="0"><code>from functools import wraps
+
+from allauth.account.decorators import (
+    reauthentication_required,
+)
+from django.contrib import messages
+from django.contrib.auth.decorators import (
+    login_required, permission_required,
+)
+from django.core.exceptions import (
+    PermissionDenied, ValidationError,
+)
+from django.db import models, transaction
+from django.http import Http404
+from django.shortcuts import (
+    get_object_or_404, redirect, render,
+)
+from django.utils import timezone
+from django.views.decorators.http import (
+    require_http_methods, require_POST,
+)
+
+from audit.models import AuditEvent, record
+
+from .forms import (
+    CopyForm, EventForm, OrganizerForm, RemoveOrganizerForm,
+)
+from .models import Event, OrganizerAssignment</code></pre><p class="" data-block="257">and add after them:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (after the imports)</p><pre class="code-listing code-listing--file" data-block="258" tabindex="0"><code>Action = AuditEvent.Action
+
+
+def deny(request, action, event=None, hidden=False):
+    &quot;&quot;&quot;Record a refused attempt, then refuse it.
+
+    Only a signed-in person&#x27;s attempt is recorded. The answer
+    is 404 if the event is hidden, else 403.
+    &quot;&quot;&quot;
+    if request.user.is_authenticated:
+        record(request.user, action, event,
+               AuditEvent.Outcome.REFUSED)
+    if hidden:
+        raise Http404(&#x27;No event matches the given query.&#x27;)
+    raise PermissionDenied</code></pre><p class="" data-block="259"><code>deny()</code> is the one place a refusal happens: it records the attempt if someone is signed in, then raises 404 or 403. Step 10 sends the event pages through it as well. Add the three views at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="260" tabindex="0"><code>def organizer_access(view):
+    &quot;&quot;&quot;Allow only holders of events.manage_organizers.
+
+    Anyone else gets 403, and the attempt is recorded.
+    &quot;&quot;&quot;
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.has_perm(
+                &#x27;events.manage_organizers&#x27;):
+            deny(request, Action.MANAGE_ORGANIZERS)
+        return view(request, *args, **kwargs)
+    return wrapper
+
+
+@login_required
+@organizer_access
+def organizer_events(request):
+    &quot;&quot;&quot;Every event with its current organizers.&quot;&quot;&quot;
+    current = OrganizerAssignment.objects.filter(
+        revoked_at__isnull=True
+    ).select_related(&#x27;member&#x27;)
+    events = Event.objects.order_by(
+        &#x27;-starts_at&#x27;
+    ).prefetch_related(models.Prefetch(
+        &#x27;organizer_assignments&#x27;, queryset=current,
+        to_attr=&#x27;current_organizers&#x27;,
+    ))
+    return render(request, &#x27;events/organizer_events.html&#x27;,
+                  {&#x27;events&#x27;: events})
+
+
+@login_required
+@organizer_access
+@reauthentication_required(allow_get=True)
+def event_organizers(request, event_id):
+    &quot;&quot;&quot;List an event&#x27;s organizers; add one by email.&quot;&quot;&quot;
+    event = get_object_or_404(Event, pk=event_id)
+    form = OrganizerForm(request.POST or None)
+    if form.is_valid():
+        try:
+            event.grant_organizer(form.member, request.user)
+        except ValidationError as error:
+            form.add_error(&#x27;email&#x27;, error)
+        else:
+            messages.success(request, &#x27;Organizer added.&#x27;)
+            return redirect(&#x27;events:organizers&#x27;, event.pk)
+    # Current organizers first, on SQLite and PostgreSQL.
+    assignments = event.organizer_assignments.order_by(
+        models.F(&#x27;revoked_at&#x27;).asc(nulls_first=True),
+        &#x27;assigned_at&#x27;,
+    ).select_related(&#x27;member&#x27;)
+    return render(request, &#x27;events/organizers.html&#x27;, {
+        &#x27;event&#x27;: event,
+        &#x27;form&#x27;: form,
+        &#x27;assignments&#x27;: assignments,
+    })
+
+
+@require_POST
+@login_required
+@organizer_access
+@reauthentication_required
+def remove_organizer(request, event_id):
+    &quot;&quot;&quot;Remove one current organizer, if allowed.&quot;&quot;&quot;
+    event = get_object_or_404(Event, pk=event_id)
+    form = RemoveOrganizerForm(request.POST, event=event)
+    if not form.is_valid():
+        raise Http404(&#x27;No current organizer matches.&#x27;)
+    try:
+        form.cleaned_data[&#x27;assignment&#x27;].revoke(request.user)
+    except ValidationError as error:
+        refuse(request, error)
+    else:
+        messages.success(request, &#x27;Organizer removed.&#x27;)
+    return redirect(&#x27;events:organizers&#x27;, event.pk)</code></pre><p class="" data-block="261"><code>organizer_access</code> is a small decorator of Otahque’s own. Django’s <code>permission_required</code> would refuse too, but before Otahque’s code runs, so it could not record the attempt. The order of the decorators is the order of the checks: signed in, then the permission, then re-authentication, so that someone without the permission is never asked for a password. <code>reauthentication_required(allow_get=True)</code> lets an administrator read the page freely, and asks for the password before any POST. <code>organizer_events</code> fetches each event’s current organizers with one prefetch, so the list costs the same number of queries for three events or three hundred.</p><p class="" data-block="262">In <code>events/urls.py</code>, add after the <code>copy</code> path:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py (after the copy path)</p><pre class="code-listing code-listing--file" data-block="263" tabindex="0"><code>    path(&#x27;events/organizers/&#x27;, views.organizer_events,
+         name=&#x27;organizer_events&#x27;),
+    path(&#x27;events/&lt;int:event_id&gt;/organizers/&#x27;,
+         views.event_organizers, name=&#x27;organizers&#x27;),
+    path(&#x27;events/&lt;int:event_id&gt;/organizers/remove/&#x27;,
+         views.remove_organizer, name=&#x27;remove_organizer&#x27;),</code></pre><p class="" data-block="264">Create <code>events/templates/events/organizer_events.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/organizer_events.html</p><pre class="code-listing code-listing--file" data-block="265" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Organizer access | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Organizer access&lt;/h1&gt;
+  &lt;p&gt;Every event, newest first, with its current
+     organizers. Open one to add or remove an organizer.&lt;/p&gt;
+  &lt;ul class=&quot;event-list space-y-3&quot;&gt;
+    {% for event in events %}
+      &lt;li class=&quot;event-row card border border-base-300
+                 bg-base-100 p-4&quot;&gt;
+        &lt;p&gt;
+          &lt;a class=&quot;font-semibold&quot;
+             href=&quot;{% url &#x27;events:organizers&#x27; event.pk %}&quot;&gt;
+            {{ event.title }}&lt;/a&gt;
+          &lt;span class=&quot;badge badge-outline&quot;&gt;
+            {{ event.get_status_display }}&lt;/span&gt;
+        &lt;/p&gt;
+        &lt;p class=&quot;text-sm&quot;&gt;
+          {% for organizer in event.current_organizers %}
+            {% if not forloop.first %}·{% endif %}
+            {{ organizer.member.display_name }}
+          {% empty %}
+            No current organizer
+          {% endfor %}
+        &lt;/p&gt;
+      &lt;/li&gt;
+    {% empty %}
+      &lt;li class=&quot;event-empty card border border-base-300
+                 bg-base-100 p-4&quot;&gt;
+        There are no events yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre><p class="" data-block="266">and <code>events/templates/events/organizers.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/organizers.html</p><pre class="code-listing code-listing--file" data-block="267" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Organizers of {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  {% url &#x27;events:remove_organizer&#x27; event.pk as remove_url %}
+  &lt;h1&gt;Organizers of {{ event.title }}&lt;/h1&gt;
+  &lt;p&gt;&lt;a href=&quot;{% url &#x27;events:organizer_events&#x27; %}&quot;&gt;
+    All events&lt;/a&gt;&lt;/p&gt;
+  &lt;ul class=&quot;space-y-3&quot;&gt;
+    {% for assignment in assignments %}
+      &lt;li class=&quot;card border border-base-300 bg-base-100
+                 p-4&quot;&gt;
+        &lt;p class=&quot;font-semibold&quot;&gt;
+          {{ assignment.member.display_name }}&lt;/p&gt;
+        &lt;p class=&quot;text-sm&quot;&gt;{{ assignment.member.email }}&lt;/p&gt;
+        {% if assignment.revoked_at %}
+          &lt;p class=&quot;text-sm&quot;&gt;Removed
+            {{ assignment.revoked_at|date:&quot;j M Y, H:i&quot; }}&lt;/p&gt;
+        {% else %}
+          &lt;form method=&quot;post&quot; action=&quot;{{ remove_url }}&quot;&gt;
+            {% csrf_token %}
+            &lt;button type=&quot;submit&quot; name=&quot;assignment&quot;
+                    value=&quot;{{ assignment.pk }}&quot;
+                    class=&quot;btn btn-outline btn-sm&quot;&gt;
+              Remove&lt;/button&gt;
+          &lt;/form&gt;
+        {% endif %}
+      &lt;/li&gt;
+    {% empty %}
+      &lt;li class=&quot;card border border-base-300 bg-base-100
+                 p-4&quot;&gt;This event has no organizers.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+  &lt;h2&gt;Add an organizer&lt;/h2&gt;
+  &lt;p&gt;The member must be active and in the Organizers
+     group, which the admin site sets.&lt;/p&gt;
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    {{ form }}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+      Add organizer&lt;/button&gt;
+  &lt;/form&gt;
+{% endblock %}</code></pre><p class="" data-block="268">Each Remove button sends its assignment’s number as the value of <code>assignment</code>; one address serves every row. An administrator’s menu now has six items, more than a 390 px phone can show in one row, so in <code>templates/includes/site_nav.html</code> let it wrap, by adding <code>flex-wrap</code> to the <code>nav</code> element’s classes:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html (the nav element)</p><pre class="code-listing code-listing--file" data-block="269" tabindex="0"><code>&lt;nav class=&quot;site-nav navbar flex-wrap gap-5 bg-neutral
+            px-4 text-neutral-content&quot; aria-label=&quot;Site&quot;&gt;</code></pre><p class="" data-block="270">and add after the New event link:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html (after New event)</p><pre class="code-listing code-listing--file" data-block="271" tabindex="0"><code>  {% if perms.events.manage_organizers %}
+    &lt;a href=&quot;{% url &#x27;events:organizer_events&#x27; %}&quot;&gt;
+      Organizer access&lt;/a&gt;
+  {% endif %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="272" tabindex="0"><code>uv run python manage.py test events.tests.OrganizerPageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="273" tabindex="0"><code>Found 8 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 8 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="274">Try it: signed in as <code>admin@example.org</code>, choose <strong>Organizer access</strong> in the menu, open one of Sam’s events, and add <code>soni@example.org</code>. Otahque asks for your password first, even though you have just signed in: allauth counts only a confirmation, not the sign-in itself, and then trusts it for five minutes. Remove Sam, then try to remove Soni: “Assign another organizer before removing the last one.” Sign in as Soni in another browser: her menu has My events and New event but no Organizer access, and typing its address gives 403. Sam would see the link, because a superuser holds every permission, which is one more reason he is not a daily account.</p><h4 data-block="275">Step 10: Record each action and each refusal</h4><p class="" data-block="276">Tests first, at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="277" tabindex="0"><code>class AuditTrailTests(TestCase):
+    &quot;&quot;&quot;Each action leaves the right audit rows.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        cls.raj = in_group(&#x27;raj@example.org&#x27;, ORGANIZERS)
+
+    def trail(self):
+        &quot;&quot;&quot;List the audit rows so far: action and outcome.&quot;&quot;&quot;
+        return list(AuditEvent.objects.order_by(&#x27;id&#x27;)
+                    .values_list(&#x27;action&#x27;, &#x27;outcome&#x27;))
+
+    def test_each_event_action_is_recorded(self):
+        self.client.force_login(self.sam)
+        self.client.post(reverse(&#x27;events:create&#x27;), NEW_EVENT)
+        clinic = Event.objects.get(title=NEW_EVENT[&#x27;title&#x27;])
+        self.client.post(edit_url(clinic),
+                         as_sent(clinic, location=&#x27;Room 2&#x27;))
+        event = future_draft(self.sam)
+        for name in (&#x27;publish&#x27;, &#x27;cancel&#x27;):
+            self.client.post(action_url(name, event))
+        self.client.post(action_url(&#x27;copy&#x27;, event),
+                         {&#x27;starts_at&#x27;: &#x27;2027-02-04T19:00&#x27;})
+        copy = Event.objects.latest(&#x27;pk&#x27;)
+        self.client.post(action_url(&#x27;delete&#x27;, copy))
+        self.assertEqual(self.trail(), [
+            (action, &#x27;allowed&#x27;) for action in (
+                &#x27;create_event&#x27;, &#x27;edit_event&#x27;,
+                &#x27;publish_event&#x27;, &#x27;cancel_event&#x27;,
+                &#x27;copy_event&#x27;, &#x27;delete_event&#x27;,
+            )
+        ])
+        edit = AuditEvent.objects.get(action=&#x27;edit_event&#x27;)
+        self.assertEqual(edit.detail,
+                         {&#x27;fields&#x27;: [&#x27;location&#x27;]})
+
+    def test_refusals_by_members_are_recorded(self):
+        draft = future_draft(self.sam)
+        published = future_draft(
+            self.sam, status=&#x27;published&#x27;
+        )
+        self.client.get(draft.get_absolute_url())
+        self.client.force_login(self.raj)
+        self.client.get(draft.get_absolute_url())
+        self.client.get(edit_url(draft))
+        self.client.post(action_url(&#x27;cancel&#x27;, published))
+        self.client.force_login(member(&#x27;sai@example.org&#x27;))
+        self.client.get(reverse(&#x27;events:create&#x27;))
+        self.assertEqual(self.trail(), [
+            (&#x27;view_event&#x27;, &#x27;refused&#x27;),
+            (&#x27;edit_event&#x27;, &#x27;refused&#x27;),
+            (&#x27;cancel_event&#x27;, &#x27;refused&#x27;),
+            (&#x27;create_event&#x27;, &#x27;refused&#x27;),
+        ])
+
+    def test_a_rule_or_an_unknown_event_adds_nothing(self):
+        draft = future_draft(self.sam, description=&#x27;&#x27;)
+        self.client.force_login(self.sam)
+        self.client.post(action_url(&#x27;publish&#x27;, draft))
+        self.client.get(reverse(&#x27;events:edit&#x27;, args=[999]))
+        self.assertEqual(self.trail(), [])</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="278" tabindex="0"><code>uv run python manage.py test events.tests.AuditTrailTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="279" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: Lists differ: [] != [(&#x27;create_event&#x27;,
+    &#x27;allowed&#x27;), (&#x27;edit_event[124 chars]ed&#x27;)]
+AssertionError: Lists differ: [] != [(&#x27;view_event&#x27;,
+    &#x27;refused&#x27;), (&#x27;edit_event&#x27;,[65 chars]ed&#x27;)]
+Ran 3 tests in ...s
+
+FAILED (failures=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="280">The rule-breaking test already passes, because nothing is recorded yet anywhere; the other two fail. In <code>events/views.py</code>, add <code>from django.forms.models import model_to_dict</code> after the <code>django.db</code> import. Then replace <code>event_detail()</code> and <code>event_create()</code>, with its decorators, by:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_detail and event_create)</p><pre class="code-listing code-listing--file" data-block="281" tabindex="0"><code>def event_detail(request, event_id):
+    &quot;&quot;&quot;Show an event its viewer may see, or 404.&quot;&quot;&quot;
+    event = get_object_or_404(
+        Event.objects.with_places(), pk=event_id
+    )
+    if not event.is_visible_to(request.user):
+        deny(request, Action.VIEW_EVENT, event, hidden=True)
+    return render(request, &#x27;events/detail.html&#x27;, {
+        &#x27;event&#x27;: event,
+        &#x27;now&#x27;: timezone.now(),
+        &#x27;can_edit&#x27;: event.can_be_edited_by(request.user),
+    })
+
+
+@login_required
+def event_create(request):
+    &quot;&quot;&quot;Create an event, for members who may add events.&quot;&quot;&quot;
+    if not request.user.has_perm(&#x27;events.add_event&#x27;):
+        deny(request, Action.CREATE_EVENT)
+    if request.method == &#x27;POST&#x27;:
+        form = EventForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                event = form.save()
+                event.add_organizer(request.user)
+                record(request.user, Action.CREATE_EVENT,
+                       event)
+            messages.success(request, &#x27;Draft saved.&#x27;)
+            return redirect(event)
+    else:
+        form = EventForm()
+    return render(request, &#x27;events/form.html&#x27;,
+                  {&#x27;form&#x27;: form})</code></pre><p class="" data-block="282"><code>event_create()</code> loses its <code>@permission_required</code> decorator: the same check is now inside, through <code>deny()</code>, so the attempt is recorded. Replace <code>event_to_manage()</code> and <code>event_edit()</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_to_manage and event_edit)</p><pre class="code-listing code-listing--file" data-block="283" tabindex="0"><code>def event_to_manage(request, event_id, action):
+    &quot;&quot;&quot;Return the event, if this member may change it.
+
+    A refusal is recorded as an attempt at action.
+    &quot;&quot;&quot;
+    event = get_object_or_404(Event, pk=event_id)
+    if not event.is_visible_to(request.user):
+        deny(request, action, event, hidden=True)
+    if not event.can_be_edited_by(request.user):
+        deny(request, action, event)
+    return event
+
+
+@login_required
+def event_edit(request, event_id):
+    &quot;&quot;&quot;Edit the event, for those who may change it.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id,
+                            Action.EDIT_EVENT)
+    title = event.title
+    if request.method == &#x27;POST&#x27;:
+        before = model_to_dict(event)
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            with transaction.atomic():
+                form.save()
+                after = model_to_dict(event)
+                changed = [name for name in form.fields
+                           if before[name] != after[name]]
+                record(request.user, Action.EDIT_EVENT,
+                       event, fields=changed)
+            messages.success(request, &#x27;Changes saved.&#x27;)
+            return redirect(event)
+    else:
+        form = EventForm(instance=event)
+    return render(request, &#x27;events/edit.html&#x27;, {
+        &#x27;form&#x27;: form,
+        &#x27;title&#x27;: title,
+        &#x27;event_id&#x27;: event.pk,
+        &#x27;taken&#x27;: event.places_taken(),
+    })</code></pre><p class="" data-block="284"><code>event_to_manage()</code> now takes the action being attempted, so a refusal is recorded as what it was: an attempt to edit, publish, cancel, delete, or copy. The edit records which fields changed by comparing the saved values before and after, for the reason the Common Error below explains. Replace <code>event_publish()</code> and <code>event_cancel()</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_publish and event_cancel)</p><pre class="code-listing code-listing--file" data-block="285" tabindex="0"><code>def event_publish(request, event_id):
+    &quot;&quot;&quot;Publish the event, or say why not.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id,
+                            Action.PUBLISH_EVENT)
+    try:
+        with transaction.atomic():
+            event.publish()
+            record(request.user, Action.PUBLISH_EVENT,
+                   event)
+    except ValidationError as error:
+        refuse(request, error)
+    else:
+        messages.success(request, &#x27;Published.&#x27;)
+    return redirect(event)
+
+
+@require_POST
+@login_required
+def event_cancel(request, event_id):
+    &quot;&quot;&quot;Cancel the event, or say why not.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id,
+                            Action.CANCEL_EVENT)
+    try:
+        with transaction.atomic():
+            event.cancel()
+            record(request.user, Action.CANCEL_EVENT,
+                   event)
+    except ValidationError as error:
+        refuse(request, error)
+    else:
+        messages.success(request, &#x27;Event cancelled.&#x27;)
+    return redirect(event)</code></pre><p class="" data-block="286">and <code>event_delete()</code> and <code>event_copy()</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_delete and event_copy)</p><pre class="code-listing code-listing--file" data-block="287" tabindex="0"><code>def event_delete(request, event_id):
+    &quot;&quot;&quot;Confirm, then delete a draft; or say why not.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id,
+                            Action.DELETE_EVENT)
+    if request.method == &#x27;POST&#x27;:
+        try:
+            with transaction.atomic():
+                # Recorded first: deleting clears event.pk.
+                record(request.user, Action.DELETE_EVENT,
+                       event, title=event.title)
+                event.delete_draft()
+        except ValidationError as error:
+            refuse(request, error)
+            return redirect(event)
+        messages.success(request, &#x27;Draft deleted.&#x27;)
+        return redirect(&#x27;events:manage&#x27;)
+    if event.status != Event.Status.DRAFT:
+        refuse(request, ValidationError(
+            &#x27;Only a draft can be deleted.&#x27;
+        ))
+        return redirect(event)
+    return render(request, &#x27;events/delete.html&#x27;,
+                  {&#x27;event&#x27;: event})
+
+
+@require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;])
+@login_required
+def event_copy(request, event_id):
+    &quot;&quot;&quot;Ask for a start, then copy the event as a draft.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id,
+                            Action.COPY_EVENT)
+    if request.method == &#x27;POST&#x27;:
+        form = CopyForm(request.POST, event=event)
+        if form.is_valid():
+            with transaction.atomic():
+                copy = event.copy_as_draft(
+                    request.user,
+                    form.cleaned_data[&#x27;starts_at&#x27;],
+                )
+                record(request.user, Action.COPY_EVENT,
+                       copy, source=event.pk)
+            messages.success(
+                request, &#x27;Copied as a new draft.&#x27;
+            )
+            return redirect(&#x27;events:edit&#x27;, copy.pk)
+    else:
+        form = CopyForm(event=event)
+    return render(request, &#x27;events/copy.html&#x27;,
+                  {&#x27;event&#x27;: event, &#x27;form&#x27;: form})</code></pre><p class="" data-block="288">Each action and its record share a transaction. When <code>publish()</code> refuses a draft with no description, it raises before saving, the transaction rolls back, and no record remains: the trail never says something happened that did not. The delete records first, because deleting a row clears its <code>pk</code>, and the record needs the number.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="289" tabindex="0"><code>uv run python manage.py test events.tests.AuditTrailTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="290" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="291">Common Error: an edit that changed only the location records the times too</p><p class="" data-block="292">Django’s <code>form.changed_data</code> compares what was typed with what the form first showed, field by field. <code>EventForm</code> shows times in the event’s own zone and reads them back in that zone in its own <code>clean()</code>, but each field’s change check sees only the typed time and the stored time in UTC, so for any event outside UTC it reports <code>starts_at</code> and <code>ends_at</code> as changed when they were not. Recording <code>changed_data</code> would fill the trail with changes nobody made. Compare the saved values instead, as <code>event_edit()</code> does with <code>model_to_dict()</code>.</p></div><p class="" data-block="293">Try it: sign in as Soni and type the address of a draft she does not organize. Then, as the administrator, open Audit events in the admin and filter by outcome: Soni’s refused <code>view_event</code> is there, with her account and the draft’s number.</p><h4 data-block="294">Step 11: Write the design down</h4><p class="" data-block="295">Create <code>docs/design/permissions.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/permissions.md</p><pre class="code-listing code-listing--file" data-block="296" tabindex="0"><code># Who may do what: permissions and roles
+
+Status: Drafted in Chapter 30, for review. Not approved.
+Rules: PR-4 (organizers manage only assigned events),
+PR-5 (publication), PR-6 (only the administrator grants
+or removes organizer access). Decision: ADR-004.
+
+## Two questions, two places
+
+1. May this person organize at all? Membership of the
+   Organizers group (add_event, change_event), set by
+   the administrator in the admin.
+2. Do they organize this event? A current
+   OrganizerAssignment, added or removed by the
+   administrator, on the admin or the Organizer access
+   page.
+
+Editing, publishing, cancelling, deleting, and copying
+need both (Event.can_be_edited_by). An inactive account
+answers no to both (Event.has_organizer).
+
+## Roles
+
+- Visitor: published and cancelled events only.
+- Member: the same; their own account pages.
+- Organizer: Organizers group; manages assigned events.
+- Administrator: Administrators group, a staff account
+  per person. The admin pages for accounts, assignments,
+  events, registrations (view), and both logs; the
+  Organizer access page (events.manage_organizers).
+  Manages no event on Otahque&#x27;s own pages; changes no
+  group except Organizers.
+- Superuser: every permission; a local setup tool only.
+- Staff only: may open the admin; sees nothing there.
+
+## Matrix: Sam&#x27;s draft
+
+| Person          | View | Edit    | Publish | Create  |
+|-----------------|------|---------|---------|---------|
+| Visitor         | 404  | sign in | sign in | sign in |
+| Member          | 404  | 404     | 404     | 403     |
+| Staff only      | 404  | 404     | 404     | 403     |
+| Other organizer | 404  | 404     | 404     | ok      |
+| Administrator   | ok   | 403     | 403     | 403     |
+| Superuser       | ok   | 403     | 403     | ok      |
+| Organizer       | ok   | ok      | ok      | ok      |
+
+A published event shows to everyone, so a refused change
+there is 403, not 404. Proved by PermissionMatrixTests.
+
+## Refusals
+
+- Hidden event: 404, so its number reveals nothing.
+- Visible but not theirs: 403.
+- Signed out: sent to sign in.
+- A signed-in refusal is recorded as a refused
+  AuditEvent; an unknown number is not.
+
+## Organizer access
+
+- Added only for active members of Organizers.
+- The last current organizer of a draft or published
+  event is not removed; a cancelled event may lose all.
+- Add and Remove on the Organizer access page ask for
+  the password again (allauth re-authentication, five
+  minutes). The admin does not yet: Chapter 59.
+
+## Audit
+
+AuditEvent (app audit): actor, action, outcome (allowed
+or refused), target, detail (field names, member ids),
+time. Written in the action&#x27;s own transaction. Rows are
+ordinary database rows, not tamper-proof. Retention,
+redaction, and alerts: Chapter 65.
+
+## Planned rows
+
+- Chapter 31: members&#x27; own registrations; an organizer&#x27;s
+  attendee list (PR-1, PR-4).
+- Chapter 46: check-in by assigned organizers; a token
+  never replaces these checks.
+- Chapter 50: the same rules behind the API.
+- Chapter 70: volunteers, a role separate from
+  organizers.</code></pre><p class="" data-block="297">and <code>docs/adr/ADR-004-access-rules.md</code>, the decision record for where the rules live:</p><p class="code-label code-label--file" aria-hidden="true">docs/adr/ADR-004-access-rules.md</p><pre class="code-listing code-listing--file" data-block="298" tabindex="0"><code># ADR-004: Access rules in model methods and groups
+
+## Status
+
+Proposed, November 2026 (Chapter 30). The choice follows
+the user&#x27;s decisions of 18 November 2026 (Chapter 30
+P2-P4); this record is not yet reviewed or accepted.
+
+## Context
+
+Otahque must answer &quot;may this person do this to this
+event?&quot; on every page, in the admin, and later in the API.
+The answer depends on a role (may organize) and on a
+relationship (organizes this event). Django&#x27;s model
+permissions are per model, not per event, and its
+ModelBackend returns no permissions for an object.
+
+## Options
+
+- A: model methods on Event (has_organizer,
+  is_visible_to, can_be_edited_by), with Django groups
+  for roles; every view calls one method.
+- B: policy functions in a separate module.
+- C: django-rules: predicates behind
+  user.has_perm(perm, event).
+- D: django-guardian: a permission row per member and
+  event.
+
+## Decision
+
+Option A. Groups Organizers and Administrators are
+created by a migration; events.manage_organizers guards
+the Organizer access page.
+
+## Consequences
+
+- One place to read and test each rule; the matrix in
+  docs/design/permissions.md has a test per row.
+- has_perm(perm, obj) is not used: Django answers True
+  for any active superuser before a backend is asked, so
+  C would let every superuser manage every event.
+- D would repeat OrganizerAssignment as permission rows.
+- Changing a group&#x27;s permissions needs a migration until
+  Chapter 41 adds a command.
+
+## Revisit when
+
+- The API (Chapter 50) needs the rules in a shared
+  module (option B).
+- Communities (Chapters 67-68) make organizing rights
+  per community.</code></pre><p class="" data-block="299">In <code>docs/design/admin.md</code>, replace the items for organizer assignments and users with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/admin.md (replace two items)</p><pre class="code-listing code-listing--file" data-block="300" tabindex="0"><code>- Organizer assignments: view, add (active members of
+  Organizers only), and remove with the Remove selected
+  organizers action, which keeps the last organizer of a
+  live event; never deleted (PR-6). Chapter 30.
+- Users: view and change email, display name, active,
+  staff, groups, and permissions. An administrator who is
+  not a superuser changes only Organizers membership;
+  staff and permissions are read-only (Chapter 30). No
+  add page (accounts come from createsuperuser or
+  create_user until Chapter 27), no delete (deactivate
+  instead), and the password is never shown or set here.</code></pre><p class="" data-block="301">replace the first item under “What the admin does not protect” with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/admin.md (replace the admin log item)</p><pre class="code-listing code-listing--file" data-block="302" tabindex="0"><code>- The admin log records admin saves only: not the
+  shell, scripts, migrations, Otahque&#x27;s own pages, or
+  sign-ins. Its rows can be changed by anyone with
+  database access. Business audit trail: AuditEvent from
+  Chapter 30, completed in Chapter 65.</code></pre><p class="" data-block="303">and the “Planned (Chapter 30)” best practice with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/admin.md (replace the Chapter 30 item)</p><pre class="code-listing code-listing--file" data-block="304" tabindex="0"><code>- Done (Chapter 30): an Administrators group with only
+  the permissions the role needs, one staff account per
+  person; no shared superuser accounts.</code></pre><p class="" data-block="305">In <code>docs/design/event-states.md</code>, replace the “Who may act” lines below the status with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md (replace Who may act)</p><pre class="code-listing code-listing--file" data-block="306" tabindex="0"><code>Who may act: current organizers who hold events.change_event
+(Event.can_be_edited_by, Chapter 25), through the Organizers
+group since Chapter 30; see permissions.md.</code></pre><p class="" data-block="307">and the open item about audit records with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md (replace the audit item)</p><pre class="code-listing code-listing--file" data-block="308" tabindex="0"><code>- Done (Chapter 30): each move, and each refused attempt,
+  is an AuditEvent.</code></pre><h4 data-block="309">Step 12: Check and commit</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="310" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="311" tabindex="0"><code>No changes detected</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="312" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="313" tabindex="0"><code>Found 288 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 288 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="314" tabindex="0"><code>git add .
+git status --short
+git commit -m &quot;Add roles, organizer access, and an audit trail&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="315" tabindex="0"><code>M  accounts/admin.py
+A  accounts/migrations/0004_groups.py
+M  accounts/tests.py
+A  audit/__init__.py
+A  audit/admin.py
+A  audit/apps.py
+A  audit/migrations/0001_initial.py
+A  audit/migrations/__init__.py
+A  audit/models.py
+A  audit/tests.py
+A  audit/views.py
+M  config/settings.py
+M  config/tests.py
+A  docs/adr/ADR-004-access-rules.md
+M  docs/design/admin.md
+M  docs/design/event-draft-form.md
+M  docs/design/event-states.md
+A  docs/design/permissions.md
+M  events/admin.py
+M  events/forms.py
+A  events/migrations/0005_manage_organizers.py
+M  events/models.py
+A  events/templates/events/organizer_events.html
+A  events/templates/events/organizers.html
+A  events/templatetags/__init__.py
+A  events/templatetags/otahque_widgets.py
+M  events/tests.py
+M  events/urls.py
+M  events/views.py
+M  templates/django/forms/widgets/checkbox.html
+M  templates/django/forms/widgets/input.html
+M  templates/django/forms/widgets/select.html
+M  templates/django/forms/widgets/textarea.html
+M  templates/includes/site_nav.html</code></pre><p class="" data-block="316">Table 30.2 lists what to do when a step does not go as described.</p><figure class="table-figure" data-block="317"><figcaption>Table 30.2 — When a step goes wrong</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 30.2 — When a step goes wrong"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">cannot import name &#x27;AuditEvent&#x27;</th>
+<td data-label="Likely cause">audit/models.py still the generated file</td>
+<td data-label="Recovery">Replace it with the Step 2 listing</td>
+</tr>
+<tr><th scope="row">no such table: audit_auditevent</th>
+<td data-label="Likely cause">The audit migration not made or not applied</td>
+<td data-label="Recovery">makemigrations audit, then migrate</td>
+</tr>
+<tr><th scope="row">Permission matching query does not exist</th>
+<td data-label="Likely cause">The create_permissions() loop left out</td>
+<td data-label="Recovery">Restore the loop in 0004_groups.py</td>
+</tr>
+<tr><th scope="row">A test adds a group and still gets 403</th>
+<td data-label="Likely cause">The user object kept its cached permissions</td>
+<td data-label="Recovery">Fetch the user again before asking</td>
+</tr>
+<tr><th scope="row">Organizer access missing from the menu</th>
+<td data-label="Likely cause">The account is not in Administrators</td>
+<td data-label="Recovery">Add it to the group as Sam, in the admin</td>
+</tr>
+<tr><th scope="row">Add or Remove goes to a password page</th>
+<td data-label="Likely cause">Re-authentication, as designed</td>
+<td data-label="Recovery">Confirm the password; it lasts five minutes</td>
+</tr>
+<tr><th scope="row">&quot;Only the Organizers group can be changed here.&quot;</th>
+<td data-label="Likely cause">An administrator changed another group</td>
+<td data-label="Recovery">Ask a superuser to make that change</td>
+</tr>
+<tr><th scope="row">Audit records show times that did not change</th>
+<td data-label="Likely cause">changed_data used for the record</td>
+<td data-label="Recovery">Compare model_to_dict() before and after</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2030%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter30/section-30-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter30/section-30-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter30/section-30-2/">← What You Need to Know</a><a href="/chapters/chapter30/section-30-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

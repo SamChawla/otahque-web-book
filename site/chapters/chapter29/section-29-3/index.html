@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 29: Account security: passwords, sign-in codes, and two factors. Make members&#x27; accounts harder to take: password rules from NIST...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter29/section-29-3/">
+<title>How We Build It · Chapter 29 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter29/">← Chapter 29 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-29-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-82">The Custom Way</a></li><li><a href="#topic-86">The Django Way</a></li></ul></li><li><a href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 8 figures · 4 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter29:29.3" data-progress-title="Section 29.3" data-reader-prev="section-29-2.html" data-reader-next="section-29-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 29.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter29/">Chapter 29 · Account security: passwords, sign-in codes, and two factors</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter29/section-29-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter29/section-29-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter29/section-29-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter29/section-29-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter29/section-29-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-29-3" data-block="79">How We Build It</h2><p class="" data-block="80">Start from Chapter 28, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 224 passing tests, every migration applied, and Sam’s superuser password from Chapter 18. One package extra is added, in Step 8, with its migrations. The new files are four email templates in <code>templates/account/email/</code>, <code>templates/allauth/elements/field.html</code>, and <code>docs/design/passwords-and-two-factor.md</code>. The commands are written the same for Windows PowerShell, Git Bash, macOS, Linux, and WSL; the chapter’s checks ran in the first two. Each step with new behaviour writes its tests first and runs them to see them fail. Steps 2 and 10 hold behaviour allauth and Django already have, so their checks pass at once.</p><p class="" data-block="81">The tests use helpers that each later step shares: <code>member()</code> makes a member with Chapter 27’s test password, <code>sign_in()</code> signs a test browser in through allauth’s page, and <code>subjects()</code> lists the subjects of the emails sent. Every test class that signs in or asks for codes calls <code>cache.clear()</code> in <code>setUp()</code>, for a reason Step 4 explains.</p><h3 class="" id="topic-82" data-block="82">The Custom Way</h3><p class="" data-block="83">Django has its own password views, and many tutorials build the reset with them. This illustration is not part of the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/urls.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="84" tabindex="0"><code>from django.contrib.auth import views as auth_views
+from django.urls import path
+
+urlpatterns = [
+    path(&#x27;password/reset/&#x27;,
+         auth_views.PasswordResetView.as_view()),
+    path(&#x27;password/reset/done/&#x27;,
+         auth_views.PasswordResetDoneView.as_view()),
+    path(&#x27;reset/&lt;uidb64&gt;/&lt;token&gt;/&#x27;,
+         auth_views.PasswordResetConfirmView.as_view()),
+    path(&#x27;reset/done/&#x27;,
+         auth_views.PasswordResetCompleteView.as_view()),
+]</code></pre><p class="" data-block="85">Each view needs a template, the reset email needs two more, and the change pages need their own pair. Django’s views do the hard part well: the same page for every address, a token that stores nothing, and the token moved out of the address bar before the page is shown. But in Otahque they would be a second set of account pages beside allauth’s, with their own templates, emails, and rate limits, and they skip members with no usable password, so Raj could never reset. A hand-made magic link would need even more: a signed, expiring token from Chapter 28, a table to make it single-use, and a way to tie it to the browser that asked. The Django Way here is to use the pages allauth already serves, decide their settings, write their words, and prove each rule with a test.</p><h3 class="" id="topic-86" data-block="86">The Django Way</h3><h4 data-block="87">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="88" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="89" tabindex="0"><code>Found 224 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 224 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="90" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="91" tabindex="0"><code>... Remember visitors: sessions and time zones</code></pre><h4 data-block="92">Step 2: How a reset token works</h4><p class="" data-block="93">Before using allauth’s reset, watch the token idea in Django’s own generator. Save this practice file as <code>s2_token.py</code> beside <code>manage.py</code>, run it with <code>uv run python manage.py shell -c &quot;exec(open(&#x27;s2_token.py&#x27;).read())&quot;</code>, and delete it. It makes two demo members inside a transaction it rolls back, so your rows are unchanged:</p><p class="code-label code-label--file" aria-hidden="true">s2_token.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="94" tabindex="0"><code>from django.contrib.auth.tokens import (
+    default_token_generator,
+)
+from django.db import transaction
+
+from accounts.models import User
+
+PASSWORD = &#x27;a-long-safe-pass-123&#x27;
+tokens = default_token_generator
+with transaction.atomic():
+    demo = User.objects.create_user(
+        &#x27;demo@example.org&#x27;, PASSWORD, display_name=&#x27;Demo&#x27;)
+    other = User.objects.create_user(
+        &#x27;other@example.org&#x27;, PASSWORD, display_name=&#x27;Other&#x27;)
+    token = tokens.make_token(demo)
+    when, check = token.split(&#x27;-&#x27;)
+    print(&#x27;the token:&#x27;, len(when), &#x27;characters of time,&#x27;,
+          len(check), &#x27;of hash&#x27;)
+    print(&#x27;stored anywhere: no; it is worked out again&#x27;)
+    print(&#x27;valid for demo:&#x27;, tokens.check_token(demo, token))
+    print(&#x27;valid for other:&#x27;,
+          tokens.check_token(other, token))
+    demo.set_password(&#x27;violet kettle harbour&#x27;)
+    demo.save()
+    print(&#x27;after a new password:&#x27;,
+          tokens.check_token(demo, token))
+    transaction.set_rollback(True)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="95" tabindex="0"><code>the token: 6 characters of time, 32 of hash
+stored anywhere: no; it is worked out again
+valid for demo: True
+valid for other: False
+after a new password: False</code></pre><p class="" data-block="96">The token is a time and a hash, and nothing is saved anywhere. It is valid for the member it was made for, not for another, and a new password makes it fail, because the hash covers the password.</p><h4 data-block="97">Step 3: Password rules, then a change</h4><p class="" data-block="98">Tests first. Add two imports to <code>accounts/tests.py</code>, the first after the <code>AnonymousUser</code> import:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (after the AnonymousUser import)</p><pre class="code-listing code-listing--file" data-block="99" tabindex="0"><code>from django.contrib.auth.password_validation import (
+    validate_password,
+)</code></pre><p class="" data-block="100">and the second after <code>from django.core import mail, signing</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (after the mail import)</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>from django.core.cache import cache</code></pre><p class="" data-block="102">Then add these helpers and tests at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="103" tabindex="0"><code>NEW_PASSWORD = &#x27;violet kettle harbour&#x27;
+
+
+def member(email=&#x27;sai@example.org&#x27;, **flags):
+    &quot;&quot;&quot;Create a member with the test password.&quot;&quot;&quot;
+    return User.objects.create_user(
+        email, PASSWORD, display_name=&#x27;Sai&#x27;, **flags)
+
+
+def sign_in(client, email=&#x27;sai@example.org&#x27;,
+            password=PASSWORD):
+    &quot;&quot;&quot;Sign in on allauth&#x27;s page with a password.&quot;&quot;&quot;
+    return client.post(reverse(&#x27;account_login&#x27;), {
+        &#x27;login&#x27;: email, &#x27;password&#x27;: password})
+
+
+def subjects():
+    &quot;&quot;&quot;Return the subjects of the emails sent so far.&quot;&quot;&quot;
+    return [message.subject for message in mail.outbox]
+
+
+class PasswordRuleTests(SimpleTestCase):
+    &quot;&quot;&quot;Passwords need at least 15 characters.&quot;&quot;&quot;
+
+    def test_fourteen_characters_are_refused(self):
+        with self.assertRaisesMessage(
+                ValidationError, &#x27;at least 15 characters&#x27;):
+            validate_password(&#x27;harbour kettle&#x27;)
+
+    def test_fifteen_characters_are_accepted(self):
+        validate_password(&#x27;harbour kettles&#x27;)
+
+
+class PasswordChangeTests(TestCase):
+    &quot;&quot;&quot;Changing a password; other browsers sign out.&quot;&quot;&quot;
+
+    def setUp(self):
+        cache.clear()
+        self.sai = member()
+        sign_in(self.client)
+        mail.outbox.clear()
+
+    def change(self, current):
+        &quot;&quot;&quot;Post the change form, giving current.&quot;&quot;&quot;
+        return self.client.post(
+            reverse(&#x27;account_change_password&#x27;), {
+                &#x27;oldpassword&#x27;: current,
+                &#x27;password1&#x27;: NEW_PASSWORD,
+                &#x27;password2&#x27;: NEW_PASSWORD})
+
+    def test_wrong_current_password_is_refused(self):
+        response = self.change(&#x27;not my password&#x27;)
+        self.assertContains(
+            response, &#x27;Please type your current password.&#x27;)
+        self.sai.refresh_from_db()
+        self.assertTrue(self.sai.check_password(PASSWORD))
+
+    def test_other_browsers_are_signed_out(self):
+        laptop = Client()
+        sign_in(laptop)
+        self.change(PASSWORD)
+        profile = reverse(&#x27;accounts:profile&#x27;)
+        self.assertEqual(
+            self.client.get(profile).status_code, 200)
+        self.assertEqual(
+            laptop.get(profile).status_code, 302)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="104" tabindex="0"><code>uv run python manage.py test accounts -k Password</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="105" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: ValidationError not raised
+Ran 4 tests in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="106"><code>-k Password</code> runs every test whose class or method name contains “Password”, which so far means the two new classes.</p><p class="" data-block="107">Only the 14-character password fails: Django still accepts eight characters. The change tests pass already, because allauth’s change page checks the current password and Django ends the other sessions. In <code>config/settings.py</code>, give the length check its option:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (the MinimumLengthValidator entry)</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>            &#x27;MinimumLengthValidator&#x27;
+        ),
+        # NIST SP 800-63B-4: 15 for a password used alone.
+        &#x27;OPTIONS&#x27;: {&#x27;min_length&#x27;: 15},
+    },</code></pre><p class="" data-block="109">Only the comment and the <code>&#x27;OPTIONS&#x27;</code> line are new; they sit inside the entry, before its closing <code>},</code>.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="110" tabindex="0"><code>uv run python manage.py test accounts -k Password</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="111" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="112">Try the change page: sign in at <a href="http://127.0.0.1:8000/accounts/login/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/login/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/login/</code></a>, open <a href="http://127.0.0.1:8000/accounts/password/change/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/password/change/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/password/change/</code></a>, and type a 14-character new password. The page says “This password is too short. It must contain at least 15 characters.” Choose a longer one, then try the profile page in another browser where you were signed in: it asks you to sign in again.</p><h4 data-block="113">Step 4: A reset that reveals nothing, for one hour</h4><p class="" data-block="114">Tests first. The reset tests read the link from the email and move the clock, so add <code>import re</code> after <code>import base64</code>, add <code>timedelta</code> to the <code>datetime</code> import, and add this after the <code>password_validation</code> import from Step 3:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (after the password_validation import)</p><pre class="code-listing code-listing--file" data-block="115" tabindex="0"><code>from django.contrib.auth.tokens import (
+    PasswordResetTokenGenerator,
+)</code></pre><p class="" data-block="116">Then add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="117" tabindex="0"><code>LINK = re.compile(
+    r&#x27;http://testserver(/accounts/password/reset/key/\S+/)&#x27;)
+
+
+class ResetCase(TestCase):
+    &quot;&quot;&quot;A member, Sai, and helpers for password resets.&quot;&quot;&quot;
+
+    def setUp(self):
+        cache.clear()
+        self.sai = member()
+        member(&#x27;old@example.org&#x27;, is_active=False)
+
+    def ask(self, email=&#x27;sai@example.org&#x27;):
+        &quot;&quot;&quot;Ask for a reset email for email.&quot;&quot;&quot;
+        mail.outbox.clear()
+        return self.client.post(
+            reverse(&#x27;account_reset_password&#x27;),
+            {&#x27;email&#x27;: email})
+
+    def link(self):
+        &quot;&quot;&quot;Return the reset link in the first email.&quot;&quot;&quot;
+        return LINK.search(mail.outbox[0].body).group(1)
+
+    def set_new_password(self, client, link):
+        &quot;&quot;&quot;Follow link and set the new password.&quot;&quot;&quot;
+        # The key moves from the address into the session.
+        page = client.get(link)
+        return client.post(page.url, {
+            &#x27;password1&#x27;: NEW_PASSWORD,
+            &#x27;password2&#x27;: NEW_PASSWORD})
+
+
+class ResetTests(ResetCase):
+    &quot;&quot;&quot;Resets: the same page for all, one-hour links.&quot;&quot;&quot;
+
+    def test_every_address_gets_the_same_page(self):
+        done = reverse(&#x27;account_reset_password_done&#x27;)
+        for email in (&#x27;sai@example.org&#x27;,
+                      &#x27;nobody@example.org&#x27;,
+                      &#x27;old@example.org&#x27;):
+            self.assertRedirects(self.ask(email), done)
+
+    def test_only_a_member_gets_an_email(self):
+        self.ask()
+        self.assertEqual(len(mail.outbox), 1)
+        for email in (&#x27;nobody@example.org&#x27;,
+                      &#x27;old@example.org&#x27;):
+            self.ask(email)
+            self.assertEqual(mail.outbox, [])
+
+    def test_the_link_works_once(self):
+        self.ask()
+        link = self.link()
+        self.assertRedirects(
+            self.set_new_password(self.client, link),
+            reverse(&#x27;account_reset_password_from_key_done&#x27;))
+        response = Client().get(link, follow=True)
+        self.assertTrue(response.context[&#x27;token_fail&#x27;])
+
+    def test_the_link_lasts_one_hour(self):
+        self.ask()
+        link = self.link()
+        for minutes, fails in ((59, False), (61, True)):
+            later = (datetime.now()
+                     + timedelta(minutes=minutes))
+            with mock.patch.object(
+                    PasswordResetTokenGenerator, &#x27;_now&#x27;,
+                    return_value=later):
+                response = Client().get(link, follow=True)
+            failed = response.context.get(&#x27;token_fail&#x27;)
+            self.assertEqual(bool(failed), fails)
+
+    def test_a_reset_does_not_sign_in(self):
+        self.ask()
+        self.set_new_password(self.client, self.link())
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)
+        self.sai.refresh_from_db()
+        self.assertFalse(self.sai.check_password(PASSWORD))
+        sign_in(self.client, password=NEW_PASSWORD)
+        self.assertIn(&#x27;_auth_user_id&#x27;, self.client.session)</code></pre><p class="" data-block="118"><code>ResetCase</code> holds the setup and helpers; <code>ResetTests</code> holds this step’s tests, and Steps 5 and 12 reuse the case. <code>set_new_password()</code> opens the link, which answers with a redirect to an address without the token, then posts the new password there.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="119" tabindex="0"><code>uv run python manage.py test accounts.tests.ResetTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="120" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False != True
+Ran 5 tests in ...s
+
+FAILED (failures=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="121">Two fail: an unknown address and an inactive one each receive allauth’s “Unknown Account” email, and a link is still accepted after 61 minutes. At the end of <code>config/settings.py</code>, add:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="122" tabindex="0"><code># Passwords, sign-in codes, and two-factor sign-in
+# (Chapter 29). See docs/design/passwords-and-two-factor.md.
+
+# A reset link works for one hour (Django: three days), and
+# an address without an account gets no email.
+PASSWORD_RESET_TIMEOUT = 60 * 60
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="123" tabindex="0"><code>uv run python manage.py test accounts.tests.ResetTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="124" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="125">Common Error: rate limits that leak between tests</p><p class="" data-block="126">allauth limits reset requests to five a minute for each address, and keeps the count in Django’s cache. The local cache lives in memory for the whole test run, and Django does not empty it between tests. A test class without <code>cache.clear()</code> in <code>setUp()</code> passes when run alone, then fails in the full run with “429 != 302”, because earlier tests already used the address’s five requests. Clear the cache in <code>setUp()</code> of every test class that signs in, resets, or asks for codes.</p></div><h4 data-block="127">Step 5: Otahque’s emails, and a notice for each change</h4><p class="" data-block="128">Run the server and ask for a reset for your own member at <a href="http://127.0.0.1:8000/accounts/password/reset/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/password/reset/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/password/reset/</code></a>: the email appears in the terminal that runs the server, starting “Hello from 127.0.0.1:8000!”, with the subject “[127.0.0.1:8000] Password Reset Email”: allauth names the site after the address in the browser. Tests first, at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="129" tabindex="0"><code>class AccountEmailTests(ResetCase):
+    &quot;&quot;&quot;Otahque&#x27;s reset email and its change notices.&quot;&quot;&quot;
+
+    def test_the_reset_email_is_otahques(self):
+        self.ask()
+        self.assertEqual(
+            subjects(), [&#x27;[Otahque] Password Reset Email&#x27;])
+        body = mail.outbox[0].body
+        self.assertIn(&#x27;Hello from Otahque.&#x27;, body)
+        self.assertIn(&#x27;one hour&#x27;, body)
+        self.assertNotIn(&#x27;testserver!&#x27;, body)
+
+    def test_a_change_sends_a_notice(self):
+        sign_in(self.client)
+        mail.outbox.clear()
+        self.client.post(
+            reverse(&#x27;account_change_password&#x27;), {
+            &#x27;oldpassword&#x27;: PASSWORD,
+            &#x27;password1&#x27;: NEW_PASSWORD,
+            &#x27;password2&#x27;: NEW_PASSWORD})
+        self.assertEqual(
+            subjects(), [&#x27;[Otahque] Password Changed&#x27;])
+        self.assertIn(&#x27;A notice about your Otahque account&#x27;,
+                      mail.outbox[0].body)
+
+    def test_a_reset_sends_a_notice(self):
+        self.ask()
+        link = self.link()
+        mail.outbox.clear()
+        self.set_new_password(self.client, link)
+        self.assertEqual(
+            subjects(), [&#x27;[Otahque] Password Reset&#x27;])</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="130" tabindex="0"><code>uv run python manage.py test accounts.tests.AccountEmailTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="131" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: Lists differ: [] != [&#x27;[Otahque] Password
+    Changed&#x27;]
+AssertionError: Lists differ: [] != [&#x27;[Otahque] Password
+    Reset&#x27;]
+Ran 3 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="132">Add the subject prefix and the notices, as a new block at the end of <code>config/settings.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="133" tabindex="0"><code># Otahque&#x27;s subject line, and a notice when a password, an
+# email address, or two-factor sign-in changes.
+ACCOUNT_EMAIL_SUBJECT_PREFIX = &#x27;[Otahque] &#x27;
+ACCOUNT_EMAIL_NOTIFICATIONS = True</code></pre><p class="" data-block="134">Every allauth email extends one template, <code>account/email/base_message.txt</code>, and every notice extends <code>account/email/base_notification.txt</code>. Overriding those two, and the reset email itself, puts Otahque’s words in all of them. Django finds templates in the project’s <code>templates/</code> folder before allauth’s, as Chapter 27’s overrides showed. Create <code>templates/account/email/base_message.txt</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/account/email/base_message.txt</p><pre class="code-listing code-listing--file" data-block="135" tabindex="0"><code>{% autoescape off %}Hello from Otahque.
+
+{% block content %}{% endblock content %}
+
+-- 
+Otahque, community events
+{% endautoescape %}</code></pre><p class="" data-block="136"><code>templates/account/email/base_notification.txt</code>, whose <code>{{ ip }}</code>, <code>{{ user_agent }}</code>, and <code>{{ timestamp }}</code> allauth fills in:</p><p class="code-label code-label--file" aria-hidden="true">templates/account/email/base_notification.txt</p><pre class="code-listing code-listing--file" data-block="137" tabindex="0"><code>{% extends &quot;account/email/base_message.txt&quot; %}
+
+{% block content %}A notice about your Otahque account:
+
+{% block notification_message %}
+{% endblock notification_message %}
+
+If this was not you, reset your password now and turn on
+two-factor sign-in from your profile. The change came
+from:
+
+- IP address: {{ ip }}
+- Browser: {{ user_agent }}
+- Time (UTC): {{ timestamp }}
+{% endblock content %}</code></pre><p class="" data-block="138">and <code>templates/account/email/password_reset_key_message.txt</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/account/email/password_reset_key_message.txt</p><pre class="code-listing code-listing--file" data-block="139" tabindex="0"><code>{% extends &quot;account/email/base_message.txt&quot; %}
+
+{% block content %}Someone asked to reset the password of
+your Otahque account. If it was you, open this link within
+one hour and choose a new password:
+
+{{ password_reset_url }}
+
+The link works once. If you did not ask, ignore this email;
+your password stays as it is.
+{% endblock content %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="140" tabindex="0"><code>uv run python manage.py test accounts.tests.AccountEmailTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="141" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="142">Common Error: a reset link broken in the terminal</p><p class="" data-block="143">The console shows each email as it would travel, in a form called quoted-printable, where a line longer than 76 characters is split with <code>=</code> at the end. The reset link is longer than that, so it appears on two lines, the first ending in <code>=</code>. Copied as it stands, the link does not work. Join the two lines and remove the <code>=</code> before opening it. A mail program does this by itself, so real emails from Chapter 43 show the link whole.</p></div><p class="" data-block="144"><code>autoescape off</code> in the base message matters: these are plain-text emails, and without it Django would write <code>&amp;amp;</code> for every <code>&amp;</code> in a link. Check the behaviour in the shell with a practice file, <code>l1_reset.py</code>, which asks for a reset for a member and for an unknown address in a transaction it rolls back, and prints the answer, the page it leads to, and the number of emails sent. The interview’s L1 uses it too:</p><p class="code-label code-label--file" aria-hidden="true">l1_reset.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="145" tabindex="0"><code>from django.core import mail
+from django.db import transaction
+from django.test import Client
+from django.test.utils import setup_test_environment
+
+from accounts.models import User
+
+setup_test_environment()
+with transaction.atomic():
+    User.objects.create_user(&#x27;demo@example.org&#x27;,
+                             &#x27;a-long-safe-pass-123&#x27;,
+                             display_name=&#x27;Demo&#x27;)
+    for email in (&#x27;demo@example.org&#x27;, &#x27;nobody@example.org&#x27;):
+        mail.outbox.clear()
+        page = Client().post(&#x27;/accounts/password/reset/&#x27;,
+                             {&#x27;email&#x27;: email})
+        print(f&#x27;{email:19}&#x27;, page.status_code, page.url,
+              len(mail.outbox))
+    transaction.set_rollback(True)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="146" tabindex="0"><code>demo@example.org    302 /accounts/password/reset/done/ 1
+nobody@example.org  302 /accounts/password/reset/done/ 0</code></pre><h4 data-block="147">Step 6: Set a password</h4><p class="" data-block="148">Raj has no password, so the profile should offer to set one where Sai’s offers to change it. Tests first, at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="149" tabindex="0"><code>class SetPasswordTests(TestCase):
+    &quot;&quot;&quot;Members without a password may set one.&quot;&quot;&quot;
+
+    def setUp(self):
+        self.raj = User.objects.create_user(
+            &#x27;raj@example.org&#x27;, None, display_name=&#x27;Raj&#x27;)
+
+    def test_profile_offers_change_or_set(self):
+        self.client.force_login(member())
+        page = self.client.get(reverse(&#x27;accounts:profile&#x27;))
+        self.assertContains(page, &#x27;Change password&#x27;)
+        self.assertNotContains(page, &#x27;Set a password&#x27;)
+        self.client.force_login(self.raj)
+        page = self.client.get(reverse(&#x27;accounts:profile&#x27;))
+        self.assertContains(page, &#x27;Set a password&#x27;)
+
+    def test_a_member_without_one_can_set_a_password(self):
+        self.assertFalse(self.raj.has_usable_password())
+        self.client.force_login(self.raj)
+        self.client.post(reverse(&#x27;account_set_password&#x27;), {
+            &#x27;password1&#x27;: NEW_PASSWORD,
+            &#x27;password2&#x27;: NEW_PASSWORD})
+        self.raj.refresh_from_db()
+        self.assertTrue(
+            self.raj.check_password(NEW_PASSWORD))
+        self.assertEqual(
+            subjects(), [&#x27;[Otahque] Password Set&#x27;])</code></pre><p class="" data-block="150"><code>create_user()</code> with <code>None</code> as the password makes an unusable one, as a sign-up through GitHub does.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="151" tabindex="0"><code>uv run python manage.py test accounts.tests.SetPasswordTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="152" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False is not true : Couldn&#x27;t find &#x27;Change
+    password&#x27; in the following response
+Ran 2 tests in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="153">Setting already works, because allauth serves the page; only the profile’s link is missing. In <code>accounts/templates/accounts/profile.html</code>, replace the paragraph of links from Chapter 27 with an “Account security” list:</p><p class="code-label code-label--file" aria-hidden="true">accounts/templates/accounts/profile.html (replace the links paragraph)</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>  &lt;h2 class=&quot;mt-8&quot;&gt;Account security&lt;/h2&gt;
+  &lt;ul class=&quot;space-y-2&quot;&gt;
+    &lt;li&gt;
+      {% if user.has_usable_password %}
+        &lt;a href=&quot;{% url &#x27;account_change_password&#x27; %}&quot;&gt;
+          Change password&lt;/a&gt;
+      {% else %}
+        You have no password yet.
+        &lt;a href=&quot;{% url &#x27;account_set_password&#x27; %}&quot;&gt;
+          Set a password&lt;/a&gt;
+      {% endif %}
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;{% url &#x27;account_email&#x27; %}&quot;&gt;
+      Email addresses&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;{% url &#x27;socialaccount_connections&#x27; %}&quot;&gt;
+      Connected accounts&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;</code></pre><p class="" data-block="155"><code>user.has_usable_password</code> is a method; Django’s templates call methods that take no arguments, so no brackets are written.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="156" tabindex="0"><code>uv run python manage.py test accounts.tests.SetPasswordTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="157" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="158">Step 7: Sign in with an emailed code</h4><p class="" data-block="159">Tests first, at the end of <code>accounts/tests.py</code>. <code>CODE</code> finds the code in the email: four letters or digits, a dash, and four more, alone on a line:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="160" tabindex="0"><code>CODE = re.compile(r&#x27;^([A-Z0-9]{4}-[A-Z0-9]{4})$&#x27;, re.M)
+
+
+class CodeSignInTests(TestCase):
+    &quot;&quot;&quot;Signing in with a code sent by email.&quot;&quot;&quot;
+
+    def setUp(self):
+        cache.clear()
+        self.sai = member()
+
+    def ask(self, client, email=&#x27;sai@example.org&#x27;):
+        &quot;&quot;&quot;Ask for a sign-in code for email.&quot;&quot;&quot;
+        mail.outbox.clear()
+        return client.post(
+            reverse(&#x27;account_request_login_code&#x27;),
+            {&#x27;email&#x27;: email})
+
+    def code(self):
+        &quot;&quot;&quot;Return the code in the first email.&quot;&quot;&quot;
+        return CODE.search(mail.outbox[0].body).group(1)
+
+    def confirm(self, client, code):
+        &quot;&quot;&quot;Post code on the confirm-code page.&quot;&quot;&quot;
+        return client.post(
+            reverse(&#x27;account_confirm_login_code&#x27;),
+            {&#x27;code&#x27;: code})
+
+    def test_the_sign_in_page_offers_a_code(self):
+        page = self.client.get(reverse(&#x27;account_login&#x27;))
+        self.assertContains(
+            page, reverse(&#x27;account_request_login_code&#x27;))
+
+    def test_a_code_signs_in_once(self):
+        self.ask(self.client)
+        self.assertEqual(
+            subjects(), [&#x27;[Otahque] Sign-In Code&#x27;])
+        self.assertIn(&#x27;ten minutes&#x27;, mail.outbox[0].body)
+        code = self.code()
+        self.confirm(self.client, code)
+        self.assertIn(&#x27;_auth_user_id&#x27;, self.client.session)
+        self.client.post(reverse(&#x27;account_logout&#x27;))
+        self.confirm(self.client, code)
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)
+
+    def test_only_the_asking_browser_can_use_it(self):
+        self.ask(self.client)
+        other = Client()
+        self.confirm(other, self.code())
+        self.assertNotIn(&#x27;_auth_user_id&#x27;, other.session)
+
+    def test_three_wrong_codes_discard_it(self):
+        self.ask(self.client)
+        code = self.code()
+        for _ in range(3):
+            self.confirm(self.client, &#x27;ZZZZ-ZZZZ&#x27;)
+        self.confirm(self.client, code)
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)
+
+    def test_the_code_lasts_ten_minutes(self):
+        for minutes, works in ((9, True), (11, False)):
+            client = Client()
+            self.ask(client)
+            later = time.time() + minutes * 60
+            with mock.patch(&#x27;time.time&#x27;, return_value=later):
+                self.confirm(client, self.code())
+            self.assertEqual(
+                &#x27;_auth_user_id&#x27; in client.session, works)
+
+    def test_an_unknown_address_gets_no_email(self):
+        response = self.ask(
+            self.client, &#x27;nobody@example.org&#x27;)
+        self.assertRedirects(
+            response, reverse(&#x27;account_confirm_login_code&#x27;),
+            fetch_redirect_response=False)
+        self.assertEqual(mail.outbox, [])</code></pre><p class="" data-block="161"><code>mock.patch(&#x27;time.time&#x27;, ...)</code> makes the clock read nine, then eleven, minutes later while the code is typed, because allauth measures the code’s age with <code>time.time()</code>.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="162" tabindex="0"><code>uv run python manage.py test accounts.tests.CodeSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="163" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+FAILED (errors=6)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="164">All six end in errors: each is a <code>NoReverseMatch</code>, “Reverse for ’account_request_login_code’ not found”, because the code pages do not exist yet. allauth adds their addresses only when the setting is on. Add this block at the end of <code>config/settings.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="165" tabindex="0"><code># Sign in with a code sent by email, typed in the same
+# browser; it works for ten minutes.
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 10 * 60</code></pre><p class="" data-block="166">and Otahque’s words for the code email, <code>templates/account/email/login_code_message.txt</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/account/email/login_code_message.txt</p><pre class="code-listing code-listing--file" data-block="167" tabindex="0"><code>{% extends &quot;account/email/base_message.txt&quot; %}
+
+{% block content %}Your Otahque sign-in code:
+
+{{ code }}
+
+Type it in the browser window where you asked for it,
+within ten minutes. It does not work anywhere else.
+
+If you did not ask, ignore this email; nobody can sign in
+without the code.
+{% endblock content %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="168" tabindex="0"><code>uv run python manage.py test accounts.tests.CodeSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="169" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="170">Common Error: turning the code pages on inside one test</p><p class="" data-block="171">A test decorated with <code>@override_settings(ACCOUNT_LOGIN_BY_CODE_ENABLED=True)</code> still fails with <code>NoReverseMatch: Reverse for &#x27;account_request_login_code&#x27; not found</code>. allauth reads the setting once, when Django first loads the addresses, and a test cannot add addresses afterwards. Turn the feature on in <code>settings.py</code>, as above, and test the setting the project really runs with.</p></div><p class="" data-block="172">The sign-in page now has a “Send me a sign-in code” link. Restart the server, choose it, type your member’s address, and copy the code from the terminal into the same window. Then try the same code in a private window: it is refused. The practice file <code>l3_code.py</code> shows the same thing with a laptop and a phone, and the interview’s L3 uses it:</p><p class="code-label code-label--file" aria-hidden="true">l3_code.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="173" tabindex="0"><code>import re
+
+from django.core import mail
+from django.db import transaction
+from django.test import Client
+from django.test.utils import setup_test_environment
+
+from accounts.models import User
+
+setup_test_environment()
+with transaction.atomic():
+    User.objects.create_user(&#x27;demo@example.org&#x27;,
+                             &#x27;a-long-safe-pass-123&#x27;,
+                             display_name=&#x27;Demo&#x27;)
+    laptop, phone = Client(), Client()
+    laptop.post(&#x27;/accounts/login/code/&#x27;,
+                {&#x27;email&#x27;: &#x27;demo@example.org&#x27;})
+    body = mail.outbox[0].body
+    code = re.search(r&#x27;^\w{4}-\w{4}$&#x27;, body, re.M).group()
+    print(&#x27;a link in the email:&#x27;, &#x27;http&#x27; in body)
+    phone.post(&#x27;/accounts/login/code/confirm/&#x27;,
+               {&#x27;code&#x27;: code})
+    print(&#x27;phone signed in:&#x27;,
+          &#x27;_auth_user_id&#x27; in phone.session)
+    laptop.post(&#x27;/accounts/login/code/confirm/&#x27;,
+                {&#x27;code&#x27;: code})
+    print(&#x27;laptop signed in:&#x27;,
+          &#x27;_auth_user_id&#x27; in laptop.session)
+    transaction.set_rollback(True)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="174" tabindex="0"><code>a link in the email: False
+phone signed in: False
+laptop signed in: True</code></pre><h4 data-block="175">Step 8: Add allauth’s two-factor module</h4><p class="" data-block="176">The module needs allauth’s <code>mfa</code> extra, which adds the <code>qrcode</code> package, to draw the QR code, and <code>fido2</code>, used for passkeys. Add it with the same pin as Chapter 27:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="177" tabindex="0"><code>uv add &quot;django-allauth[socialaccount,mfa]==65.22.1&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="178" tabindex="0"><code> + colorama==0.4.6
+ + fido2==2.2.1
+ + qrcode==8.2</code></pre><p class="" data-block="179"><code>colorama</code> comes with <code>qrcode</code> on Windows only; on macOS and Linux the list is two packages. uv writes the extra into <code>pyproject.toml</code> and <code>uv.lock</code>. In <code>config/settings.py</code>, add the app at the end of <code>INSTALLED_APPS</code>, after the GitHub provider:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (in INSTALLED_APPS, after the GitHub provider)</p><pre class="code-listing code-listing--file" data-block="180" tabindex="0"><code>    &#x27;allauth.mfa&#x27;,</code></pre><p class="" data-block="181">and the types and the name the authenticator app shows, as a new block at the end:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="182" tabindex="0"><code># Two-factor sign-in: an authenticator app, recovery codes.
+MFA_SUPPORTED_TYPES = [&#x27;totp&#x27;, &#x27;recovery_codes&#x27;]
+MFA_TOTP_ISSUER = &#x27;Otahque&#x27;</code></pre><p class="" data-block="183">The module stores each member’s authenticators in a table of its own, so apply its migrations:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="184" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="185" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, auth,
+    contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying mfa.0001_initial... OK
+  Applying mfa.0002_authenticator_timestamps... OK
+  Applying mfa.0003_authenticator_type_uniq... OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="186" tabindex="0"><code>uv run python manage.py check
+uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="187" tabindex="0"><code>Found 244 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 244 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="188">Common Error: no such table: mfa_authenticator</p><p class="" data-block="189">After adding <code>&#x27;allauth.mfa&#x27;</code> without running <code>migrate</code>, the profile page and every sign-in fail with <code>OperationalError: no such table: mfa_authenticator</code>, because allauth looks up each member’s authenticators. The tests still pass, since they build their own database from the migrations. Run <code>uv run python manage.py migrate</code>; it only adds tables, so no data is lost.</p></div><h4 data-block="190">Step 9: Turn on an authenticator app</h4><p class="" data-block="191">Tests first. They import allauth’s model and its TOTP functions, which exist only now that the app is installed. Add after the <code>request_context</code> import in <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (after the request_context import)</p><pre class="code-listing code-listing--file" data-block="192" tabindex="0"><code>from allauth.mfa.models import Authenticator
+from allauth.mfa.totp.internal import auth as totp</code></pre><p class="" data-block="193">and at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="194" tabindex="0"><code>def code_at(secret, moment):
+    &quot;&quot;&quot;Return the authenticator app&#x27;s code at moment.&quot;&quot;&quot;
+    counter = int(moment) // 30
+    return totp.format_hotp_value(
+        totp.hotp_value(secret, counter))
+
+
+def turn_on_totp(client, at=None):
+    &quot;&quot;&quot;Turn on an authenticator app, as a member does.
+
+    The code is typed at moment `at` (default: now).
+    &quot;&quot;&quot;
+    page = client.get(reverse(&#x27;mfa_activate_totp&#x27;))
+    if page.status_code == 302:  # the password, again
+        client.post(page.url, {&#x27;password&#x27;: PASSWORD})
+        page = client.get(reverse(&#x27;mfa_activate_totp&#x27;))
+    secret = page.context[&#x27;form&#x27;].secret
+    moment = time.time() if at is None else at
+    with mock.patch(&#x27;time.time&#x27;, return_value=moment):
+        client.post(reverse(&#x27;mfa_activate_totp&#x27;),
+                    {&#x27;code&#x27;: code_at(secret, moment)})
+    return secret
+
+
+def confirmed(email=&#x27;sai@example.org&#x27;, **flags):
+    &quot;&quot;&quot;Create a member whose email address is verified.&quot;&quot;&quot;
+    user = member(email, **flags)
+    EmailAddress.objects.create(
+        user=user, email=email, verified=True, primary=True)
+    return user
+
+
+class TwoFactorCase(TestCase):
+    &quot;&quot;&quot;Helpers for members with an authenticator app.&quot;&quot;&quot;
+
+    def setUp(self):
+        cache.clear()
+
+    def two_factor_on(self):
+        &quot;&quot;&quot;Give Sai two-factor sign-in; sign out again.&quot;&quot;&quot;
+        sai = confirmed()
+        sign_in(self.client)
+        secret = turn_on_totp(self.client)
+        self.client.post(reverse(&#x27;account_logout&#x27;))
+        return sai, secret
+
+    def second_factor(self, client, code, at=None):
+        &quot;&quot;&quot;Type a code at moment `at` (default: 31 s on).&quot;&quot;&quot;
+        moment = time.time() + 31 if at is None else at
+        with mock.patch(&#x27;time.time&#x27;, return_value=moment):
+            client.post(reverse(&#x27;mfa_authenticate&#x27;),
+                        {&#x27;code&#x27;: code})
+        return &#x27;_auth_user_id&#x27; in client.session
+
+
+class TwoFactorTests(TwoFactorCase):
+    &quot;&quot;&quot;Turning on an authenticator app.&quot;&quot;&quot;
+
+    def test_turning_it_on_asks_for_the_password(self):
+        confirmed()
+        sign_in(self.client)
+        page = self.client.get(reverse(&#x27;mfa_activate_totp&#x27;))
+        self.assertTrue(page.url.startswith(
+            reverse(&#x27;account_reauthenticate&#x27;)))
+
+    def test_an_unconfirmed_address_blocks_it(self):
+        sai = member()
+        EmailAddress.objects.create(
+            user=sai, email=sai.email, verified=False,
+            primary=True)
+        sign_in(self.client)
+        profile = self.client.get(
+            reverse(&#x27;accounts:profile&#x27;))
+        self.assertContains(
+            profile, &#x27;Confirm your email address first&#x27;)
+        page = self.client.get(reverse(&#x27;mfa_activate_totp&#x27;))
+        self.client.post(page.url, {&#x27;password&#x27;: PASSWORD})
+        page = self.client.get(reverse(&#x27;mfa_activate_totp&#x27;),
+                               follow=True)
+        self.assertContains(
+            page, &#x27;verified your email address&#x27;)
+        self.assertFalse(Authenticator.objects.exists())
+
+    def test_the_profile_says_on_or_off(self):
+        confirmed()
+        sign_in(self.client)
+        profile = reverse(&#x27;accounts:profile&#x27;)
+        self.assertContains(self.client.get(profile),
+                            &#x27;&lt;strong&gt;off&lt;/strong&gt;&#x27;)
+        turn_on_totp(self.client)
+        self.assertContains(self.client.get(profile),
+                            &#x27;&lt;strong&gt;on&lt;/strong&gt;&#x27;)
+
+    def test_the_secret_is_stored_as_text(self):
+        sai, secret = self.two_factor_on()
+        stored = Authenticator.objects.get(
+            user=sai, type=Authenticator.Type.TOTP)
+        # Known risk until Chapter 59 encrypts it.
+        self.assertEqual(stored.data[&#x27;secret&#x27;], secret)
+
+    def test_the_activation_code_cannot_sign_in(self):
+        confirmed()
+        sign_in(self.client)
+        now = time.time()
+        secret = turn_on_totp(self.client, at=now)
+        self.client.post(reverse(&#x27;account_logout&#x27;))
+        sign_in(self.client)
+        used = code_at(secret, now)
+        self.assertFalse(
+            self.second_factor(self.client, used, at=now))</code></pre><p class="" data-block="195"><code>code_at()</code> works out the code an authenticator app would show at a given moment, using allauth’s own functions. <code>turn_on_totp()</code> does what Sam does on the page: confirm the password, read the secret, and type the code. <code>TwoFactorCase</code> holds the shared setup for this step’s tests and the next two steps’. <code>second_factor()</code> types a code with the clock fixed at a given moment, 31 seconds on by default: in the next 30-second step, because the code used to turn the app on is used up.</p><p class="" data-block="196">Each test works out a moment once and passes it both to <code>code_at()</code> and to <code>second_factor()</code>. Asking the clock twice would be a mistake that shows only on a slow day: if a 30-second step ends between the two calls, the code belongs to one step and the check to the next, and the test fails for no reason in the code. The first run of this chapter’s checks failed exactly that way while the computer was busy.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="197" tabindex="0"><code>uv run python manage.py test accounts.tests.TwoFactorTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="198" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: True is not false
+Ran 5 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="199">Three fail. The profile does not show the state or the warning yet, and the code used to turn the app on still signs in a second time: allauth marks codes as used at sign-in, but not on the page that turns the app on. NIST SP 800-63B-4 (3.1.4.2) says a code “SHALL” be accepted only once. allauth lets a project replace that page’s form through its <code>MFA_FORMS</code> setting, so Otahque’s form marks the code as allauth does. In <code>accounts/forms.py</code>, add these imports above <code>from django import forms</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (above the django import)</p><pre class="code-listing code-listing--file" data-block="200" tabindex="0"><code>from allauth.mfa.models import Authenticator
+from allauth.mfa.totp.forms import ActivateTOTPForm
+from allauth.mfa.totp.internal.auth import TOTP</code></pre><p class="" data-block="201">and this form at the end:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="202" tabindex="0"><code>class OneUseActivateTOTPForm(ActivateTOTPForm):
+    &quot;&quot;&quot;allauth&#x27;s form for turning on an authenticator app.
+
+    The code is marked as used, so it cannot sign in again
+    within its 30 seconds (NIST SP 800-63B-4).
+    &quot;&quot;&quot;
+
+    def clean_code(self):
+        &quot;&quot;&quot;Mark the activation code as used.&quot;&quot;&quot;
+        code = super().clean_code()
+        # A private allauth method: TwoFactorTests fails
+        # if an upgrade changes it.
+        unsaved = Authenticator(
+            user=self.user, type=Authenticator.Type.TOTP,
+        )
+        TOTP(unsaved)._mark_code_used(code)
+        return code</code></pre><p class="" data-block="203"><code>_mark_code_used()</code> starts with an underscore: allauth’s own method, not promised to stay the same between versions. Calling it is a deliberate risk, so the test that proves the form also guards it, and the design note and ADR-003 say to check it on every upgrade. Tell allauth to use the form, at the end of <code>config/settings.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="204" tabindex="0"><code># The code typed to turn it on is used up too (NIST).
+MFA_FORMS = {
+    &#x27;activate_totp&#x27;:
+        &#x27;accounts.forms.OneUseActivateTOTPForm&#x27;,
+}</code></pre><p class="" data-block="205">The profile needs two facts the template cannot work out alone. In <code>accounts/views.py</code>, add the imports above <code>from django.contrib import messages</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/views.py (above the messages import)</p><pre class="code-listing code-listing--file" data-block="206" tabindex="0"><code>from allauth.account.models import EmailAddress
+from allauth.mfa.models import Authenticator</code></pre><p class="" data-block="207">and two entries in the dictionary that <code>profile()</code> passes to <code>render()</code>, after <code>&#x27;form&#x27;: form,</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/views.py (in profile(), after &#x27;form&#x27;: form,)</p><pre class="code-listing code-listing--file" data-block="208" tabindex="0"><code>        &#x27;two_factor&#x27;: Authenticator.objects.filter(
+            user=user, type=Authenticator.Type.TOTP,
+        ).exists(),
+        &#x27;unconfirmed&#x27;: EmailAddress.objects.filter(
+            user=user, verified=False,
+        ).exists(),</code></pre><p class="" data-block="209">Then, in <code>profile.html</code>, add the two-factor line after the password line’s closing <code>&lt;/li&gt;</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/templates/accounts/profile.html (after the password line)</p><pre class="code-listing code-listing--file" data-block="210" tabindex="0"><code>    &lt;li&gt;
+      &lt;a href=&quot;{% url &#x27;mfa_index&#x27; %}&quot;&gt;Two-factor sign-in&lt;/a&gt;:
+      &lt;strong&gt;{{ two_factor|yesno:&quot;on,off&quot; }}&lt;/strong&gt;
+      {% if unconfirmed and not two_factor %}
+        &lt;span class=&quot;block text-sm&quot;&gt;
+          Confirm your email address first, from
+          &lt;a href=&quot;{% url &#x27;account_email&#x27; %}&quot;&gt;Email
+            addresses&lt;/a&gt;.&lt;/span&gt;
+      {% endif %}
+    &lt;/li&gt;</code></pre><p class="" data-block="211"><code>yesno:&quot;on,off&quot;</code> is a Django filter that writes the first word for a true value and the second for a false one.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="212" tabindex="0"><code>uv run python manage.py test accounts.tests.TwoFactorTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="213" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="214">Common Error: importing allauth.mfa before installing it</p><p class="" data-block="215">Importing <code>allauth.mfa.models</code> in a view, a form, or a test before <code>&#x27;allauth.mfa&#x27;</code> is in <code>INSTALLED_APPS</code> stops every command, <code>check</code> included, with <code>ImproperlyConfigured: allauth.mfa not installed, yet its models are imported.</code> allauth checks for this itself and says so plainly. That is why this chapter adds the app in Step 8 and imports the model in Step 9. Add the app first, then the import.</p></div><p class="" data-block="216">The two-factor pages use two of allauth’s display elements that Chapter 27 left alone: <code>field</code>, which draws a single box such as the authenticator secret or the list of recovery codes, and the links that the <code>button</code> element draws. With allauth’s plain versions, the secret runs into its help text and is cut off on a phone, so a member who types it into an app cannot see all of it, and the two links on the recovery codes page run together. Create <code>templates/allauth/elements/field.html</code> with the same <code>fieldset</code> classes as Otahque’s form fields:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/field.html</p><pre class="code-listing code-listing--file" data-block="217" tabindex="0"><code>{% load allauth %}
+{{ attrs.errors }}
+&lt;div class=&quot;fieldset&quot;&gt;
+  {% if attrs.type == &quot;checkbox&quot; or attrs.type == &quot;radio&quot; %}
+    &lt;label&gt;
+      &lt;input type=&quot;{{ attrs.type }}&quot; id=&quot;{{ attrs.id }}&quot;
+        {% if attrs.name %}name=&quot;{{ attrs.name }}&quot;{% endif %}
+        {% if attrs.value is not None %}
+          value=&quot;{{ attrs.value }}&quot;{% endif %}
+        {% if attrs.checked %}checked{% endif %}
+        {% if attrs.disabled %}disabled{% endif %}&gt;
+      {% slot label %}{% endslot %}&lt;/label&gt;
+  {% else %}
+    &lt;label class=&quot;fieldset-legend&quot; for=&quot;{{ attrs.id }}&quot;&gt;
+      {% slot label %}{% endslot %}&lt;/label&gt;
+    {% if attrs.type == &quot;textarea&quot; %}
+      &lt;textarea class=&quot;textarea w-full&quot; id=&quot;{{ attrs.id }}&quot;
+        {% if attrs.rows %}rows=&quot;{{ attrs.rows }}&quot;{% endif %}
+        {% if attrs.name %}name=&quot;{{ attrs.name }}&quot;{% endif %}
+        {% if attrs.readonly %}readonly{% endif %}
+        &gt;{% slot value %}{% endslot %}&lt;/textarea&gt;
+    {% else %}
+      &lt;input class=&quot;input w-full&quot; id=&quot;{{ attrs.id }}&quot;
+        type=&quot;{{ attrs.type }}&quot;
+        {% if attrs.name %}name=&quot;{{ attrs.name }}&quot;{% endif %}
+        {% if attrs.value is not None %}
+          value=&quot;{{ attrs.value }}&quot;{% endif %}
+        {% if attrs.placeholder %}
+          placeholder=&quot;{{ attrs.placeholder }}&quot;{% endif %}
+        {% if attrs.autocomplete %}
+          autocomplete=&quot;{{ attrs.autocomplete }}&quot;{% endif %}
+        {% if attrs.disabled %}disabled{% endif %}
+        {% if attrs.readonly %}readonly{% endif %}
+        {% if attrs.required %}required{% endif %}&gt;
+    {% endif %}
+  {% endif %}
+  {% if slots.help_text %}
+    &lt;p class=&quot;label whitespace-normal&quot;&gt;
+      {% slot help_text %}{% endslot %}&lt;/p&gt;
+  {% endif %}
+&lt;/div&gt;</code></pre><p class="" data-block="218">A checkbox or a radio button keeps its label beside it, as on the Email addresses page; every other box gets a label above it and the full width. In <code>templates/allauth/elements/button.html</code> from Chapter 27, put each link in a paragraph of its own:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/button.html (the link branch)</p><pre class="code-listing code-listing--file" data-block="219" tabindex="0"><code>{% if attrs.href %}
+&lt;p&gt;&lt;a href=&quot;{{ attrs.href }}&quot; class=&quot;link&quot;&gt;
+  {% slot %}{% endslot %}&lt;/a&gt;&lt;/p&gt;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="220" tabindex="0"><code>uv run python manage.py test accounts</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="221" tabindex="0"><code>Found 73 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 73 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="222">Now turn it on yourself. Restart the server, sign in, open your profile, and choose <strong>Two-factor sign-in</strong>. If the profile says to confirm your email address first, choose <strong>Email addresses</strong>, send the confirmation, and open the link printed in the server’s terminal. Then choose to activate the authenticator app. Otahque asks for your password again, then shows a QR code and the secret written out. Scan the code with an authenticator app on your phone, or type the secret into it, and enter the six digits it shows. Otahque then shows ten recovery codes: save them in your password manager. The profile now says <strong>on</strong>.</p><h4 data-block="223">Step 10: Sign in with two factors</h4><p class="" data-block="224">These tests prove what Figure 29.3 shows, and pass at once, because allauth adds the second step to every way of signing in. Add them at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="225" tabindex="0"><code>class TwoFactorSignInTests(TwoFactorCase):
+    &quot;&quot;&quot;Signing in with a second factor.&quot;&quot;&quot;
+
+    def test_a_password_alone_is_not_enough(self):
+        sai, secret = self.two_factor_on()
+        response = sign_in(self.client)
+        self.assertRedirects(
+            response, reverse(&#x27;mfa_authenticate&#x27;),
+            fetch_redirect_response=False)
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)
+        later = time.time() + 31
+        self.assertTrue(self.second_factor(
+            self.client, code_at(secret, later), at=later))
+
+    def test_a_recovery_code_works_once(self):
+        sai, secret = self.two_factor_on()
+        codes = Authenticator.objects.get(
+            user=sai, type=Authenticator.Type.RECOVERY_CODES,
+        ).wrap().get_unused_codes()
+        self.assertEqual(len(codes), 10)
+        sign_in(self.client)
+        self.assertTrue(
+            self.second_factor(self.client, codes[0]))
+        other = Client()
+        sign_in(other)
+        self.assertFalse(self.second_factor(other, codes[0]))
+
+    def test_a_used_code_waits_in_the_cache(self):
+        sai, secret = self.two_factor_on()
+        first, second, third = Client(), Client(), Client()
+        for client in (first, second, third):
+            sign_in(client)
+        later = time.time() + 31
+        code = code_at(secret, later)
+        self.assertTrue(
+            self.second_factor(first, code, at=later))
+        self.assertFalse(
+            self.second_factor(second, code, at=later))
+        cache.clear()  # what a second process would see
+        self.assertTrue(
+            self.second_factor(third, code, at=later))
+
+    def test_a_sign_in_code_still_asks_for_it(self):
+        self.two_factor_on()
+        mail.outbox.clear()
+        self.client.post(
+            reverse(&#x27;account_request_login_code&#x27;),
+            {&#x27;email&#x27;: &#x27;sai@example.org&#x27;})
+        code = CODE.search(mail.outbox[0].body).group(1)
+        response = self.client.post(
+            reverse(&#x27;account_confirm_login_code&#x27;),
+            {&#x27;code&#x27;: code})
+        self.assertRedirects(
+            response, reverse(&#x27;mfa_authenticate&#x27;),
+            fetch_redirect_response=False)
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="226" tabindex="0"><code>uv run python manage.py test accounts.tests.TwoFactorSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="227" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="228"><code>test_a_used_code_waits_in_the_cache</code> shows where allauth remembers used codes. After <code>cache.clear()</code>, the same code works again: a second server process, with a cache of its own, would see exactly that. One process is enough on your computer; Chapter 57 moves Otahque to a cache all processes share, before Chapter 62 starts several.</p><div class="callout callout--hood"><p class="callout__title" data-block="229">Under the Hood: what the database holds</p><p class="" data-block="230">Each member’s authenticators are rows of allauth’s <code>mfa_authenticator</code> table. The <code>totp</code> row’s data holds the secret your phone was given, written out, and the <code>recovery_codes</code> row holds the seed the ten codes are made from; the interview’s L5 prints such a row. allauth’s adapter has two methods, <code>encrypt()</code> and <code>decrypt()</code>, that a project can replace; by default they change nothing. <code>test_the_secret_is_stored_as_text</code> in Step 9 records this, and Chapter 59 encrypts both with a key kept in <code>.env</code>, before Otahque is put online in Chapter 63. Until then, treat a copy of the database, or of a backup, as holding every member’s second factor.</p></div><p class="" data-block="231">Sign out, then sign in again with your password: Otahque asks for an authenticator code. Type the one your phone shows now. Then sign out, sign in in a private window, and use one of your recovery codes; the profile’s two-factor page shows nine left.</p><h4 data-block="232">Step 11: The admin signs in through allauth</h4><p class="" data-block="233">Chapter 23’s admin has its own sign-in form, which signs staff in with Django’s <code>ModelBackend</code> directly: no allauth rate limits, and no second factor. Tests first, at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="234" tabindex="0"><code>class AdminSignInTests(TwoFactorCase):
+    &quot;&quot;&quot;The admin sends staff to allauth&#x27;s sign-in.&quot;&quot;&quot;
+
+    def test_the_admin_sends_staff_to_allauth(self):
+        response = self.client.get(reverse(&#x27;admin:login&#x27;))
+        self.assertTrue(response.url.startswith(
+            reverse(&#x27;account_login&#x27;)))
+
+    def test_the_old_form_signs_nobody_in(self):
+        member(&#x27;sam@example.org&#x27;, is_staff=True)
+        self.client.post(reverse(&#x27;admin:login&#x27;), {
+            &#x27;username&#x27;: &#x27;sam@example.org&#x27;,
+            &#x27;password&#x27;: PASSWORD})
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)
+
+    def test_staff_with_two_factor_give_the_code(self):
+        confirmed(&#x27;sam@example.org&#x27;, is_staff=True)
+        sign_in(self.client, &#x27;sam@example.org&#x27;)
+        secret = turn_on_totp(self.client)
+        self.client.post(reverse(&#x27;account_logout&#x27;))
+        sign_in(self.client, &#x27;sam@example.org&#x27;)
+        index = reverse(&#x27;admin:index&#x27;)
+        self.assertEqual(
+            self.client.get(index).status_code, 302)
+        later = time.time() + 31
+        self.second_factor(
+            self.client, code_at(secret, later), at=later)
+        self.assertEqual(
+            self.client.get(index).status_code, 200)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="235" tabindex="0"><code>uv run python manage.py test accounts.tests.AdminSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="236" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;TemplateResponse&#x27; object has no attribute
+    &#x27;url&#x27;
+Ran 3 tests in ...s
+
+FAILED (failures=1, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="237">Two go wrong. The first test errors with <code>&#x27;TemplateResponse&#x27; object has no attribute &#x27;url&#x27;</code>: the admin answers with its own sign-in form, a page rather than a redirect. The second fails because that form signs Sam in. The third passes already, because signing in through allauth already asks for the code. allauth provides <code>secure_admin_login</code>, which wraps the admin’s sign-in view: a visitor is sent to allauth’s page, and a signed-in member who is not active staff is refused. In <code>config/urls.py</code>, add the import at the top:</p><p class="code-label code-label--file" aria-hidden="true">config/urls.py (first import)</p><pre class="code-listing code-listing--file" data-block="238" tabindex="0"><code>from allauth.account.decorators import secure_admin_login</code></pre><p class="" data-block="239">and wrap the view after the two <code>site_</code> lines from Chapter 23:</p><p class="code-label code-label--file" aria-hidden="true">config/urls.py (after admin.site.site_title)</p><pre class="code-listing code-listing--file" data-block="240" tabindex="0"><code># Staff sign in through allauth&#x27;s page, with its limits and
+# two-factor sign-in; the admin&#x27;s own form is never used.
+admin.site.login = secure_admin_login(admin.site.login)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="241" tabindex="0"><code>uv run python manage.py test accounts.tests.AdminSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="242" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="243">Chapter 23’s admin tests in <code>config/tests.py</code> still sign in on the old form. Run them:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="244" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="245" tabindex="0"><code>Found 8 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 302 != 200 : Couldn&#x27;t retrieve content:
+    Response code was 302 (expected 200)
+Ran 8 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="246">The three failures are the change working: the old form no longer signs anyone in. Change the tests in place, as Chapter 27 did for its sign-in tests. Remove the <code>REFUSED</code> text at the top of <code>config/tests.py</code>, which no page shows any more, and replace the <code>sign_in()</code> method of <code>AdminAccessTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (replace sign_in in AdminAccessTests)</p><pre class="code-listing code-listing--file" data-block="247" tabindex="0"><code>    def sign_in(self, email, **flags):
+        &quot;&quot;&quot;Create a member and sign in on allauth&#x27;s page.&quot;&quot;&quot;
+        # Chapter 29: staff sign in on allauth&#x27;s page.
+        User.objects.create_user(
+            email, PASSWORD, display_name=&#x27;Test&#x27;, **flags
+        )
+        return self.client.post(
+            reverse(&#x27;account_login&#x27;),
+            {&#x27;login&#x27;: email, &#x27;password&#x27;: PASSWORD},
+        )</code></pre><p class="" data-block="248">and the three tests that follow <code>staff()</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (replace the three tests)</p><pre class="code-listing code-listing--file" data-block="249" tabindex="0"><code>    def test_visitor_is_sent_to_sign_in(self):
+        index = reverse(&#x27;admin:index&#x27;)
+        self.assertRedirects(
+            self.client.get(index),
+            f&quot;{reverse(&#x27;admin:login&#x27;)}?next={index}&quot;,
+            fetch_redirect_response=False,
+        )
+        self.assertRedirects(
+            self.client.get(index, follow=True),
+            f&quot;{reverse(&#x27;account_login&#x27;)}?next={index}&quot;,
+        )
+
+    def test_member_is_refused(self):
+        self.sign_in(&#x27;raj@example.org&#x27;)
+        response = self.client.get(reverse(&#x27;admin:login&#x27;))
+        self.assertEqual(response.status_code, 403)
+
+    def test_inactive_staff_is_refused(self):
+        self.sign_in(
+            &#x27;old@example.org&#x27;, is_staff=True,
+            is_active=False,
+        )
+        self.assertNotIn(
+            &#x27;_auth_user_id&#x27;, self.client.session)
+        response = self.client.get(reverse(&#x27;admin:index&#x27;))
+        self.assertEqual(response.status_code, 302)</code></pre><p class="" data-block="250">A member who is not staff now gets a 403 page from allauth’s wrapper, and an inactive account cannot sign in at all, so the admin’s index sends it to sign in.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="251" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="252" tabindex="0"><code>Found 8 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 8 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="253">Open <a href="http://127.0.0.1:8000/admin/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/admin/ (opens in a new tab)"><code>http://127.0.0.1:8000/admin/</code></a> in a private window: you arrive at Otahque’s sign-in page, not the admin’s. Sign in as Sam; if you turned on two-factor sign-in for Sam, Otahque asks for the code before the admin opens. Staff who have not turned it on still enter with a password alone until Chapter 59 requires it, and <code>docs/design/admin.md</code> says so.</p><h4 data-block="254">Step 12: Logs, the design, and the commit</h4><p class="" data-block="255">A last test checks that a full reset leaves neither the new password nor the token in the logs. Add <code>import logging</code> after <code>import base64</code>, and at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="256" tabindex="0"><code>class SecretLogTests(ResetCase):
+    &quot;&quot;&quot;Logs never hold a password or a reset key.&quot;&quot;&quot;
+
+    def test_logs_hold_no_password_or_key(self):
+        with self.assertLogs(level=&#x27;DEBUG&#x27;) as logs:
+            logging.getLogger(&#x27;otahque&#x27;).debug(&#x27;start&#x27;)
+            self.ask()
+            link = self.link()
+            self.set_new_password(self.client, link)
+        text = &#x27;\n&#x27;.join(logs.output)
+        self.assertNotIn(NEW_PASSWORD, text)
+        self.assertNotIn(link.split(&#x27;/&#x27;)[-2], text)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="257" tabindex="0"><code>uv run python manage.py test accounts.tests.SecretLogTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="258" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="259">It passes: allauth marks its password fields as sensitive, so Django’s error reports hide them, and it moves the token out of the address before the page is shown. <code>assertLogs(level=&#x27;DEBUG&#x27;)</code> captures everything any part of the project logs while the block runs; the first line logs one message itself, because the check fails if nothing at all is logged.</p><p class="" data-block="260">Write the design down. Create <code>docs/design/passwords-and-two-factor.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/passwords-and-two-factor.md</p><pre class="code-listing code-listing--file" data-block="261" tabindex="0"><code># Passwords, sign-in codes, and two factors: design
+
+Status: Drafted in Chapter 29, for review. Not approved.
+
+## Passwords
+
+- At least 15 characters (NIST SP 800-63B-4, 3.1.1.2,
+  for a password used alone), not like the email or
+  name, not a common password, not all digits. No
+  other composition rules; no forced periodic change.
+- Existing shorter passwords keep working; the rule
+  applies whenever a password is chosen, changed,
+  reset, or set.
+- Change: the browser that changes it stays signed in;
+  every other browser is signed out.
+- A member with no password (a GitHub sign-up) may set
+  one from the profile, or through a reset.
+
+## Reset
+
+- Every address gets the same page. Only a member&#x27;s
+  address gets an email (ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS
+  is False); inactive accounts get none.
+- The link works once and for one hour
+  (PASSWORD_RESET_TIMEOUT). A new password, a new
+  address, or a sign-in ends it.
+- A reset does not sign the member in (OWASP Forgot
+  Password Cheat Sheet); the new password does.
+
+## Notices
+
+- Password changed, set, or reset; email changed;
+  two-factor turned on or off: one email each, with
+  the IP address, browser, and time.
+
+## Sign-in by code
+
+- An emailed code, eight characters, for ten minutes,
+  three tries, only in the browser that asked.
+- It proves control of the mailbox, as a reset email
+  does: a convenience, not a second factor (NIST
+  SP 800-63B-4, 3.1.3.1). Two-factor still applies
+  after it.
+
+## Two-factor sign-in
+
+- Optional for members; required for staff from
+  Chapter 59. An authenticator app (TOTP, 30-second
+  codes) and ten single-use recovery codes. Passkeys
+  later, after HTTPS (Chapter 63), as an optional
+  extra.
+- Turning it on asks for the password again and needs
+  a confirmed email address.
+- A code is accepted once. allauth remembers used
+  codes in the cache; OneUseActivateTOTPForm also
+  marks the activation code. It calls the private
+  TOTP._mark_code_used(): a test fails if an upgrade
+  changes it.
+
+## Known risks
+
+- The authenticator secret, and the seed the
+  recovery codes are made from, are stored as plain
+  text in mfa_authenticator. A copy of the database,
+  a backup, or an export gives every member&#x27;s codes.
+  Exports leave the table out (Chapter 41); Chapter
+  59 encrypts it before any deployment (Chapter 63).
+- Used codes and rate limits live in the local-memory
+  cache, one per process. Before more than one
+  process, a shared cache (Chapter 57, Redis in 62).
+- Until Chapter 43, a known address may answer more
+  slowly than an unknown one, because only it sends
+  an email.
+
+## Admin
+
+- The admin&#x27;s sign-in page sends staff to allauth&#x27;s,
+  so limits and two-factor apply. Staff without
+  two-factor still enter until Chapter 59.</code></pre><p class="" data-block="262">In <code>docs/design/admin.md</code>, replace the “Planned (Chapters 29, 59): two-factor sign-in” item of the best-practices list with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/admin.md (replace the Chapters 29, 59 item)</p><pre class="code-listing code-listing--file" data-block="263" tabindex="0"><code>- Done (Chapter 29): sign-in through allauth&#x27;s page
+  (secure_admin_login), with its rate limits and
+  two-factor sign-in for staff who turn it on.
+- Planned (Chapter 59): two-factor required for every
+  staff account.</code></pre><p class="" data-block="264">In <code>docs/adr/ADR-003-accounts-allauth.md</code>, replace the consequence about the admin’s sign-in page with:</p><p class="code-label code-label--file" aria-hidden="true">docs/adr/ADR-003-accounts-allauth.md (replace the admin consequence)</p><pre class="code-listing code-listing--file" data-block="265" tabindex="0"><code>- The admin&#x27;s own sign-in page bypassed allauth until
+  Chapter 29 wrapped it with secure_admin_login.
+- Chapter 29 adds the mfa extra:
+  `django-allauth[socialaccount,mfa]==65.22.1`, with
+  qrcode, fido2, and (on Windows) colorama.</code></pre><p class="" data-block="266">and add this section before “## Revisit when”:</p><p class="code-label code-label--file" aria-hidden="true">docs/adr/ADR-003-accounts-allauth.md (before Revisit when)</p><pre class="code-listing code-listing--file" data-block="267" tabindex="0"><code>## Upgrade checklist
+
+- Run the whole test suite before and after.
+- accounts.forms.OneUseActivateTOTPForm calls allauth&#x27;s
+  private TOTP._mark_code_used(); TwoFactorTests must
+  still pass, or remove the form if allauth now marks
+  the activation code itself.</code></pre><p class="" data-block="268">Check that the models and the migrations agree, run every test, and commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="269" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="270" tabindex="0"><code>No changes detected</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="271" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="272" tabindex="0"><code>Found 257 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 257 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="273" tabindex="0"><code>git add .
+git status --short
+git commit -m &quot;Add password reset, codes, and two factors&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="274" tabindex="0"><code>M  accounts/forms.py
+M  accounts/templates/accounts/profile.html
+M  accounts/tests.py
+M  accounts/views.py
+M  config/settings.py
+M  config/tests.py
+M  config/urls.py
+M  docs/adr/ADR-003-accounts-allauth.md
+M  docs/design/admin.md
+A  docs/design/passwords-and-two-factor.md
+M  pyproject.toml
+A  templates/account/email/base_message.txt
+A  templates/account/email/base_notification.txt
+A  templates/account/email/login_code_message.txt
+A  templates/account/email/password_reset_key_message.txt
+M  templates/allauth/elements/button.html
+A  templates/allauth/elements/field.html
+M  uv.lock</code></pre><p class="" data-block="275">Table 29.2 lists what to do when a step does not go as described.</p><figure class="table-figure" data-block="276"><figcaption>Table 29.2 — When a step goes wrong</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 29.2 — When a step goes wrong"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">429 != 302 in the full test run only</th>
+<td data-label="Likely cause">Rate limits counted across tests</td>
+<td data-label="Recovery">Add cache.clear() to the class&#x27;s setUp(), as in Step 4</td>
+</tr>
+<tr><th scope="row">NoReverseMatch: account_request_login_code</th>
+<td data-label="Likely cause">ACCOUNT_LOGIN_BY_CODE_ENABLED missing, or set only in a test</td>
+<td data-label="Recovery">Add the Step 7 block to settings.py</td>
+</tr>
+<tr><th scope="row">allauth.mfa not installed, yet its models are imported</th>
+<td data-label="Likely cause">allauth.mfa imported before it is installed</td>
+<td data-label="Recovery">Add &#x27;allauth.mfa&#x27; to INSTALLED_APPS, as in Step 8</td>
+</tr>
+<tr><th scope="row">no such table: mfa_authenticator</th>
+<td data-label="Likely cause">The two-factor migrations not applied</td>
+<td data-label="Recovery">uv run python manage.py migrate</td>
+</tr>
+<tr><th scope="row">The authenticator app&#x27;s code is always wrong</th>
+<td data-label="Likely cause">The phone&#x27;s clock is wrong, or the code was already used</td>
+<td data-label="Recovery">Set the phone&#x27;s time automatically; wait for the next code</td>
+</tr>
+<tr><th scope="row">Lost phone and lost recovery codes</th>
+<td data-label="Likely cause">No second factor left</td>
+<td data-label="Recovery">An administrator removes the member&#x27;s authenticators in the shell, after checking who is asking</td>
+</tr>
+<tr><th scope="row">Reset email says &quot;Hello from testserver!&quot;</th>
+<td data-label="Likely cause">templates/account/email/ not where Django looks</td>
+<td data-label="Recovery">Check the folder is beside manage.py, under templates/</td>
+</tr>
+<tr><th scope="row">A reset link from the terminal is refused</th>
+<td data-label="Likely cause">The link copied with the = line break</td>
+<td data-label="Recovery">Join the two lines and remove the =</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2029%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter29/section-29-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter29/section-29-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter29/section-29-2/">← What You Need to Know</a><a href="/chapters/chapter29/section-29-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

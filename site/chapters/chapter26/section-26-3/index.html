@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 26: Publishing, cancelling, and deleting an event: Sam takes the clinic public. Take Sam&#x27;s clinic public: a description field...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter26/section-26-3/">
+<title>How We Build It · Chapter 26 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter26/">← Chapter 26 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-26-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-75">The Custom Way</a></li><li><a href="#topic-80">The Django Way</a></li></ul></li><li><a href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 9 figures · 5 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter26:26.3" data-progress-title="Section 26.3" data-reader-prev="section-26-2.html" data-reader-next="section-26-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 26.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter26/">Chapter 26 · Publishing, cancelling, and deleting an event: Sam takes the clinic public</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter26/section-26-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter26/section-26-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter26/section-26-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter26/section-26-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter26/section-26-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-26-3" data-block="72">How We Build It</h2><p class="" data-block="73">Start from Chapter 25, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 124 passing tests, every migration applied, the Node.js packages from Chapter 14 installed, Sam’s superuser password from Chapter 18, and the Online Django clinic you saved as a draft in Chapter 24, event 6, with Sam as its organizer. The new files are <code>events/templates/events/manage.html</code>, <code>delete.html</code>, <code>copy.html</code>, <code>templates/django/forms/widgets/textarea.html</code>, <code>events/migrations/0004_event_description.py</code>, and <code>docs/design/event-states.md</code>. The commands below are written the same for Windows PowerShell, Git Bash, macOS, Linux, and WSL shells; the chapter’s checks ran in the first two. Each step writes its tests first and runs them to see them fail, then writes the code.</p><p class="" data-block="74">One date matters. The clinic starts on 3 December 2026. Publishing refuses an event whose start is not in the future, so if your clock is already past that day, Step 6 will refuse the clinic with exactly the message the chapter teaches. Edit the clinic’s dates with the Chapter 25 page before you publish it.</p><h3 class="" id="topic-75" data-block="75">The Custom Way</h3><p class="" data-block="76">Without the rules of this chapter, an event’s views delete when their address is opened. This illustration, plain Python with no Django, shows what a crawler does to each style. Run it with any Python, and do not add it to the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/by_link.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="77" tabindex="0"><code>START = {6: &#x27;Online Django clinic&#x27;, 7: &#x27;Python meetup&#x27;}
+LINKS = [&#x27;/events/6/delete/&#x27;, &#x27;/events/7/delete/&#x27;]
+
+
+def by_link(events, path, method):
+    &quot;&quot;&quot;Delete whenever the address is opened.&quot;&quot;&quot;
+    events.pop(int(path.split(&#x27;/&#x27;)[2]), None)
+
+
+def by_form(events, path, method):
+    &quot;&quot;&quot;Delete only for a POST; refuse anything else.&quot;&quot;&quot;
+    if method != &#x27;POST&#x27;:
+        return 405
+    events.pop(int(path.split(&#x27;/&#x27;)[2]), None)
+
+
+def crawl(handler):
+    &quot;&quot;&quot;Act as a crawler: open every link with a GET.&quot;&quot;&quot;
+    events = dict(START)
+    for link in LINKS:
+        handler(events, link, &#x27;GET&#x27;)
+    return events
+
+
+print(&#x27;by link:&#x27;, crawl(by_link))
+print(&#x27;by form:&#x27;, crawl(by_form))</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="78" tabindex="0"><code>by link: {}
+by form: {6: &#x27;Online Django clinic&#x27;, 7: &#x27;Python meetup&#x27;}</code></pre><p class="" data-block="79">A crawler opens every address it finds with a GET. The first handler treats the address itself as the instruction, so the crawl emptied the list. The second accepts only a POST, so the same crawl changed nothing. The rest of the chapter builds the second kind, for an event’s whole life.</p><h3 class="" id="topic-80" data-block="80">The Django Way</h3><p class="" data-block="81">Django gives each piece a place. The model holds the rules: what is missing, which moves are allowed, and the deletion in one transaction. A decorator, <code>require_POST</code>, answers anything but a POST with 405. A shared function decides who may act. Templates show buttons only to the people who may use them, and the views still refuse everyone else.</p><h4 data-block="82">Step 1: Check the starting point</h4><p class="" data-block="83">Run every test, beside <code>manage.py</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="84" tabindex="0"><code>uv run python manage.py test</code></pre><p class="" data-block="85">Expected result, shortened with <code>...</code>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="86" tabindex="0"><code>Found 124 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 124 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="87">Then confirm that nothing is waiting to be committed and that the last commit is Chapter 25’s:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="88" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="89" tabindex="0"><code>... Add the Edit event page</code></pre><p class="" data-block="90"><code>git status --short</code> prints nothing when every change is committed. Your commit’s code, the seven characters before the message, differs from the one shown.</p><h4 data-block="91">Step 2: The states on paper, and why Sam’s draft will not delete</h4><p class="" data-block="92">Table 26.1 and Figure 26.1 are the plan for Steps 6 to 9, so Step 2 only proves what the plan has to deal with. Sam’s draft has an organizer assignment, and the assignment protects it. This practice file tries to delete the clinic and prints what Django says. It runs inside Django’s shell against your own database, and it changes nothing, because the delete fails before it removes anything:</p><p class="code-label code-label--file" aria-hidden="true">probe.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="93" tabindex="0"><code>from textwrap import fill
+
+from events.models import Event
+
+draft = Event.objects.get(pk=6)
+try:
+    draft.delete()
+except Exception as error:
+    print(type(error).__name__)
+    print(fill(error.args[0], 60))</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="94" tabindex="0"><code>uv run python manage.py shell -c &quot;exec(open(&#x27;probe.py&#x27;).read())&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="95" tabindex="0"><code>15 objects imported automatically (use -v 2 for details).
+
+ProtectedError
+Cannot delete some instances of model &#x27;Event&#x27; because they
+are referenced through protected foreign keys:
+&#x27;OrganizerAssignment.event&#x27;.</code></pre><p class="" data-block="96">That is <code>ProtectedError</code>, the exception Django raises for a protected foreign key. It names the model that holds the protection, <code>OrganizerAssignment.event</code>. Delete <code>probe.py</code> now. Step 8 will delete the assignments first, and only then the event.</p><h4 data-block="97">Step 3: A description, and the migration for it</h4><p class="" data-block="98">Chapter 2’s criteria need a description, so the field comes first. Tests first: a draft saves without one, the field sits right after <strong>Title</strong>, and the event page keeps the line breaks the organizer typed. Add this at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="99" tabindex="0"><code>class DescriptionTests(TestCase):
+    &quot;&quot;&quot;Descriptions: optional for drafts, shown on pages.&quot;&quot;&quot;
+
+    def test_a_draft_saves_without_one(self):
+        form = new_event_form()
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save().description, &#x27;&#x27;)
+
+    def test_it_follows_the_title_and_is_saved(self):
+        names = list(EventForm().fields)
+        self.assertEqual(names[:2], [&#x27;title&#x27;, &#x27;description&#x27;])
+        form = new_event_form(description=&#x27;For beginners.&#x27;)
+        saved = form.save()
+        self.assertEqual(saved.description, &#x27;For beginners.&#x27;)
+
+    def test_the_page_keeps_line_breaks(self):
+        event = save_event(description=&#x27;One.\nTwo &amp; three.&#x27;)
+        url = reverse(&#x27;events:detail&#x27;, args=[event.pk])
+        response = self.client.get(url)
+        self.assertContains(
+            response, &#x27;One.&lt;br&gt;Two &amp;amp; three.&#x27;
+        )</code></pre><p class="" data-block="100">One existing test changes in place, because the form has a new field and a new kind of box. In <code>FormMarkupTests.test_fields_use_otahque_styles_and_script</code>, replace the three counted classes with these four, since the form now has seven fieldsets and one textarea:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (replace the loop&#x27;s header in FormMarkupTests)</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>        for text, count in ((&#x27;class=&quot;fieldset&quot;&#x27;, 7),
+                            (&#x27;class=&quot;input w-full&quot;&#x27;, 5),
+                            (&#x27;class=&quot;textarea w-full&quot;&#x27;, 1),
+                            (&#x27;class=&quot;select w-full&quot;&#x27;, 1)):</code></pre><p class="" data-block="102">Run the two classes and watch them fail:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="103" tabindex="0"><code>uv run python manage.py test events -k Description -k FormMarkup</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="104" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute &#x27;description&#x27;
+TypeError: Event() got unexpected keyword arguments:
+    &#x27;description&#x27;
+AssertionError: Lists differ: [&#x27;title&#x27;, &#x27;timezone&#x27;] !=
+    [&#x27;title&#x27;, &#x27;description&#x27;]
+Ran 5 tests in ...s
+
+FAILED (failures=2, errors=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="105">Add the field to the model. In <code>events/models.py</code>, replace the <code>title</code> and <code>starts_at</code> lines of <code>Event</code> with these three:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, after title)</p><pre class="code-listing code-listing--file" data-block="106" tabindex="0"><code>    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    starts_at = models.DateTimeField()</code></pre><p class="" data-block="107"><code>blank=True</code> lets forms accept an empty value, and there is no <code>null=True</code>: the “no data” value is the empty string, which is Django’s convention for text fields. In <code>events/forms.py</code>, replace the form’s <code>Meta</code> class so that the field follows the title, has a five-row box, and explains itself:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (EventForm.Meta, replaced)</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>    class Meta:
+        model = Event
+        fields = [&#x27;title&#x27;, &#x27;description&#x27;, &#x27;timezone&#x27;,
+                  &#x27;starts_at&#x27;, &#x27;ends_at&#x27;, &#x27;location&#x27;,
+                  &#x27;capacity&#x27;]
+        labels = {&#x27;starts_at&#x27;: &#x27;Starts&#x27;, &#x27;ends_at&#x27;: &#x27;Ends&#x27;}
+        help_texts = {
+            &#x27;description&#x27;: &#x27;Needed before the event can be &#x27;
+                           &#x27;published.&#x27;,
+            &#x27;location&#x27;: &#x27;A venue address, or Online.&#x27;,
+        }
+        widgets = {
+            &#x27;description&#x27;: forms.Textarea(attrs={&#x27;rows&#x27;: 5}),
+            &#x27;starts_at&#x27;: local_input(),
+            &#x27;ends_at&#x27;: local_input(),
+        }</code></pre><p class="" data-block="109">Django draws a <code>Textarea</code> with its own template, so Chapter 24’s styling needs one more widget template. Create <code>templates/django/forms/widgets/textarea.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/django/forms/widgets/textarea.html</p><pre class="code-listing code-listing--file" data-block="110" tabindex="0"><code>&lt;textarea name=&quot;{{ widget.name }}&quot; class=&quot;textarea w-full&quot;
+          {% include &quot;django/forms/widgets/attrs.html&quot; %}&gt;
+{% if widget.value %}{{ widget.value }}{% endif %}&lt;/textarea&gt;</code></pre><p class="" data-block="111">Show the description on the event page: in <code>events/templates/events/detail.html</code>, replace the title line with these four lines. <code>linebreaksbr</code> keeps the line breaks as <code>&lt;br&gt;</code> and, like every template variable, escapes any HTML:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the h1 line)</p><pre class="code-listing code-listing--file" data-block="112" tabindex="0"><code>    &lt;h1&gt;{{ event.title }}&lt;/h1&gt;
+    {% if event.description %}
+      &lt;p&gt;{{ event.description|linebreaksbr }}&lt;/p&gt;
+    {% endif %}</code></pre><p class="" data-block="113">And let the admin show it: in <code>events/admin.py</code>, replace the first line of <code>EventAdmin.fields</code> so that it reads:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (the start of EventAdmin.fields)</p><pre class="code-listing code-listing--file" data-block="114" tabindex="0"><code>    fields = [&#x27;title&#x27;, &#x27;description&#x27;, &#x27;status&#x27;,
+              &#x27;starts_at&#x27;, &#x27;ends_at&#x27;,</code></pre><p class="" data-block="115">Now generate the migration, and read it before you apply it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="116" tabindex="0"><code>uv run python manage.py makemigrations -n event_description</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="117" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events\migrations\0004_event_description.py
+    + Add field description to event</code></pre><p class="code-label code-label--file" aria-hidden="true">events/migrations/0004_event_description.py (generated)</p><pre class="code-listing code-listing--file" data-block="118" tabindex="0"><code>from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        (&#x27;events&#x27;, &#x27;0003_rules&#x27;),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name=&#x27;event&#x27;,
+            name=&#x27;description&#x27;,
+            field=models.TextField(blank=True),
+        ),
+    ]</code></pre><p class="" data-block="119">The migration adds one field. To see the SQL it will run, without running it, use <code>sqlmigrate</code> with the app and the migration’s number:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="120" tabindex="0"><code>uv run python manage.py sqlmigrate events 0004</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="121" tabindex="0"><code>BEGIN;
+--
+-- Add field description to event
+--
+CREATE TABLE &quot;new__events_event&quot; (&quot;id&quot; integer NOT NULL
+    PRIMARY KEY AUTOINCREMENT, &quot;description&quot; text NOT NULL,
+    &quot;title&quot; varchar(200) NOT NULL, &quot;starts_at&quot; datetime NOT
+    NULL, &quot;ends_at&quot; datetime NOT NULL, &quot;timezone&quot; varchar(64)
+    NOT NULL, &quot;location&quot; varchar(200) NOT NULL, &quot;capacity&quot;
+    integer unsigned NOT NULL CHECK (&quot;capacity&quot; &gt;= 0),
+    &quot;status&quot; varchar(20) NOT NULL, CONSTRAINT
+    &quot;event_capacity_gt_0&quot; CHECK (&quot;capacity&quot; &gt; 0), CONSTRAINT
+    &quot;event_ends_after_start&quot; CHECK (&quot;ends_at&quot; &gt;
+    (&quot;starts_at&quot;)), CONSTRAINT &quot;event_status_valid&quot; CHECK
+    (&quot;status&quot; IN (&#x27;draft&#x27;, &#x27;published&#x27;, &#x27;cancelled&#x27;)));
+INSERT INTO &quot;new__events_event&quot; (&quot;id&quot;, &quot;title&quot;, &quot;starts_at&quot;,
+    &quot;ends_at&quot;, &quot;timezone&quot;, &quot;location&quot;, &quot;capacity&quot;, &quot;status&quot;,
+    &quot;description&quot;) SELECT &quot;id&quot;, &quot;title&quot;, &quot;starts_at&quot;,
+    &quot;ends_at&quot;, &quot;timezone&quot;, &quot;location&quot;, &quot;capacity&quot;, &quot;status&quot;,
+    &#x27;&#x27; FROM &quot;events_event&quot;;
+DROP TABLE &quot;events_event&quot;;
+ALTER TABLE &quot;new__events_event&quot; RENAME TO &quot;events_event&quot;;
+COMMIT;</code></pre><p class="" data-block="122">On SQLite, Django builds a new table with the new column, copies every row across with an empty string for the new column, and renames it. Other databases do this with one <code>ALTER TABLE ... ADD COLUMN</code> statement, so run the command on your own database before you trust a prediction. The existing rows get <code>&#x27;&#x27;</code> and your clinic stays valid. Now the other direction:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="123" tabindex="0"><code>uv run python manage.py sqlmigrate events 0004 --backwards</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="124" tabindex="0"><code>BEGIN;
+--
+-- Add field description to event
+--
+ALTER TABLE &quot;events_event&quot; DROP COLUMN &quot;description&quot;;
+COMMIT;</code></pre><p class="" data-block="125">That is what unapplying does: it drops the column, and the descriptions typed into it. Apply the migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="126" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="127" tabindex="0"><code>Operations to perform:
+  Apply all migrations: accounts, admin, auth, contenttypes,
+    events, registrations, sessions
+Running migrations:
+  Applying events.0004_event_description... OK</code></pre><p class="" data-block="128">Run the two classes again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="129" tabindex="0"><code>uv run python manage.py test events -k Description -k FormMarkup</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="130" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="131">Rebuild the stylesheet, because the new template class <code>textarea</code> has to be in it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="132" tabindex="0"><code>npm run build</code></pre><div class="callout callout--error"><p class="callout__title" data-block="133">Common Error: a field with no default and no blank</p><p class="" data-block="134">Without <code>blank=True</code> on the field, a new required column has no value for the rows that already exist, and Django cannot decide one for you: <code>makemigrations</code> stops and asks for a one-off default, or, with no way to ask, refuses. Add <code>blank=True</code>, or give a <code>default</code>, and run <code>makemigrations</code> again. Do not edit the numbered migration to make the question go away.</p></div><p class="" data-block="135">Last, rolling back. Imagine the migration was applied and you want it gone. This is safe on your own machine and never on a database whose rows matter, because it drops the column. Check where you are, look at the plan, go back to the third migration, and check again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="136" tabindex="0"><code>uv run python manage.py showmigrations events
+uv run python manage.py migrate events 0003
+uv run python manage.py showmigrations events</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="137" tabindex="0"><code>Operations to perform:
+  Target specific migration: 0003_rules, from events
+Running migrations:
+  Rendering model states... DONE
+  Unapplying events.0004_event_description... OK</code></pre><p class="" data-block="138"><code>migrate events 0003</code> means “bring the <code>events</code> app to the state after migration 0003”, which unapplies every later <code>events</code> migration, here only <code>0004</code>. Django’s documentation warns that dependent migrations in other apps are unapplied too, and that <code>--plan</code> shows which will be. Apply it forward again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="139" tabindex="0"><code>uv run python manage.py migrate --plan
+uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="140" tabindex="0"><code>Operations to perform:
+  Apply all migrations: accounts, admin, auth, contenttypes,
+    events, registrations, sessions
+Running migrations:
+  Applying events.0004_event_description... OK</code></pre><p class="" data-block="141">(The first command lists the single migration that <code>migrate</code> would apply.) Run the whole suite:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="142" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="143" tabindex="0"><code>Found 127 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 127 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="144">Step 4: The model’s own URL</h4><p class="" data-block="145">Today, the views build an event’s address by hand with <code>redirect(&#x27;events:detail&#x27;, event.pk)</code>, and the admin does not know where an event lives. A model method fixes both. Tests first, at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="146" tabindex="0"><code>class AbsoluteUrlTests(TestCase):
+    &quot;&quot;&quot;An event knows the address of its own page.&quot;&quot;&quot;
+
+    def test_an_event_knows_its_page(self):
+        event = save_event()
+        self.assertEqual(event.get_absolute_url(),
+                         f&#x27;/events/{event.pk}/&#x27;)
+
+    def test_the_admin_offers_view_on_site(self):
+        boss = member(&#x27;admin@example.org&#x27;)
+        boss.is_staff = boss.is_superuser = True
+        boss.save()
+        event = save_event()
+        self.client.force_login(boss)
+        response = self.client.get(
+            admin_url(Event, &#x27;change&#x27;, event.pk)
+        )
+        self.assertContains(response, &#x27;View on site&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="147" tabindex="0"><code>uv run python manage.py test events.tests.AbsoluteUrlTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="148" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute
+    &#x27;get_absolute_url&#x27;
+AssertionError: False is not true : Couldn&#x27;t find &#x27;View on
+    site&#x27; in the following response
+Ran 2 tests in ...s
+
+FAILED (failures=1, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="149">In <code>events/models.py</code>, import <code>reverse</code> and add the method. First the import:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (the import line, replaced)</p><pre class="code-listing code-listing--file" data-block="150" tabindex="0"><code>from django.db import models
+from django.urls import reverse</code></pre><p class="" data-block="151">Then, in <code>Event</code>, replace <code>__str__</code> with these lines:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, replace __str__)</p><pre class="code-listing code-listing--file" data-block="152" tabindex="0"><code>    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        &quot;&quot;&quot;Return the address of the event&#x27;s own page.&quot;&quot;&quot;
+        return reverse(&#x27;events:detail&#x27;, args=[self.pk])</code></pre><p class="" data-block="153"><code>get_absolute_url()</code> is the name Django looks for. With it, <code>redirect(event)</code> works, and the admin’s event page gains a <strong>View on site</strong> link. In <code>events/views.py</code>, use it in both places that redirect after a save:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (event_create, replace the redirect)</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>            messages.success(request, &#x27;Draft saved.&#x27;)
+            return redirect(event)</code></pre><p class="code-label code-label--file" aria-hidden="true">events/views.py (event_edit, replace the redirect)</p><pre class="code-listing code-listing--file" data-block="155" tabindex="0"><code>            messages.success(request, &#x27;Changes saved.&#x27;)
+            return redirect(event)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="156" tabindex="0"><code>uv run python manage.py test events.tests.AbsoluteUrlTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="157" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="158">If the address ever gains a slug, or the community in its path, one method changes and every redirect follows.</p><h4 data-block="159">Step 5: My events</h4><p class="" data-block="160">Sam needs a page that lists his own events, drafts first, each with a tag for its state. The question “which events does this person organize now?” belongs in a named query, like Chapter 22’s others. Tests first. These helpers and the five tests go at the end of <code>events/tests.py</code>; the helpers are used again in every later step:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (replace these imports at the top)</p><pre class="code-listing code-listing--file" data-block="161" tabindex="0"><code>from django.db import (
+    IntegrityError, connection, transaction,
+)
+from django.db.models import ProtectedError
+from django.template.loader import render_to_string
+from django.test import Client, SimpleTestCase, TestCase
+from django.test.utils import CaptureQueriesContext</code></pre><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="162" tabindex="0"><code>def future_draft(organizer=None, **changes):
+    &quot;&quot;&quot;Create a complete draft that starts next week.&quot;&quot;&quot;
+    fields = {
+        &#x27;status&#x27;: Event.Status.DRAFT,
+        &#x27;starts_at&#x27;: timezone.now() + timedelta(days=7),
+        &#x27;description&#x27;: &#x27;Bring a laptop and a question.&#x27;,
+    }
+    event = save_event(**(fields | changes))
+    if organizer:
+        event.add_organizer(organizer)
+    return event
+
+
+def action_url(name, event):
+    &quot;&quot;&quot;Return the address of the named action on event.&quot;&quot;&quot;
+    return reverse(f&#x27;events:{name}&#x27;, args=[event.pk])
+
+
+class MyEventsTests(TestCase):
+    &quot;&quot;&quot;My events lists what a member organizes now.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+        cls.url = reverse(&#x27;events:manage&#x27;)
+        cls.draft = future_draft(cls.sam, title=&#x27;Clinic&#x27;)
+        cls.live = save_event(title=&#x27;Meetup&#x27;)
+        cls.live.add_organizer(cls.sam)
+        cls.off = save_event(
+            title=&#x27;Walk&#x27;, status=Event.Status.CANCELLED
+        )
+        cls.off.add_organizer(cls.sam)
+        save_event(title=&#x27;Run by someone else&#x27;)
+
+    def test_the_address(self):
+        self.assertEqual(self.url, &#x27;/events/manage/&#x27;)
+
+    def test_visitor_and_plain_member_are_kept_out(self):
+        response = self.client.get(self.url)
+        sign_in = reverse(&#x27;admin:login&#x27;)
+        self.assertRedirects(
+            response, f&#x27;{sign_in}?next={self.url}&#x27;,
+            fetch_redirect_response=False,
+        )
+        self.client.force_login(self.sai)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_drafts_first_with_tags_and_only_his_own(self):
+        self.client.force_login(self.sam)
+        response = self.client.get(self.url)
+        html = response.content.decode()
+        order = [html.index(t) for t in
+                 (&#x27;Clinic&#x27;, &#x27;Meetup&#x27;, &#x27;Walk&#x27;)]
+        self.assertEqual(order, sorted(order))
+        self.assertNotContains(response, &#x27;someone else&#x27;)
+        for tag in (&#x27;Draft&#x27;, &#x27;Published&#x27;, &#x27;Cancelled&#x27;):
+            self.assertContains(response, f&#x27;{tag}&lt;/span&gt;&#x27;)
+
+    def test_a_revoked_assignment_leaves_the_list(self):
+        place = self.live.organizer_assignments.get()
+        place.revoked_at = timezone.now()
+        place.save()
+        self.client.force_login(self.sam)
+        response = self.client.get(self.url)
+        self.assertNotContains(response, &#x27;Meetup&#x27;)
+
+    def test_more_events_do_not_mean_more_queries(self):
+        self.client.force_login(self.sam)
+        with CaptureQueriesContext(connection) as few:
+            self.client.get(self.url)
+        for number in range(5):
+            future_draft(self.sam, title=f&#x27;Extra {number}&#x27;)
+        with CaptureQueriesContext(connection) as many:
+            self.client.get(self.url)
+        self.assertEqual(len(few), len(many))</code></pre><p class="" data-block="163">The last test counts queries. It loads the page with three events, adds five more, loads it again, and asserts that the number of queries did not change. A page that runs one extra query for every row would fail it. Run the class:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="164" tabindex="0"><code>uv run python manage.py test events.tests.MyEventsTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="165" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 0 tests in ...s
+
+FAILED (errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="166">Add the query to <code>EventQuerySet</code> in <code>events/models.py</code>, just above <code>with_places</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (EventQuerySet, add before with_places)</p><pre class="code-listing code-listing--file" data-block="167" tabindex="0"><code>    def organized_by(self, user):
+        &quot;&quot;&quot;Events user organizes now, drafts first.&quot;&quot;&quot;
+        draft_first = models.Case(
+            models.When(status=Event.Status.DRAFT, then=0),
+            models.When(
+                status=Event.Status.PUBLISHED, then=1
+            ),
+            default=2,
+        )
+        return self.filter(
+            organizer_assignments__member=user,
+            organizer_assignments__revoked_at__isnull=True,
+        ).annotate(
+            rank=draft_first
+        ).order_by(&#x27;rank&#x27;, &#x27;starts_at&#x27;)
+
+    def with_places(self):</code></pre><p class="" data-block="168">Both conditions are inside one <code>filter()</code> call on purpose: in a single call, they must hold for the same assignment row. Two separate calls could match one assignment for the member and another, revoked one, for the event. The <code>Case</code> ranks drafts first, then published, then cancelled, and <code>order_by</code> sorts by that rank and then by start.</p><p class="" data-block="169">Add the view at the end of <code>events/views.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="170" tabindex="0"><code>@login_required
+@permission_required(
+    &#x27;events.change_event&#x27;, raise_exception=True
+)
+def event_manage(request):
+    &quot;&quot;&quot;My events: what this member organizes now.&quot;&quot;&quot;
+    events = Event.objects.organized_by(
+        request.user
+    ).with_places()
+    return render(request, &#x27;events/manage.html&#x27;,
+                  {&#x27;events&#x27;: events})</code></pre><p class="" data-block="171">The view needs <code>change_event</code>, and the query then shows only the events this member currently organizes. A member without the permission gets 403, and a visitor is sent to sign in. Add the address to <code>events/urls.py</code>, in place of the <code>new/</code> pattern. The address is <code>/events/manage/</code>, in the family of <code>events/new/</code>, and the number-only pattern below cannot capture the word <code>manage</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py (replace the events/new/ pattern)</p><pre class="code-listing code-listing--file" data-block="172" tabindex="0"><code>    path(&#x27;events/new/&#x27;, views.event_create,
+         name=&#x27;create&#x27;),
+    path(&#x27;events/manage/&#x27;, views.event_manage,
+         name=&#x27;manage&#x27;),</code></pre><p class="" data-block="173">Create <code>events/templates/events/manage.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/manage.html</p><pre class="code-listing code-listing--file" data-block="174" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+{% load tz %}
+
+{% block title %}My events | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;My events&lt;/h1&gt;
+  &lt;ul class=&quot;event-list space-y-3&quot;&gt;
+    {% for event in events %}
+      &lt;li class=&quot;event-row card border border-base-300
+                 bg-base-100 p-4&quot;&gt;
+        &lt;p&gt;
+          &lt;a class=&quot;font-semibold&quot;
+             href=&quot;{{ event.get_absolute_url }}&quot;&gt;
+            {{ event.title }}&lt;/a&gt;
+          {% if event.status == &#x27;draft&#x27; %}
+            &lt;span class=&quot;badge badge-outline&quot;&gt;Draft&lt;/span&gt;
+          {% elif event.status == &#x27;published&#x27; %}
+            &lt;span class=&quot;badge badge-primary&quot;&gt;
+              Published&lt;/span&gt;
+          {% else %}
+            &lt;span class=&quot;badge badge-error&quot;&gt;Cancelled&lt;/span&gt;
+          {% endif %}
+        &lt;/p&gt;
+        {% timezone event.timezone %}
+          &lt;p class=&quot;text-sm&quot;&gt;
+            {{ event.starts_at|date:&quot;D j M Y, H:i T&quot; }}&lt;/p&gt;
+        {% endtimezone %}
+        &lt;p class=&quot;flex flex-wrap items-center gap-4 text-sm&quot;&gt;
+          &lt;a href=&quot;{% url &#x27;events:edit&#x27; event.pk %}&quot;&gt;Edit&lt;/a&gt;
+        &lt;/p&gt;
+      &lt;/li&gt;
+    {% empty %}
+      &lt;li class=&quot;event-empty card border border-base-300
+                 bg-base-100 p-4&quot;&gt;
+        You do not organize any events yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+  &lt;p&gt;&lt;a href=&quot;{% url &#x27;events:create&#x27; %}&quot;&gt;New event&lt;/a&gt;&lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="175">And add the link to the navigation, in <code>templates/includes/site_nav.html</code>, for people who hold <code>change_event</code>. Replace the Events link and the line after it with these:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html (replace two lines)</p><pre class="code-listing code-listing--file" data-block="176" tabindex="0"><code>  &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;Events&lt;/a&gt;
+  {% if perms.events.change_event %}
+    &lt;a href=&quot;{% url &#x27;events:manage&#x27; %}&quot;&gt;My events&lt;/a&gt;
+  {% endif %}
+  {% if perms.events.add_event %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="177" tabindex="0"><code>uv run python manage.py test events.tests.MyEventsTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="178" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="179">Rebuild the stylesheet for the tags, <code>npm run build</code>, then sign in as Sam in the development server (<code>uv run python manage.py runserver</code>) and open <a href="http://127.0.0.1:8000/events/manage/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/events/manage/ (opens in a new tab)"><code>http://127.0.0.1:8000/events/manage/</code></a>. The clinic is listed, first, with a <strong>Draft</strong> tag.</p><div class="callout callout--error"><p class="callout__title" data-block="180">Common Error: a link before its address</p><p class="" data-block="181">Add the navigation link before the URL exists and every page shows <code>NoReverseMatch: Reverse for &#x27;manage&#x27; not found</code>, because the template asks Django for an address that has not been registered. Add the pattern first, then the link, as the steps above do.</p></div><h4 data-block="182">Step 6: Ready to publish</h4><p class="" data-block="183">Now the first move. Two kinds of test: the model’s own, with no browser involved, and the page’s. Tests first, at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="184" tabindex="0"><code>class ReadinessTests(TestCase):
+    &quot;&quot;&quot;What stops a draft from being published.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+
+    def test_a_complete_draft_has_no_problems(self):
+        event = future_draft(self.sam)
+        self.assertEqual(event.readiness_problems(), [])
+
+    def test_every_missing_detail_is_named(self):
+        event = future_draft(
+            description=&#x27;  &#x27;,
+            starts_at=timezone.now() - timedelta(days=1),
+        )
+        self.assertEqual(event.readiness_problems(), [
+            &#x27;Add a description.&#x27;,
+            &#x27;Move the start to a time in the future.&#x27;,
+            &#x27;Assign at least one current organizer.&#x27;,
+        ])
+
+    def test_a_refused_publish_changes_nothing(self):
+        event = future_draft(self.sam, description=&#x27;&#x27;)
+        with self.assertRaises(ValidationError) as caught:
+            event.publish()
+        self.assertEqual(caught.exception.messages,
+                         [&#x27;Add a description.&#x27;])
+        event.refresh_from_db()
+        self.assertEqual(event.status, Event.Status.DRAFT)
+
+
+class PublishTests(TestCase):
+    &quot;&quot;&quot;Who may publish, and what publishing needs.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+
+    def post(self, event, person):
+        &quot;&quot;&quot;Sign in as person and publish event.&quot;&quot;&quot;
+        self.client.force_login(person)
+        return self.client.post(action_url(&#x27;publish&#x27;, event))
+
+    def status(self, url):
+        &quot;&quot;&quot;Return the status code of a GET to url.&quot;&quot;&quot;
+        return self.client.get(url).status_code
+
+    def test_an_organizer_publishes_a_complete_draft(self):
+        event = future_draft(self.sam)
+        response = self.post(event, self.sam)
+        self.assertRedirects(
+            response, event.get_absolute_url(),
+            fetch_redirect_response=False,
+        )
+        event.refresh_from_db()
+        self.assertEqual(
+            event.status, Event.Status.PUBLISHED
+        )
+        page = self.client.get(event.get_absolute_url())
+        self.assertContains(page, &#x27;Published.&#x27;)
+
+    def test_missing_details_are_shown_and_it_stays_a_draft(
+            self):
+        event = future_draft(
+            self.sam, description=&#x27;&#x27;,
+            starts_at=timezone.now() - timedelta(days=1),
+        )
+        self.post(event, self.sam)
+        page = self.client.get(event.get_absolute_url())
+        self.assertContains(page, &#x27;Add a description.&#x27;)
+        self.assertContains(
+            page, &#x27;Move the start to a time in the future.&#x27;
+        )
+        event.refresh_from_db()
+        self.assertEqual(event.status, Event.Status.DRAFT)
+
+    def test_a_member_who_may_not_edit_is_refused(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        response = self.post(event, self.sai)
+        self.assertEqual(response.status_code, 403)
+
+    def test_a_hidden_draft_is_not_found(self):
+        event = future_draft(self.sam)
+        response = self.post(event, self.sai)
+        self.assertEqual(response.status_code, 404)
+        event.refresh_from_db()
+        self.assertEqual(event.status, Event.Status.DRAFT)
+
+    def test_a_published_event_is_not_published_again(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        response = self.post(event, self.sam)
+        page = self.client.get(response[&#x27;Location&#x27;])
+        self.assertContains(
+            page, &#x27;Only a draft can be published.&#x27;
+        )
+
+    def test_a_get_does_not_publish(self):
+        event = future_draft(self.sam)
+        self.client.force_login(self.sam)
+        response = self.client.get(
+            action_url(&#x27;publish&#x27;, event)
+        )
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response[&#x27;Allow&#x27;], &#x27;POST&#x27;)
+        event.refresh_from_db()
+        self.assertEqual(event.status, Event.Status.DRAFT)
+
+    def test_visitors_see_it_once_it_is_published(self):
+        event = future_draft(self.sam)
+        url = event.get_absolute_url()
+        self.assertEqual(self.status(url), 404)
+        self.post(event, self.sam)
+        self.client.logout()
+        self.assertEqual(self.status(url), 200)
+
+    def test_the_button_is_for_organizers_of_drafts(self):
+        draft = future_draft(self.sam)
+        live = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        self.client.force_login(self.sam)
+        page = self.client.get(draft.get_absolute_url())
+        self.assertContains(
+            page, f&#x27;action=&quot;{action_url(&quot;publish&quot;, draft)}&quot;&#x27;
+        )
+        page = self.client.get(live.get_absolute_url())
+        self.assertNotContains(
+            page, f&#x27;action=&quot;{action_url(&quot;publish&quot;, live)}&quot;&#x27;
+        )</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="185" tabindex="0"><code>uv run python manage.py test events -k Readiness -k Publish</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="186" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute
+    &#x27;readiness_problems&#x27;
+AttributeError: &#x27;Event&#x27; object has no attribute &#x27;publish&#x27;
+Ran 11 tests in ...s
+
+FAILED (errors=11)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="187">The model comes first. In <code>events/models.py</code>, add both methods to <code>Event</code>, just above <code>places_taken</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, add before places_taken)</p><pre class="code-listing code-listing--file" data-block="188" tabindex="0"><code>    def readiness_problems(self):
+        &quot;&quot;&quot;List what stops this draft being published.&quot;&quot;&quot;
+        problems = []
+        if not self.description.strip():
+            problems.append(&#x27;Add a description.&#x27;)
+        if self.starts_at &lt;= timezone.now():
+            problems.append(
+                &#x27;Move the start to a time in the future.&#x27;
+            )
+        if not self.organizer_assignments.filter(
+                revoked_at__isnull=True).exists():
+            problems.append(
+                &#x27;Assign at least one current organizer.&#x27;
+            )
+        return problems
+
+    def publish(self):
+        &quot;&quot;&quot;Draft to published, or ValidationError.&quot;&quot;&quot;
+        if self.status != self.Status.DRAFT:
+            raise ValidationError(
+                &#x27;Only a draft can be published.&#x27;
+            )
+        problems = self.readiness_problems()
+        if problems:
+            raise ValidationError(problems)
+        self.status = self.Status.PUBLISHED
+        self.save(update_fields=[&#x27;status&#x27;])
+
+    def places_taken(self):</code></pre><figure data-block="189"><a href="/assets/chapter26/figure-26-4-publish.png" aria-label="Open Figure 26.4 at full size"><img src="/assets/chapter26/figure-26-4-publish.png" alt="Four numbered cards in a column joined by downward arrows, with two outcome boxes on the right. 1, a blue Publish button card: a POST to events slash id slash publish. 2, a purple Access check card: event_to_manage answers 404 if the event is hidden and 403 if the member is not an organizer. 3, an orange event.publish card: a draft only, then readiness_problems. 4, a purple readiness_problems card: a description, a start in the future, and a current organizer. From card 4, one arrow leads to a green box, Nothing missing: the status becomes published and the message Published. A second arrow leads to a red box, Something missing: the event stays a draft, with one message per missing detail." width="1500" height="860" loading="lazy"></a><figcaption data-block="190">Figure 26.4 — Publishing, from the button to the readiness check.</figcaption></figure><p class="" data-block="191"><code>readiness_problems()</code> returns a list, not a yes or no, so a person can be told everything at once. <code>publish()</code> raises a <code>ValidationError</code>, Django’s own exception for a rule that was not met, carrying the same messages. Only a draft can be published, and nothing changes if the list is not empty. <code>update_fields</code> writes the one column that changed.</p><p class="" data-block="192">Now the view and its access check. The check from Chapter 25’s edit page becomes a function the edit view and every action share. In <code>events/views.py</code>, import <code>ValidationError</code> and <code>require_POST</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace the PermissionDenied import)</p><pre class="code-listing code-listing--file" data-block="193" tabindex="0"><code>from django.core.exceptions import (
+    PermissionDenied, ValidationError,
+)</code></pre><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace the timezone import)</p><pre class="code-listing code-listing--file" data-block="194" tabindex="0"><code>from django.utils import timezone
+from django.views.decorators.http import require_POST</code></pre><p class="" data-block="195">Replace the start of <code>event_edit</code> so that it uses the shared check:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (event_edit, replace its first lines)</p><pre class="code-listing code-listing--file" data-block="196" tabindex="0"><code>def event_to_manage(request, event_id):
+    &quot;&quot;&quot;Return the event, if this member may change it.&quot;&quot;&quot;
+    event = get_object_or_404(Event, pk=event_id)
+    if not event.is_visible_to(request.user):
+        raise Http404(&#x27;No event matches the given query.&#x27;)
+    if not event.can_be_edited_by(request.user):
+        raise PermissionDenied
+    return event
+
+
+@login_required
+def event_edit(request, event_id):
+    &quot;&quot;&quot;Edit the event, for those who may change it.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id)
+    title = event.title</code></pre><p class="" data-block="197">And add the publish view, with the helper that turns a refusal into messages, at the end:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="198" tabindex="0"><code>def refuse(request, error):
+    &quot;&quot;&quot;Show why a change was refused; nothing changed.&quot;&quot;&quot;
+    for message in error.messages:
+        messages.error(request, message)
+
+
+@require_POST
+@login_required
+def event_publish(request, event_id):
+    &quot;&quot;&quot;Publish the event, or say why not.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id)
+    try:
+        event.publish()
+    except ValidationError as error:
+        refuse(request, error)
+    else:
+        messages.success(request, &#x27;Published.&#x27;)
+    return redirect(event)</code></pre><p class="" data-block="199"><code>@require_POST</code> answers any other method with a 405 response that carries an <code>Allow: POST</code> header, and the test that sent a GET observed exactly that. It sits outside <code>@login_required</code>, so a visitor who sends a GET also gets 405 and not a redirect that would end in a GET on the next page. A refusal becomes one error message per missing detail, and the redirect brings Sam back to the draft, where the messages are shown. Register the address, after the edit pattern:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py (add after the edit pattern)</p><pre class="code-listing code-listing--file" data-block="200" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/publish/&#x27;,
+         views.event_publish, name=&#x27;publish&#x27;),</code></pre><p class="" data-block="201">The Publish button belongs on the draft page, which is also the preview Sam checks, so he reads the page and presses the button on the same screen. In <code>events/templates/events/detail.html</code>, replace the three lines of the Edit link with this block:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the Edit link)</p><pre class="code-listing code-listing--file" data-block="202" tabindex="0"><code>    {% if can_edit %}
+      &lt;div class=&quot;space-y-3 border-t border-base-300 pt-4&quot;&gt;
+        &lt;p class=&quot;flex flex-wrap items-center gap-4&quot;&gt;
+          &lt;a href=&quot;{% url &#x27;events:edit&#x27; event.pk %}&quot;&gt;
+            Edit event&lt;/a&gt;
+        &lt;/p&gt;
+        {% if event.status == &#x27;draft&#x27; %}
+          &lt;form method=&quot;post&quot;
+                action=&quot;{% url &#x27;events:publish&#x27; event.pk %}&quot;&gt;
+            {% csrf_token %}
+            &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+              Publish&lt;/button&gt;
+          &lt;/form&gt;
+        {% endif %}
+      &lt;/div&gt;
+    {% endif %}</code></pre><p class="" data-block="203">The button is a form with <code>{% csrf_token %}</code>, never a link. Errors need their own colour: in <code>templates/base.html</code>, replace the messages loop so that an error message gets the <code>alert-error</code> class:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html (replace the messages loop)</p><pre class="code-listing code-listing--file" data-block="204" tabindex="0"><code>        {% for message in messages %}
+          &lt;p class=&quot;alert
+             {% if message.level_tag == &#x27;error&#x27; %}alert-error
+             {% else %}alert-success{% endif %}&quot;&gt;
+            {{ message }}&lt;/p&gt;
+        {% endfor %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="205" tabindex="0"><code>uv run python manage.py test events -k Readiness -k Publish</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="206" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 11 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="207">Rebuild the stylesheet with <code>npm run build</code>. In the browser, open the clinic as Sam. It has no description, so press <strong>Publish</strong>: the page returns with <strong>Add a description.</strong> in red, and the event is still a draft. Edit the clinic, type a description, save, and press <strong>Publish</strong> again: the page says <strong>Published.</strong>, the Draft banner is gone, and the clinic is in the Events list for everyone.</p><div class="callout callout--error"><p class="callout__title" data-block="208">Common Error: hiding the button is not a check</p><p class="" data-block="209">A template that shows the Publish button only for ready events looks safe, but a crafted POST to the address still arrives. The tests send the POST directly, with no button, and the rules live in <code>publish()</code>, so the answer is the same however the request is made.</p></div><div class="callout callout--error"><p class="callout__title" data-block="210">Common Error: the clock has moved past the start</p><p class="" data-block="211">Publishing the clinic after 3 December 2026 is refused with <strong>Move the start to a time in the future.</strong> That is the rule working, not a fault. Use the Edit event page, move the clinic to a future date, and try again.</p></div><h4 data-block="212">Step 7: Cancel, and what members see</h4><p class="" data-block="213">Sam cancels a published event, and the cancelled event stays visible with a tag. Tests first. Add these at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="214" tabindex="0"><code>class CancelTests(TestCase):
+    &quot;&quot;&quot;Cancelling published events, and who may.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+
+    def cancel(self, event, person):
+        &quot;&quot;&quot;Sign in as person and cancel event.&quot;&quot;&quot;
+        self.client.force_login(person)
+        return self.client.post(action_url(&#x27;cancel&#x27;, event))
+
+    def test_an_organizer_cancels_a_published_event(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        response = self.cancel(event, self.sam)
+        self.assertRedirects(
+            response, event.get_absolute_url(),
+            fetch_redirect_response=False,
+        )
+        event.refresh_from_db()
+        self.assertEqual(
+            event.status, Event.Status.CANCELLED
+        )
+
+    def test_a_draft_cannot_be_cancelled(self):
+        event = future_draft(self.sam)
+        response = self.cancel(event, self.sam)
+        page = self.client.get(response[&#x27;Location&#x27;])
+        self.assertContains(
+            page, &#x27;Only a published event can be cancelled.&#x27;
+        )
+        event.refresh_from_db()
+        self.assertEqual(event.status, Event.Status.DRAFT)
+
+    def test_everyone_sees_the_tag_and_no_places(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        self.cancel(event, self.sam)
+        self.client.logout()
+        page = self.client.get(event.get_absolute_url())
+        self.assertContains(page, &#x27;&gt;Cancelled&lt;/span&gt;&#x27;)
+        self.assertNotContains(page, &#x27;places&#x27;)
+
+    def test_registrations_are_kept(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        place = Registration.objects.create(
+            event=event, member=self.sai
+        )
+        self.cancel(event, self.sam)
+        place.refresh_from_db()
+        self.assertEqual(place.status,
+                         Registration.Status.ACTIVE)
+        self.client.force_login(self.sai)
+        page = self.client.get(event.get_absolute_url())
+        self.assertContains(page, &#x27;&gt;Cancelled&lt;/span&gt;&#x27;)
+
+    def test_it_leaves_the_event_list(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED,
+            title=&#x27;Gone&#x27;,
+        )
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(page, &#x27;Gone&#x27;)
+        self.cancel(event, self.sam)
+        self.client.logout()
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertNotContains(page, &#x27;Gone&#x27;)
+
+    def test_a_non_organizer_and_a_get_are_refused(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        response = self.cancel(event, self.sai)
+        self.assertEqual(response.status_code, 403)
+        self.client.force_login(self.sam)
+        response = self.client.get(
+            action_url(&#x27;cancel&#x27;, event)
+        )
+        self.assertEqual(response.status_code, 405)
+        event.refresh_from_db()
+        self.assertEqual(
+            event.status, Event.Status.PUBLISHED
+        )</code></pre><p class="" data-block="215">One Chapter 24 test changes in place, because it expected a cancelled event to be hidden. In <code>EventDetailTests</code>, rename <code>test_unpublished_events_are_hidden</code> to <code>test_drafts_are_hidden</code>, and replace the loop over the two statuses with a draft alone:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (EventDetailTests, replace the loop)</p><pre class="code-listing code-listing--file" data-block="216" tabindex="0"><code>        event = save_event(status=Event.Status.DRAFT)
+        response = self.client.get(f&#x27;/events/{event.pk}/&#x27;)
+        self.assertEqual(response.status_code, 404)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="217" tabindex="0"><code>uv run python manage.py test events -k Cancel -k EventDetail</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="218" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 11 tests in ...s
+
+FAILED (errors=6)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="219">In <code>events/models.py</code>, change <code>is_visible_to</code> so that only a draft is hidden. Replace its first lines:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (is_visible_to, replace its first lines)</p><pre class="code-listing code-listing--file" data-block="220" tabindex="0"><code>    def is_visible_to(self, user):
+        &quot;&quot;&quot;Whether user may see this event.
+
+        Published and cancelled: everyone. A draft:
+        organizers and holders of view_event.
+        &quot;&quot;&quot;
+        if self.status != self.Status.DRAFT:
+            return True</code></pre><p class="" data-block="221">And add <code>cancel</code> above <code>places_taken</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, add before places_taken)</p><pre class="code-listing code-listing--file" data-block="222" tabindex="0"><code>    def cancel(self):
+        &quot;&quot;&quot;Cancel if published, or raise ValidationError.&quot;&quot;&quot;
+        if self.status != self.Status.PUBLISHED:
+            raise ValidationError(
+                &#x27;Only a published event can be cancelled.&#x27;
+            )
+        self.status = self.Status.CANCELLED
+        self.save(update_fields=[&#x27;status&#x27;])
+
+    def places_taken(self):</code></pre><p class="" data-block="223">At the end of <code>events/views.py</code>, add the view, then its address after the publish pattern:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="224" tabindex="0"><code>@require_POST
+@login_required
+def event_cancel(request, event_id):
+    &quot;&quot;&quot;Cancel the event, or say why not.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id)
+    try:
+        event.cancel()
+    except ValidationError as error:
+        refuse(request, error)
+    else:
+        messages.success(request, &#x27;Event cancelled.&#x27;)
+    return redirect(event)</code></pre><p class="code-label code-label--file" aria-hidden="true">events/urls.py (add after the publish pattern)</p><pre class="code-listing code-listing--file" data-block="225" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/cancel/&#x27;,
+         views.event_cancel, name=&#x27;cancel&#x27;),</code></pre><p class="" data-block="226">Three changes to <code>events/templates/events/detail.html</code>. The banner now says Cancelled for a cancelled event and Draft for a draft:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the banner)</p><pre class="code-listing code-listing--file" data-block="227" tabindex="0"><code>    {% if event.status == &#x27;draft&#x27; %}
+      &lt;p class=&quot;rounded-box border border-base-content
+                px-3 py-1 text-sm&quot;&gt;
+        {{ event.get_status_display }}: only its organizers
+        and the administrator can see this page.&lt;/p&gt;
+    {% elif event.status == &#x27;cancelled&#x27; %}
+      &lt;p&gt;&lt;span class=&quot;badge badge-error&quot;&gt;Cancelled&lt;/span&gt;
+        This event is off.&lt;/p&gt;
+    {% endif %}</code></pre><p class="" data-block="228">A cancelled event shows no line about places, because nothing can be taken. Replace the places condition:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the places condition)</p><pre class="code-listing code-listing--file" data-block="229" tabindex="0"><code>    {% if now &lt; event.ends_at %}
+      {% if event.status != &#x27;cancelled&#x27; %}
+        &lt;p&gt;{% include &quot;events/places.html&quot; %}&lt;/p&gt;
+      {% endif %}
+    {% endif %}</code></pre><p class="" data-block="230">And the actions block gains the Cancel form for a published event:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the Publish form)</p><pre class="code-listing code-listing--file" data-block="231" tabindex="0"><code>        {% if event.status == &#x27;draft&#x27; %}
+          &lt;form method=&quot;post&quot;
+                action=&quot;{% url &#x27;events:publish&#x27; event.pk %}&quot;&gt;
+            {% csrf_token %}
+            &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+              Publish&lt;/button&gt;
+          &lt;/form&gt;
+        {% elif event.status == &#x27;published&#x27; %}
+          &lt;form method=&quot;post&quot;
+                action=&quot;{% url &#x27;events:cancel&#x27; event.pk %}&quot;&gt;
+            {% csrf_token %}
+            &lt;button type=&quot;submit&quot; class=&quot;btn btn-outline&quot;&gt;
+              Cancel event&lt;/button&gt;
+            &lt;span class=&quot;text-sm&quot;&gt;Cancelling cannot be
+              undone. Members keep their places.&lt;/span&gt;
+          &lt;/form&gt;
+        {% endif %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="232" tabindex="0"><code>uv run python manage.py test events -k Cancel -k EventDetail</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="233" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 11 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="234">The Cancel button sits beside a plain sentence that cancelling cannot be undone and that members keep their places, which is true: the registrations are untouched, and Chapter 31 and Chapters 43 and 44 decide what members are told. Rebuild the stylesheet with <code>npm run build</code>.</p><div class="callout callout--note"><p class="callout__title" data-block="235">Note: the old test and the new rule</p><p class="" data-block="236">The Chapter 24 test did not become wrong by accident. It recorded a decision, that cancelled events are hidden like drafts, and this chapter changes the decision on purpose. When a rule changes, the test that held the old rule changes in the same step, and you say so, as here.</p></div><h4 data-block="237">Step 8: Delete a draft</h4><p class="" data-block="238">Deleting is the only move that loses data, so it has the most refusals. Tests first, at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="239" tabindex="0"><code>class DeleteTests(TestCase):
+    &quot;&quot;&quot;Only a draft nobody registered for is deleted.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+
+    def kept(self, event):
+        &quot;&quot;&quot;Return whether event is still in the database.&quot;&quot;&quot;
+        return Event.objects.filter(pk=event.pk).exists()
+
+    def test_a_get_shows_the_page_and_deletes_nothing(self):
+        draft = future_draft(self.sam)
+        response = self.client.get(
+            action_url(&#x27;delete&#x27;, draft)
+        )
+        self.assertTemplateUsed(
+            response, &#x27;events/delete.html&#x27;
+        )
+        self.assertContains(response, &#x27;cannot be undone&#x27;)
+        self.assertTrue(self.kept(draft))
+
+    def test_a_post_deletes_the_draft_and_assignments(self):
+        draft = future_draft(self.sam)
+        response = self.client.post(
+            action_url(&#x27;delete&#x27;, draft)
+        )
+        self.assertRedirects(
+            response, reverse(&#x27;events:manage&#x27;),
+            fetch_redirect_response=False,
+        )
+        self.assertFalse(self.kept(draft))
+        self.assertFalse(
+            OrganizerAssignment.objects.exists()
+        )
+        page = self.client.get(reverse(&#x27;events:manage&#x27;))
+        self.assertContains(page, &#x27;Draft deleted.&#x27;)
+
+    def test_a_draft_with_registrations_is_kept(self):
+        draft = future_draft(self.sam)
+        Registration.objects.create(
+            event=draft, member=self.sai
+        )
+        response = self.client.post(
+            action_url(&#x27;delete&#x27;, draft)
+        )
+        page = self.client.get(response[&#x27;Location&#x27;])
+        self.assertContains(page, &#x27;has registrations&#x27;)
+        self.assertTrue(self.kept(draft))
+        places = draft.organizer_assignments.count()
+        self.assertEqual(places, 1)
+
+    def test_published_and_cancelled_events_are_kept(self):
+        for status in (Event.Status.PUBLISHED,
+                       Event.Status.CANCELLED):
+            with self.subTest(status=status):
+                event = future_draft(self.sam, status=status)
+                for send in (self.client.get,
+                             self.client.post):
+                    response = send(
+                        action_url(&#x27;delete&#x27;, event)
+                    )
+                    code = response.status_code
+                    self.assertEqual(code, 302)
+                self.assertTrue(self.kept(event))
+
+    def test_a_non_organizer_is_refused(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        self.client.force_login(self.sai)
+        for send in (self.client.get, self.client.post):
+            response = send(action_url(&#x27;delete&#x27;, event))
+            self.assertEqual(response.status_code, 403)
+        self.assertTrue(self.kept(event))
+
+    def test_another_method_is_refused(self):
+        draft = future_draft(self.sam)
+        url = action_url(&#x27;delete&#x27;, draft)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 405)
+        self.assertTrue(self.kept(draft))</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="240" tabindex="0"><code>uv run python manage.py test events.tests.DeleteTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="241" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+FAILED (errors=7)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="242">In <code>events/models.py</code>, import <code>transaction</code> and add the method. Replace the import line:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (the import line, replaced)</p><pre class="code-listing code-listing--file" data-block="243" tabindex="0"><code>from django.db import models, transaction
+from django.urls import reverse</code></pre><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, add before places_taken)</p><pre class="code-listing code-listing--file" data-block="244" tabindex="0"><code>    def delete_draft(self):
+        &quot;&quot;&quot;Delete a draft nobody registered for.&quot;&quot;&quot;
+        if self.status != self.Status.DRAFT:
+            raise ValidationError(
+                &#x27;Only a draft can be deleted.&#x27;
+            )
+        if self.registrations.exists():
+            raise ValidationError(
+                &#x27;This draft has registrations, so it &#x27;
+                &#x27;is kept.&#x27;
+            )
+        with transaction.atomic():
+            self.organizer_assignments.all().delete()
+            self.delete()
+
+    def places_taken(self):</code></pre><figure data-block="245"><a href="/assets/chapter26/figure-26-5-delete.png" aria-label="Open Figure 26.5 at full size"><img src="/assets/chapter26/figure-26-5-delete.png" alt="Four numbered cards down the left and two boxes on the right. 1, a blue GET delete page card: it shows the draft and says it cannot be undone, and nothing changes. 2, a blue POST card: the button sends the token. 3, an orange delete_draft card: a draft only, with no registrations. 4, a green One transaction card: the draft’s organizer assignments are deleted first, then the event, so both happen or neither. A red Refused box beside card 3 says that for a published or cancelled event, or one with a registration, there is a message and every row stays. A purple Why the order box beside card 4 says each assignment protects its event, so the event cannot be deleted while one remains." width="1500" height="900" loading="lazy"></a><figcaption data-block="246">Figure 26.5 — Deleting a draft, and why the assignments go first.</figcaption></figure><p class="" data-block="247">Inside <code>transaction.atomic()</code>, the assignments go first and the event second. If the second delete fails, the first is undone, and nothing is half deleted. In <code>events/views.py</code>, the import for the methods the view allows changes:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace the require_POST import)</p><pre class="code-listing code-listing--file" data-block="248" tabindex="0"><code>from django.views.decorators.http import (
+    require_http_methods, require_POST,
+)</code></pre><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="249" tabindex="0"><code>@require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;])
+@login_required
+def event_delete(request, event_id):
+    &quot;&quot;&quot;Confirm, then delete a draft; or say why not.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id)
+    if request.method == &#x27;POST&#x27;:
+        try:
+            event.delete_draft()
+        except ValidationError as error:
+            refuse(request, error)
+            return redirect(event)
+        messages.success(request, &#x27;Draft deleted.&#x27;)
+        return redirect(&#x27;events:manage&#x27;)
+    if event.status != Event.Status.DRAFT:
+        refuse(request, ValidationError(
+            &#x27;Only a draft can be deleted.&#x27;
+        ))
+        return redirect(event)
+    return render(request, &#x27;events/delete.html&#x27;,
+                  {&#x27;event&#x27;: event})</code></pre><p class="" data-block="250">The view allows GET and POST only. A GET shows the confirmation page for a draft, and for anything else it explains and redirects. A POST deletes, and sends the person to My events. Add the address after the cancel pattern:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py (add after the cancel pattern)</p><pre class="code-listing code-listing--file" data-block="251" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/delete/&#x27;,
+         views.event_delete, name=&#x27;delete&#x27;),</code></pre><p class="" data-block="252">Create <code>events/templates/events/delete.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/delete.html</p><pre class="code-listing code-listing--file" data-block="253" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Delete {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Delete {{ event.title }}?&lt;/h1&gt;
+  &lt;p&gt;This draft and its organizer list will be removed. It
+     cannot be undone.&lt;/p&gt;
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-error&quot;&gt;
+      Delete draft&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;p&gt;
+    &lt;a href=&quot;{{ event.get_absolute_url }}&quot;&gt;Keep it&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="254">The link to it goes on the event page for drafts, and on the My events page. In <code>detail.html</code>, replace the Edit link with these lines, and in <code>manage.html</code>, its Edit link:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the Edit link)</p><pre class="code-listing code-listing--file" data-block="255" tabindex="0"><code>          &lt;a href=&quot;{% url &#x27;events:edit&#x27; event.pk %}&quot;&gt;
+            Edit event&lt;/a&gt;
+          {% if event.status == &#x27;draft&#x27; %}
+            &lt;a href=&quot;{% url &#x27;events:delete&#x27; event.pk %}&quot;&gt;
+              Delete draft&lt;/a&gt;
+          {% endif %}</code></pre><p class="code-label code-label--file" aria-hidden="true">events/templates/events/manage.html (replace the Edit link)</p><pre class="code-listing code-listing--file" data-block="256" tabindex="0"><code>          &lt;a href=&quot;{% url &#x27;events:edit&#x27; event.pk %}&quot;&gt;Edit&lt;/a&gt;
+          {% if event.status == &#x27;draft&#x27; %}
+            &lt;a href=&quot;{% url &#x27;events:delete&#x27; event.pk %}&quot;&gt;
+              Delete&lt;/a&gt;
+          {% endif %}</code></pre><p class="" data-block="257">A link to the delete page is safe: it is a GET that only reads. Run the class, then rebuild the stylesheet with <code>npm run build</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="258" tabindex="0"><code>uv run python manage.py test events.tests.DeleteTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="259" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="260">Common Error: deleting the event before its assignments</p><p class="" data-block="261">Call <code>self.delete()</code> first and Django raises <code>ProtectedError</code>, the message you saw in Step 2, and nothing is deleted. Delete the assignments first, inside the same transaction, as <code>delete_draft()</code> does.</p></div><h4 data-block="262">Step 9: Copy an event</h4><p class="" data-block="263">Sam’s clinic runs every Thursday. A copy creates a new draft with the same title, description, place, time zone, capacity, and length, and asks only for the new start. It never copies registrations, status, or other organizers: the copier becomes the organizer. A cancelled event can be copied, which is how it is run again. Tests first, at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="264" tabindex="0"><code>class CopyTests(TestCase):
+    &quot;&quot;&quot;A copy is a new draft starting when asked.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.sai = member(&#x27;sai@example.org&#x27;)
+        cls.raj = editor(&#x27;raj@example.org&#x27;)
+
+    def test_a_copy_is_a_new_draft_with_form_details(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED,
+            title=&#x27;Weekly clinic&#x27;, timezone=&#x27;Asia/Kolkata&#x27;,
+            capacity=25, location=&#x27;Online&#x27;,
+        )
+        event.add_organizer(self.raj)
+        Registration.objects.create(
+            event=event, member=self.sai
+        )
+        self.client.force_login(self.sam)
+        response = self.client.post(
+            action_url(&#x27;copy&#x27;, event),
+            {&#x27;starts_at&#x27;: &#x27;2027-02-04T19:00&#x27;},
+        )
+        copy = Event.objects.exclude(pk=event.pk).get()
+        self.assertRedirects(
+            response, reverse(&#x27;events:edit&#x27;, args=[copy.pk]),
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(copy.status, Event.Status.DRAFT)
+        self.assertEqual(
+            (copy.title, copy.description, copy.location,
+             copy.timezone, copy.capacity),
+            (event.title, event.description, event.location,
+             event.timezone, event.capacity),
+        )
+        self.assertEqual(copy.ends_at - copy.starts_at,
+                         event.ends_at - event.starts_at)
+        self.assertEqual(
+            copy.starts_at,
+            datetime(2027, 2, 4, 13, 30, tzinfo=UTC),
+        )
+        self.assertFalse(copy.registrations.exists())
+        members = [a.member for a in
+                   copy.organizer_assignments.all()]
+        self.assertEqual(members, [self.sam])
+
+    def test_a_cancelled_event_can_be_copied(self):
+        event = future_draft(
+            self.sam, status=Event.Status.CANCELLED
+        )
+        self.client.force_login(self.sam)
+        self.client.post(action_url(&#x27;copy&#x27;, event),
+                         {&#x27;starts_at&#x27;: &#x27;2027-02-04T19:00&#x27;})
+        self.assertEqual(Event.objects.count(), 2)
+        event.refresh_from_db()
+        self.assertEqual(
+            event.status, Event.Status.CANCELLED
+        )
+
+    def test_a_bad_start_copies_nothing(self):
+        event = future_draft(self.sam)
+        self.client.force_login(self.sam)
+        page = self.client.get(action_url(&#x27;copy&#x27;, event))
+        self.assertContains(page, &#x27;type=&quot;datetime-local&quot;&#x27;)
+        response = self.client.post(
+            action_url(&#x27;copy&#x27;, event), {&#x27;starts_at&#x27;: &#x27;&#x27;}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Event.objects.count(), 1)
+
+    def test_a_non_organizer_is_refused(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        self.client.force_login(self.sai)
+        for send in (self.client.get, self.client.post):
+            response = send(action_url(&#x27;copy&#x27;, event))
+            self.assertEqual(response.status_code, 403)
+        self.assertEqual(Event.objects.count(), 1)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="265" tabindex="0"><code>uv run python manage.py test events.tests.CopyTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="266" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+FAILED (errors=4)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="267">The form asks for one value, read in the event’s own zone with Chapter 24’s <code>in_zone()</code>. Add it at the end of <code>events/forms.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="268" tabindex="0"><code>class CopyForm(forms.Form):
+    &quot;&quot;&quot;The one thing a copy asks for: when it starts.&quot;&quot;&quot;
+
+    starts_at = forms.DateTimeField(
+        label=&#x27;New start&#x27;, widget=local_input(),
+    )
+
+    def __init__(self, *args, event, **kwargs):
+        &quot;&quot;&quot;Say which zone the new start is read in.&quot;&quot;&quot;
+        super().__init__(*args, **kwargs)
+        self.event = event
+        self.fields[&#x27;starts_at&#x27;].help_text = (
+            f&#x27;Read in {event.timezone}. The copy lasts as &#x27;
+            &#x27;long as the original.&#x27;
+        )
+
+    def clean_starts_at(self):
+        &quot;&quot;&quot;Read the new start in the event&#x27;s time zone.&quot;&quot;&quot;
+        return in_zone(self.cleaned_data[&#x27;starts_at&#x27;],
+                       self.event.timezone)</code></pre><p class="" data-block="269">In <code>events/models.py</code>, add the method above <code>places_taken</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, add before places_taken)</p><pre class="code-listing code-listing--file" data-block="270" tabindex="0"><code>    def copy_as_draft(self, member, starts_at):
+        &quot;&quot;&quot;Return a new draft with this event&#x27;s details.
+
+        It starts at starts_at, organized by member.
+        &quot;&quot;&quot;
+        with transaction.atomic():
+            copy = Event.objects.create(
+                title=self.title,
+                description=self.description,
+                timezone=self.timezone,
+                location=self.location,
+                capacity=self.capacity,
+                starts_at=starts_at,
+                ends_at=starts_at + (
+                    self.ends_at - self.starts_at
+                ),
+            )
+            copy.add_organizer(member)
+        return copy
+
+    def places_taken(self):</code></pre><p class="" data-block="271">The copy’s end is its start plus the original’s length, so a two-hour event stays two hours. In <code>events/views.py</code>, import <code>CopyForm</code> and add the view at the end:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace the forms import)</p><pre class="code-listing code-listing--file" data-block="272" tabindex="0"><code>from .forms import CopyForm, EventForm</code></pre><p class="code-label code-label--file" aria-hidden="true">events/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="273" tabindex="0"><code>@require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;])
+@login_required
+def event_copy(request, event_id):
+    &quot;&quot;&quot;Ask for a start, then copy the event as a draft.&quot;&quot;&quot;
+    event = event_to_manage(request, event_id)
+    if request.method == &#x27;POST&#x27;:
+        form = CopyForm(request.POST, event=event)
+        if form.is_valid():
+            copy = event.copy_as_draft(
+                request.user, form.cleaned_data[&#x27;starts_at&#x27;]
+            )
+            messages.success(
+                request, &#x27;Copied as a new draft.&#x27;
+            )
+            return redirect(&#x27;events:edit&#x27;, copy.pk)
+    else:
+        form = CopyForm(event=event)
+    return render(request, &#x27;events/copy.html&#x27;,
+                  {&#x27;event&#x27;: event, &#x27;form&#x27;: form})</code></pre><p class="" data-block="274">This view, unlike publish and cancel, allows a GET: the page that asks for the new start only reads, and the POST creates the draft. Add the address, then the template:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py (add after the delete pattern)</p><pre class="code-listing code-listing--file" data-block="275" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/copy/&#x27;, views.event_copy,
+         name=&#x27;copy&#x27;),</code></pre><p class="code-label code-label--file" aria-hidden="true">events/templates/events/copy.html</p><pre class="code-listing code-listing--file" data-block="276" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Copy {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Copy {{ event.title }}&lt;/h1&gt;
+  &lt;p&gt;Otahque saves a new draft with the same title,
+     description, place, time zone, capacity, and length.
+     Registrations and other organizers are not copied.&lt;/p&gt;
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    {{ form }}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+      Save copy as a draft&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;p&gt;
+    &lt;a href=&quot;{{ event.get_absolute_url }}&quot;&gt;
+      Back to the event&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="277">And the links, in <code>detail.html</code> and in <code>manage.html</code>, next to Edit:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the Edit link)</p><pre class="code-listing code-listing--file" data-block="278" tabindex="0"><code>          &lt;a href=&quot;{% url &#x27;events:edit&#x27; event.pk %}&quot;&gt;
+            Edit event&lt;/a&gt;
+          &lt;a href=&quot;{% url &#x27;events:copy&#x27; event.pk %}&quot;&gt;
+            Copy as a new draft&lt;/a&gt;</code></pre><p class="code-label code-label--file" aria-hidden="true">events/templates/events/manage.html (replace the Edit link)</p><pre class="code-listing code-listing--file" data-block="279" tabindex="0"><code>          &lt;a href=&quot;{% url &#x27;events:edit&#x27; event.pk %}&quot;&gt;Edit&lt;/a&gt;
+          &lt;a href=&quot;{% url &#x27;events:copy&#x27; event.pk %}&quot;&gt;Copy&lt;/a&gt;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="280" tabindex="0"><code>uv run python manage.py test events.tests.CopyTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="281" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="282">In the browser, open a published event as Sam, choose <strong>Copy as a new draft</strong>, type next Thursday at the same time, and save. You land on the new draft’s edit page with a copy of everything but the date.</p><h4 data-block="283">Step 10: Prove the token on every action, record the design, and commit</h4><p class="" data-block="284">Each action changes data, so each needs Chapter 24’s proof: a client that enforces the CSRF check is refused without a token, and accepted with the page’s. Add this at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="285" tabindex="0"><code>class ActionCsrfTests(TestCase):
+    &quot;&quot;&quot;Each action refuses a post without the token.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+
+    def send(self, name, event, data=None):
+        &quot;&quot;&quot;Post without, then with, the page&#x27;s token.&quot;&quot;&quot;
+        data = data or {}
+        browser = Client(enforce_csrf_checks=True)
+        browser.force_login(self.sam)
+        url = action_url(name, event)
+        refused = browser.post(url, data)
+        self.assertEqual(refused.status_code, 403)
+        self.assertEqual(Event.objects.count(), 1)
+        page = browser.get(url if name == &#x27;copy&#x27;
+                           else event.get_absolute_url())
+        token = str(page.context[&#x27;csrf_token&#x27;])
+        sent = browser.post(
+            url, data | {&#x27;csrfmiddlewaretoken&#x27;: token}
+        )
+        self.assertEqual(sent.status_code, 302)
+
+    def test_publish_needs_the_token(self):
+        event = future_draft(self.sam)
+        self.send(&#x27;publish&#x27;, event)
+        event.refresh_from_db()
+        self.assertEqual(
+            event.status, Event.Status.PUBLISHED
+        )
+
+    def test_cancel_needs_the_token(self):
+        event = future_draft(
+            self.sam, status=Event.Status.PUBLISHED
+        )
+        self.send(&#x27;cancel&#x27;, event)
+        event.refresh_from_db()
+        self.assertEqual(
+            event.status, Event.Status.CANCELLED
+        )
+
+    def test_delete_needs_the_token(self):
+        event = future_draft(self.sam)
+        self.send(&#x27;delete&#x27;, event)
+        self.assertFalse(Event.objects.exists())
+
+    def test_copy_needs_the_token(self):
+        event = future_draft(self.sam)
+        self.send(&#x27;copy&#x27;, event,
+                  {&#x27;starts_at&#x27;: &#x27;2027-02-04T19:00&#x27;})
+        self.assertEqual(Event.objects.count(), 2)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="286" tabindex="0"><code>uv run python manage.py test events.tests.ActionCsrfTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="287" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="288">Write the design down in <code>docs/design/event-states.md</code>, as Chapters 24 and 25 did for their pages. It holds Table 26.1, what each state shows, the request paths, and what is left open:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md</p><pre class="code-listing code-listing--file" data-block="289" tabindex="0"><code># Event states: low-level design
+
+Status: Drafted in Chapter 26, for review. Not approved.
+Who may act: current organizers who hold events.change_event
+(Event.can_be_edited_by, Chapter 25). Chapter 30 replaces
+the rule behind that one method with roles.
+
+## States and moves
+
+- publish: draft to published. Refused when it is not a
+  draft, has no description, does not start in the future,
+  or has no current organizer.
+- cancel: published to cancelled. Refused when not published.
+- delete: a draft is removed. Refused when it is not a draft,
+  or when any registration exists.
+- copy: any state to a new draft. Refused when the new start
+  is missing or unreadable.
+
+- There is no unpublish. Cancelled is final: run the event
+  again by copying it.
+- Every move except the delete page&#x27;s GET is a POST. The
+  views for publish and cancel answer a GET with 405.
+- A refused move changes nothing and tells the member why
+  (one message per missing detail).
+
+## What each state shows
+
+- Draft: organizers and view_event holders; a Draft banner.
+- Published: everyone; in the upcoming and past lists.
+- Cancelled: everyone who has the address, with a
+  Cancelled tag and no places line; not in either list.
+  Registrations stay as they are.
+
+## Request path
+
+- POST events/&lt;id&gt;/publish/ and .../cancel/: require_POST,
+  login_required, event_to_manage (404 hidden, 403
+  refused), then event.publish() or event.cancel();
+  ValidationError messages become error messages; 302 to
+  the event.
+- GET events/&lt;id&gt;/delete/: the confirmation page (a draft
+  only). POST: event.delete_draft() removes the draft&#x27;s
+  organizer assignments, then the event, in one
+  transaction; 302 to My events.
+- GET/POST events/&lt;id&gt;/copy/: asks for the new start in the
+  event&#x27;s zone; event.copy_as_draft(user, starts_at) copies
+  title, description, place, time zone, capacity, and
+  length; never registrations, status, or other organizers;
+  302 to the new draft&#x27;s edit page.
+- GET events/manage/: permission_required(change_event);
+  Event.objects.organized_by(user): current assignments
+  only, drafts first.
+
+## Open
+
+- Audit records of each move: Chapter 30.
+- Telling members of a cancellation: Chapters 43-44.
+- A version check for two organizers acting at once:
+  Chapter 33.
+- The cover image joins what a copy carries: Chapter 42.</code></pre><p class="" data-block="290">Last checks and the commit. No migration is waiting, the project’s own check is clean, and the whole suite passes:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="291" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run
+uv run python manage.py check
+uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="292" tabindex="0"><code>No changes detected
+System check identified no issues (0 silenced).
+Found 165 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 165 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="293">Commit the work, with the stylesheet that <code>npm run build</code> produced:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="294" tabindex="0"><code>git add .
+git status --short
+git commit -m &quot;Publish, cancel, delete, and copy events&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="295" tabindex="0"><code> M events/admin.py
+ M events/forms.py
+ M events/models.py
+ M events/templates/events/detail.html
+ M events/tests.py
+ M events/urls.py
+ M events/views.py
+ M static/otahque/site.css
+ M templates/base.html
+ M templates/includes/site_nav.html
+?? docs/design/event-states.md
+?? events/migrations/0004_event_description.py
+?? events/templates/events/copy.html
+?? events/templates/events/delete.html
+?? events/templates/events/manage.html
+?? templates/django/forms/widgets/textarea.html</code></pre><p class="" data-block="296">Table 26.2 lists what to do when a step does not go as described. Every route leaves your work in place.</p><figure class="table-figure" data-block="297"><figcaption>Table 26.2 — When a step goes wrong</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 26.2 — When a step goes wrong"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">NoReverseMatch for manage, publish, cancel, delete, or copy</th>
+<td data-label="Likely cause">The link or redirect was added before the pattern in urls.py</td>
+<td data-label="Recovery">Add the pattern, matching the name in Table 26.3, and reload</td>
+</tr>
+<tr><th scope="row">A new test passes before the code exists</th>
+<td data-label="Likely cause">The test asserts something already true</td>
+<td data-label="Recovery">Check what it asserts, and make it fail first by naming the missing behaviour</td>
+</tr>
+<tr><th scope="row">Publish says Move the start to a time in the future</th>
+<td data-label="Likely cause">The clinic&#x27;s start has passed</td>
+<td data-label="Recovery">Edit the clinic&#x27;s start, then publish</td>
+</tr>
+<tr><th scope="row">Delete does nothing and shows Only a draft can be deleted</th>
+<td data-label="Likely cause">The event is published or cancelled</td>
+<td data-label="Recovery">Cancel it instead; only a draft is deleted</td>
+</tr>
+<tr><th scope="row">The Cancel button or tags look unstyled</th>
+<td data-label="Likely cause">The stylesheet was not rebuilt</td>
+<td data-label="Recovery">Run npm run build, then reload</td>
+</tr>
+<tr><th scope="row">A migration refuses to apply or roll back</th>
+<td data-label="Likely cause">Another migration depends on it, or the database holds data it cannot convert</td>
+<td data-label="Recovery">Run migrate --plan, read the list, and compare your files with a separate copy of the reference repository</td>
+</tr>
+</tbody></table></div></figure><figure class="table-figure" data-block="298"><figcaption>Table 26.3 — The addresses this chapter adds</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 26.3 — The addresses this chapter adds"><table><thead><tr><th scope="col">Address</th>
+<th scope="col">What it does</th>
+<th scope="col">Name</th>
+</tr></thead><tbody><tr><th scope="row">/events/manage/</th>
+<td data-label="What it does">The organizer&#x27;s own events, drafts first</td>
+<td data-label="Name">events:manage</td>
+</tr>
+<tr><th scope="row">/events/&lt;id&gt;/publish/</th>
+<td data-label="What it does">POST: publish a ready draft</td>
+<td data-label="Name">events:publish</td>
+</tr>
+<tr><th scope="row">/events/&lt;id&gt;/cancel/</th>
+<td data-label="What it does">POST: cancel a published event</td>
+<td data-label="Name">events:cancel</td>
+</tr>
+<tr><th scope="row">/events/&lt;id&gt;/delete/</th>
+<td data-label="What it does">GET: confirm; POST: delete a draft</td>
+<td data-label="Name">events:delete</td>
+</tr>
+<tr><th scope="row">/events/&lt;id&gt;/copy/</th>
+<td data-label="What it does">GET: ask for a start; POST: save a copy</td>
+<td data-label="Name">events:copy</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2026%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter26/section-26-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter26/section-26-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter26/section-26-2/">← What You Need to Know</a><a href="/chapters/chapter26/section-26-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

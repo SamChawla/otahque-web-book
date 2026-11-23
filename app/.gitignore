@@ -11,5 +11,8 @@ __pycache__/
 # This computer's local development database
 db.sqlite3
 
+# The SQLite copy kept from before Chapter 32
+db-before-32.sqlite3
+
 # Node packages, rebuilt from package-lock.json by npm ci
 node_modules/

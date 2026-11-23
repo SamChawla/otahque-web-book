@@ -26,6 +26,7 @@ from audit.models import AuditEvent, record
 
 from .forms import (
     CopyForm, EventForm, OrganizerForm, RemoveOrganizerForm,
+    VersionForm,
 )
 from .models import REASONS, Event, OrganizerAssignment
 
@@ -139,6 +140,41 @@ def event_to_manage(request, event_id, action):
     return event
 
 
+STALE = ('This event was changed after you opened this '
+         'page, so your changes were not saved. The form '
+         'now shows the event as it is: make them again.')
+
+
+def save_edit(request, event):
+    """Save the edit form under the event's lock.
+
+    Return None once saved, or the form to show again.
+    The lock makes the capacity floor count the places
+    taken now; the version shows whether anyone saved the
+    event after this page was opened.
+    """
+    with transaction.atomic():
+        event = event.locked()
+        seen = VersionForm(request.POST)
+        if (not seen.is_valid()
+                or seen.cleaned_data['version']
+                != event.version):
+            messages.error(request, STALE)
+            return EventForm(instance=event)
+        before = model_to_dict(event)
+        form = EventForm(request.POST, instance=event)
+        if not form.is_valid():
+            return form
+        event.version += 1
+        form.save()
+        after = model_to_dict(event)
+        changed = [name for name in form.fields
+                   if before[name] != after[name]]
+        record(request.user, Action.EDIT_EVENT, event,
+               fields=changed)
+    return None
+
+
 @login_required
 def event_edit(request, event_id):
     """Edit the event, for those who may change it."""
@@ -146,16 +182,12 @@ def event_edit(request, event_id):
                             Action.EDIT_EVENT)
     title = event.title
     if request.method == 'POST':
-        before = model_to_dict(event)
-        form = EventForm(request.POST, instance=event)
-        if form.is_valid():
-            with transaction.atomic():
-                form.save()
-                after = model_to_dict(event)
-                changed = [name for name in form.fields
-                           if before[name] != after[name]]
-                record(request.user, Action.EDIT_EVENT,
-                       event, fields=changed)
+        try:
+            form = save_edit(request, event)
+        except ValidationError as error:
+            refuse(request, error)
+            form = EventForm(request.POST, instance=event)
+        if form is None:
             messages.success(request, 'Changes saved.')
             return redirect(event)
     else:

@@ -1,4 +1,5 @@
 """Tests for the registrations app."""
+import threading
 from datetime import UTC, datetime, timedelta
 from unittest import mock
 
@@ -7,14 +8,20 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
 from django.db.models import ProtectedError
-from django.test import TestCase
+from django.contrib.auth.models import Permission
+from django.test import (
+    TestCase, TransactionTestCase, skipUnlessDBFeature,
+)
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import Profile
 from audit.models import AuditEvent
-from events.models import ORGANIZERS, Event
+from events.models import (
+    ORGANIZERS, Event, OrganizerAssignment,
+)
+from events.tests import as_sent
 from events.tests import SAI_PASSWORD as PASSWORD
 from events.tests import admin_url, in_group, outcome
 from .models import Registration
@@ -790,3 +797,200 @@ class AttendeeMatrixTests(TestCase):
             actor=raj,
         )
         self.assertEqual(refused.count(), 2)
+
+
+def at_once(*actions):
+    """Run each action in its own thread; return outcomes.
+
+    An outcome is what the action returned, or the codes
+    of the ValidationError it raised. Each thread has its
+    own database connection, closed at the end, as two
+    requests would.
+    """
+    outcomes = [None] * len(actions)
+
+    def run(n, action):
+        try:
+            outcomes[n] = action()
+        except ValidationError as error:
+            outcomes[n] = [e.code for e in error.error_list]
+        finally:
+            connection.close()
+
+    threads = [threading.Thread(target=run, args=(n, act))
+               for n, act in enumerate(actions)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    return outcomes
+
+
+def meet_after_counting(timeout=2):
+    """Make each request wait, after counting, for the other.
+
+    Without a lock both count before either inserts, so
+    the race happens every time. With the lock the other
+    request is still waiting for the event row, so the
+    meeting times out and the requests take turns.
+    """
+    barrier = threading.Barrier(2, timeout=timeout)
+    count = Event.places_taken
+
+    def counted(event):
+        taken = count(event)
+        try:
+            barrier.wait()
+        except threading.BrokenBarrierError:
+            pass
+        return taken
+
+    return mock.patch.object(Event, 'places_taken', counted)
+
+
+def organizer(event):
+    """Create Sam, who may edit event, without any group.
+
+    TransactionTestCase empties every table after a test,
+    including the groups Chapter 30's migration made, so
+    the permission is given to Sam directly.
+    """
+    sam = User.objects.create_user('sam@example.org',
+                                   display_name='Sam')
+    sam.user_permissions.add(
+        Permission.objects.get(codename='change_event')
+    )
+    OrganizerAssignment.objects.create(event=event,
+                                       member=sam)
+    return sam
+
+
+@skipUnlessDBFeature('has_select_for_update')
+class RaceTests(TransactionTestCase):
+    """Requests for one event at the same moment.
+
+    PostgreSQL only. Each test commits its rows, so other
+    threads see them, and the tables are emptied after it.
+    """
+
+    def setUp(self):
+        self.event = soon(capacity=1)
+        self.now = timezone.now()
+
+    def register(self, member):
+        """Return an action that registers, as a request does."""
+        def action():
+            event = Event.objects.get(pk=self.event.pk)
+            event.register(member, self.now)
+            return 'place'
+        return action
+
+    def test_the_last_place_goes_to_one_member(self):
+        sai = verified('sai@example.org')
+        raj = verified('raj@example.org')
+        with meet_after_counting():
+            outcomes = at_once(self.register(sai),
+                               self.register(raj))
+        self.assertCountEqual(outcomes, ['place', ['full']])
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_the_same_member_twice_gets_one_place(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            capacity=5
+        )
+        sai = verified('sai@example.org')
+        with meet_after_counting():
+            outcomes = at_once(self.register(sai),
+                               self.register(sai))
+        self.assertCountEqual(
+            outcomes, ['place', ['already_registered']]
+        )
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_busy_while_another_request_holds_it(self):
+        sai = verified('sai@example.org')
+        held, finished = threading.Event(), threading.Event()
+
+        def hold():
+            with transaction.atomic():
+                Event.objects.select_for_update().get(
+                    pk=self.event.pk
+                )
+                held.set()
+                finished.wait(5)
+
+        def try_to_register():
+            held.wait(5)
+            try:
+                return self.register(sai)()
+            finally:
+                finished.set()
+
+        with mock.patch('events.models.LOCK_TIMEOUT',
+                        '100ms', create=True):
+            outcomes = at_once(hold, try_to_register)
+        self.assertEqual(outcomes[1], ['busy'])
+        self.assertEqual(self.event.places_taken(), 0)
+
+    def test_capacity_edit_counts_a_place_being_made(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            capacity=2
+        )
+        verified('raj@example.org').registrations.create(
+            event=self.event, registered_at=self.now
+        )
+        sam = organizer(self.event)
+        sai = verified('sai@example.org')
+
+        def lower_capacity():
+            client = self.client_class()
+            client.force_login(sam)
+            event = Event.objects.get(pk=self.event.pk)
+            return client.post(
+                reverse('events:edit', args=[event.pk]),
+                as_sent(event, capacity='1'),
+            ).status_code
+
+        # The edit's capacity floor counts too, so it meets
+        # the registration right after both have counted.
+        with meet_after_counting():
+            at_once(self.register(sai), lower_capacity)
+        self.event.refresh_from_db()
+        # Either order is fair: Sai's place, then the edit
+        # refused; or the edit, then "full". Never both.
+        self.assertLessEqual(self.event.places_taken(),
+                             self.event.capacity)
+
+
+class StaleCopyTests(TestCase):
+    """Actions read the event again, not the page's copy."""
+
+    def setUp(self):
+        self.event = soon()
+        # The copy a view loaded before someone else acted.
+        self.copy = Event.objects.get(pk=self.event.pk)
+
+    def test_register_sees_a_cancel_made_since(self):
+        Event.objects.get(pk=self.event.pk).cancel()
+        with self.assertRaises(ValidationError) as caught:
+            self.copy.register(verified('sai@example.org'),
+                               timezone.now())
+        self.assertEqual(
+            [e.code for e in caught.exception.error_list],
+            ['not_published'],
+        )
+
+    def test_cancel_sees_a_cancel_made_since(self):
+        Event.objects.get(pk=self.event.pk).cancel()
+        with self.assertRaises(ValidationError):
+            self.copy.cancel()
+
+    def test_publish_sees_a_publish_made_since(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            status=Event.Status.DRAFT, description='Notes.'
+        )
+        organizer(self.event)
+        draft = Event.objects.get(pk=self.event.pk)
+        Event.objects.get(pk=self.event.pk).publish()
+        with self.assertRaises(ValidationError):
+            draft.publish()

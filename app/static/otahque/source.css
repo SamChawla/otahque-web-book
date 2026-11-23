@@ -24,6 +24,8 @@
   --color-success-content: #ffffff;
   --color-error: #b42318;
   --color-error-content: #ffffff;
+  --color-warning: #fdf0d2;
+  --color-warning-content: #5b3a00;
   --radius-box: 0.375rem;
   --border: 1px;
 }
@@ -60,6 +62,32 @@
   .site-nav :focus-visible {
     outline-color: currentColor;
   }
+
+  /* A form's fields in two columns on wider screens; long
+     text, check boxes, and the form's errors take a row. */
+  .form-grid {
+    display: grid;
+    gap: 0.25rem 1.5rem;
+  }
+
+  @media (width >= 48rem) {
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid > :has(textarea, .checkbox),
+    .form-grid > .errorlist {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* A form's buttons side by side, at their natural width. */
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
 }
 
 /* daisyUI styles form fields inside the utilities layer,
@@ -71,6 +99,11 @@
 
   .fieldset [aria-invalid="true"] {
     --input-color: var(--color-error);
+  }
+
+  .fieldset .label {
+    color: color-mix(in oklab, var(--color-base-content)
+                     78%, transparent);
   }
 
   .errorlist {

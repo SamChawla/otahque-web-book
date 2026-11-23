@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 32: Moving to PostgreSQL. Move Otahque from SQLite to PostgreSQL 18 without losing a row: install the server, a role and a...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter32/section-32-3/">
+<title>How We Build It · Chapter 32 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter32/">← Chapter 32 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-32-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-73">The Custom Way</a></li><li><a href="#topic-78">The Django Way</a></li><li><a href="#topic-236">When something goes wrong</a></li><li><a href="#topic-240">Optional lab: a table Otahque does not own</a></li></ul></li><li><a href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 7 figures · 7 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter32:32.3" data-progress-title="Section 32.3" data-reader-prev="section-32-2.html" data-reader-next="section-32-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 32.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter32/">Chapter 32 · Moving to PostgreSQL</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter32/section-32-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter32/section-32-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter32/section-32-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter32/section-32-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter32/section-32-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-32-3" data-block="71">How We Build It</h2><p class="" data-block="72">Start from Chapter 31, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 342 passing tests, every migration applied, and the work committed. This chapter installs PostgreSQL 18 and adds one package, psycopg. The new files are <code>compare_databases.py</code> beside <code>manage.py</code> and <code>docs/adr/ADR-005-postgresql.md</code>; <code>config/settings.py</code>, <code>.env</code>, <code>.env.example</code>, <code>.gitignore</code>, <code>check_environment.py</code>, <code>events/tests.py</code>, and seven templates and the stylesheet source change. The visible result is the same Otahque, with all its data, now served from PostgreSQL, and wider forms. Commands that differ between systems are labelled; the chapter’s checks ran in Windows PowerShell 5.1 and Git Bash, against PostgreSQL 18.3 server programs.</p><h3 class="" id="topic-73" data-block="73">The Custom Way</h3><p class="" data-block="74">The obvious way to move data is to read each table from SQLite and insert the same rows into PostgreSQL yourself. The practice file below does that for events. It is shown to explain what Django’s tools do for you; you do not need to run it, and it was run once against a separate, empty database:</p><p class="code-label code-label--file" aria-hidden="true">s_by_hand.py (illustration only)</p><pre class="code-listing code-listing--file" data-block="75" tabindex="0"><code>&quot;&quot;&quot;Copy events by hand, to see what loaddata does for us.&quot;&quot;&quot;
+import sqlite3
+
+from django.db import IntegrityError, connection, transaction
+
+from events.models import Event
+
+old = sqlite3.connect(&#x27;db-before-32.sqlite3&#x27;)
+cursor = old.execute(&#x27;SELECT * FROM events_event&#x27;)
+names = [column[0] for column in cursor.description]
+rows = [dict(zip(names, row)) for row in cursor]
+print(&#x27;SQLite starts_at:&#x27;, repr(rows[0][&#x27;starts_at&#x27;]))
+print(&#x27;SQLite phone_required:&#x27;, repr(rows[0][&#x27;phone_required&#x27;]))
+
+columns = &#x27;, &#x27;.join(names)
+marks = &#x27;, &#x27;.join([&#x27;%s&#x27;] * len(names))
+sql = f&#x27;INSERT INTO events_event ({columns}) VALUES ({marks})&#x27;
+with connection.cursor() as pg:
+    try:
+        with transaction.atomic():
+            pg.execute(sql, list(rows[0].values()))
+    except Exception as error:
+        print(&#x27;as it is:&#x27;, str(error).splitlines()[0])
+    for row in rows:
+        row[&#x27;phone_required&#x27;] = bool(row[&#x27;phone_required&#x27;])
+        pg.execute(sql, list(row.values()))
+print(&#x27;copied events:&#x27;, Event.objects.count())
+
+new = Event.objects.first()
+new.pk = None
+try:
+    with transaction.atomic():
+        new.save()
+except IntegrityError as error:
+    print(&#x27;a new event:&#x27;, str(error).splitlines()[0])</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="76" tabindex="0"><code>SQLite starts_at: &#x27;2026-11-19 18:30:00&#x27;
+SQLite phone_required: 0
+as it is: column &quot;phone_required&quot; is of type boolean but
+    expression is of type integer
+copied events: 7
+a new event: duplicate key value violates unique constraint
+    &quot;events_event_pkey&quot;</code></pre><p class="" data-block="77">Three problems in a few lines. SQLite stores times as text and true or false as 0 or 1, while PostgreSQL has real types and refuses 0 for a boolean: every column has to be translated. The rows went in with their ids, but PostgreSQL’s counter for new ids still stood at 1, so the next event Sam creates collides with an existing one. And this is one table: members, places, and permissions point at each other by number, and those numbers differ on each side. The Django Way leaves translation to <code>dumpdata</code> and <code>loaddata</code>, which know every field’s type, reset the counters, and follow relations by name.</p><h3 class="" id="topic-78" data-block="78">The Django Way</h3><p class="" data-block="79">The move runs in the order that Figure 32.2 shows. Steps 1 to 3 prepare, Step 4 writes the file, Steps 5 to 7 connect Django to PostgreSQL, and Step 8 loads and checks.</p><figure data-block="80"><a href="/assets/chapter32/figure-32-2-move.png" aria-label="Open Figure 32.2 at full size"><img src="/assets/chapter32/figure-32-2-move.png" alt="Five numbered cards, top to bottom, joined by arrows. 1, green: Copy db.sqlite3, db-before-32.sqlite3 stays, read only. 2, purple: dumpdata in XML, natural foreign keys, times to the microsecond. 3, purple: migrate on PostgreSQL, makes content types, permissions, and groups. 4, purple: loaddata, inserts every row, then resets the id sequences. 5, green: compare_databases.py, counts and sampled rows, every table matches. An arrow from card 2 points right to a grey card, Left out of the dump: content types, permissions, and groups, which migrations make again with new ids, and sessions, so everyone signs in again. Below it a red card: The dump is a secret, holding password hashes, phone numbers, and two-factor secrets, kept outside the project and deleted after." width="1500" height="1010" loading="lazy"></a><figcaption data-block="81">Figure 32.2 — The move, in order, with what is left out and why.</figcaption></figure><h4 data-block="82">Step 1: Check the starting point and keep a copy</h4><p class="" data-block="83">Run the whole suite. From this chapter on, the whole suite runs with <code>--parallel</code>, which starts one test process per processor core, each with its own test database:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="84" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="85" tabindex="0"><code>Found 342 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 342 tests in ...s
+
+OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="86" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="87" tabindex="0"><code>... Add registration, cancellation, and attendees</code></pre><p class="" data-block="88">Now keep a copy of the database that nothing will change. Stop <code>runserver</code> first if it is running.</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="89" tabindex="0"><code># PowerShell
+Copy-Item db.sqlite3 db-before-32.sqlite3</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="90" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+cp db.sqlite3 db-before-32.sqlite3</code></pre><p class="" data-block="91">The copy holds personal data, so Git must never see it. Add these lines at the end of <code>.gitignore</code>:</p><p class="code-label code-label--file" aria-hidden="true">.gitignore (add at the end)</p><pre class="code-listing code-listing--file" data-block="92" tabindex="0"><code>
+# The SQLite copy kept from before Chapter 32
+db-before-32.sqlite3</code></pre><p class="" data-block="93"><code>git status --short</code> prints nothing: the copy is ignored and the project is unchanged.</p><h4 data-block="94">Step 2: Install PostgreSQL 18</h4><p class="" data-block="95">Install the newest PostgreSQL 18 for your system. Each installer also installs the command-line programs <code>psql</code>, <code>createdb</code>, <code>pg_dump</code>, and <code>pg_restore</code>, which this chapter uses.</p><ul class="outcomes"><li data-block="96"><strong>Windows.</strong> From the PostgreSQL download page for Windows, run the installer for version 18. Keep “PostgreSQL Server” and “Command Line Tools”; pgAdmin and Stack Builder are optional. Choose a password for the <code>postgres</code> administrator and store it in your password manager. Keep port 5432 and the default locale.</li><li data-block="97"><strong>macOS.</strong> Install Postgres.app with PostgreSQL 18 and follow its page for adding the command-line tools to your PATH, or use Homebrew: <code>brew install postgresql@18</code>, then <code>brew services start postgresql@18</code>, and put <code>$(brew --prefix postgresql@18)/bin</code> on your PATH.</li><li data-block="98"><strong>Linux (Debian, Ubuntu).</strong> Add the PostgreSQL project’s repository with <code>sudo apt install -y postgresql-common</code> and <code>sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh</code>, then run <code>sudo apt install postgresql-18</code>. The server starts by itself.</li></ul><p class="" data-block="99">The installer runs PostgreSQL as a background service that starts with the computer, so nothing needs to be started by hand.</p><div class="callout callout--error"><p class="callout__title" data-block="100">Common Error: psql is not recognized</p><p class="" data-block="101">On Windows, the installer does not add its programs to PATH. A new terminal then answers:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="102" tabindex="0"><code>psql : The term &#x27;psql&#x27; is not recognized as the name of a
+    cmdlet, function, script file, or operable program. Check
+    the spelling of the name, or if a path was included,
+    verify that the path is correct and try again.</code></pre><p class="" data-block="103">Add <code>C:\Program Files\PostgreSQL\18\bin</code> to your user’s Path in Windows’ Environment Variables settings, and open a new terminal, which reads the new Path. On macOS, open a new terminal after following Postgres.app’s or Homebrew’s PATH instructions.</p></div><p class="" data-block="104">To use the programs in the current window while you fix Path for good:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="105" tabindex="0"><code># PowerShell
+$env:Path += &#x27;;C:\Program Files\PostgreSQL\18\bin&#x27;
+psql --version</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="106" tabindex="0"><code># Git Bash
+export PATH=&quot;$PATH:/c/Program Files/PostgreSQL/18/bin&quot;
+psql --version</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="107" tabindex="0"><code>psql (PostgreSQL) 18.3</code></pre><p class="" data-block="108">Any 18 is right; your last number may be higher. The checks for this chapter ran on 18.3, and 18.7 was the newest on 22 November 2026.</p><h4 data-block="109">Step 3: A role and a database for Otahque</h4><p class="" data-block="110">Otahque gets its own role, so the administrator’s password never goes in its settings. Sign in to PostgreSQL as the administrator; how depends on your system, as Table 32.3 shows.</p><figure class="table-figure" data-block="111"><figcaption>Table 32.3 — Opening psql as the administrator</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 32.3 — Opening psql as the administrator"><table><thead><tr><th scope="col">System</th>
+<th scope="col">Command</th>
+</tr></thead><tbody><tr><th scope="row">Windows</th>
+<td data-label="Command">psql -h localhost -U postgres (the installer&#x27;s password)</td>
+</tr>
+<tr><th scope="row">macOS</th>
+<td data-label="Command">psql -h localhost -d postgres (you are the administrator)</td>
+</tr>
+<tr><th scope="row">Linux</th>
+<td data-label="Command">sudo -u postgres psql</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="112">On Windows:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="113" tabindex="0"><code>psql -h localhost -U postgres</code></pre><p class="" data-block="114">At the <code>postgres=#</code> prompt, type:</p><p class="code-label code-label--file" aria-hidden="true">psql, as the administrator</p><pre class="code-listing code-listing--file" data-block="115" tabindex="0"><code>CREATE ROLE otahque LOGIN CREATEDB;
+\password otahque
+\q</code></pre><p class="" data-block="116"><code>CREATE ROLE</code> makes a role that may sign in (<code>LOGIN</code>) and create databases (<code>CREATEDB</code>), which the test runner needs in Step 9. <code>\password</code> asks for the new password twice without showing it, and sends only its hash, so it never lands in your shell history. Choose a new password, not one you use elsewhere, and keep it for <code>.env</code>. <code>\q</code> leaves psql.</p><p class="" data-block="117">Now create the database, owned by <code>otahque</code>, with the code-point sort order. The command is split; in PowerShell the backtick continues it, with no space after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="118" tabindex="0"><code># PowerShell
+createdb -h localhost -U postgres -O otahque -T template0 `
+  --locale-provider=builtin --builtin-locale=C.UTF-8 otahque
+psql -h localhost -U otahque -d otahque -x -c &quot;\l otahque&quot;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="119" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+createdb -h localhost -U postgres -O otahque -T template0 \
+  --locale-provider=builtin --builtin-locale=C.UTF-8 otahque
+psql -h localhost -U otahque -d otahque -x -c &quot;\l otahque&quot;</code></pre><p class="" data-block="120">On macOS leave out <code>-U postgres</code> in the first command; on Linux start it with <code>sudo -u postgres</code> and leave out <code>-h localhost -U postgres</code>. Each program asks for the password of the role it signs in as. <code>-T template0</code> builds the database from PostgreSQL’s untouched template, which is required when the new database’s sort order differs from the server’s default. The second command signs in as <code>otahque</code> and lists the database:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="121" tabindex="0"><code>List of databases
+-[ RECORD 1 ]-----+---------------------------
+Name              | otahque
+Owner             | otahque
+Encoding          | UTF8
+Locale Provider   | builtin
+Collate           | English_United States.1252
+Ctype             | English_United States.1252
+Locale            | C.UTF-8
+ICU Rules         |
+Access privileges |</code></pre><p class="" data-block="122"><code>-x</code> prints one field per line. Look for <code>builtin</code> on the Locale Provider line and <code>C.UTF-8</code> on the Locale line. Collate and Ctype show the server’s own default, which a database with the builtin provider does not use for sorting. Typing the password for every command soon becomes tiring. psql and the other programs can read it from a <strong>password file</strong>: on Windows <code>%APPDATA%\postgresql\pgpass.conf</code>, elsewhere <code>~/.pgpass</code> with permissions 600, one line <code>localhost:5432:*:otahque:yourpassword</code>. It is a secret like <code>.env</code>; use it only on your own computer.</p><h4 data-block="123">Step 4: Write the data out of SQLite</h4><p class="" data-block="124">Django still reads SQLite, so this is the moment to write the data out. The command leaves out the four kinds of rows that migrations make again or that should not move, follows relations by name, and writes XML to a file one folder up, outside the project:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="125" tabindex="0"><code># PowerShell
+uv run python -X utf8 manage.py dumpdata --format xml `
+  --natural-foreign --exclude contenttypes `
+  --exclude auth.permission --exclude auth.group `
+  --exclude sessions -o ../otahque-data.xml</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="126" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+uv run python -X utf8 manage.py dumpdata --format xml \
+  --natural-foreign --exclude contenttypes \
+  --exclude auth.permission --exclude auth.group \
+  --exclude sessions -o ../otahque-data.xml</code></pre><p class="" data-block="127">The command prints nothing when it succeeds. <code>../otahque-data.xml</code> now holds your members, events, places, profiles, email addresses, two-factor settings, organizer assignments, audit rows, and the admin’s history. Group memberships travel with each member, as group names.</p><div class="callout callout--error"><p class="callout__title" data-block="128">Common Error: ’charmap’ codec can’t encode character</p><p class="" data-block="129">Without <code>-X utf8</code>, Python on Windows writes files in the computer’s old code page, which has no room for many characters. One Hindi word in an event description is enough:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="130" tabindex="0"><code>CommandError: Unable to serialize database: &#x27;charmap&#x27; codec
+    can&#x27;t encode characters in position 43-48: character maps
+    to &lt;undefined&gt;</code></pre><p class="" data-block="131">A half-written file is left behind. Delete it and run the command again with <code>-X utf8</code>, which makes Python write UTF-8. macOS and Linux already use UTF-8; the option does no harm there.</p></div><h4 data-block="132">Step 5: Add the driver</h4><p class="" data-block="133">Add psycopg at the exact version checked for this chapter:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="134" tabindex="0"><code>uv add &quot;psycopg[binary]==3.3.9&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="135" tabindex="0"><code>Resolved 25 packages in 13ms
+Installed 2 packages in 87ms
+ + psycopg==3.3.9
+ + psycopg-binary==3.3.9</code></pre><p class="" data-block="136">uv records the package in <code>pyproject.toml</code>, locks it and <code>psycopg-binary</code> in <code>uv.lock</code>, and installs both. Nothing uses them yet.</p><h4 data-block="137">Step 6: Choose the database from .env</h4><p class="" data-block="138">The settings have named one SQLite file since Chapter 6. Replace the whole Database section of <code>config/settings.py</code>, from the <code># Database</code> comment to the closing brace of <code>DATABASES</code>, with:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (replace the Database section)</p><pre class="code-listing code-listing--file" data-block="139" tabindex="0"><code># Database
+# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+# SQLite until DB_ENGINE names another backend, such as
+# PostgreSQL from Chapter 32 (docs/adr/ADR-005-postgresql.md).
+
+SQLITE = &#x27;django.db.backends.sqlite3&#x27;
+# An empty DB_ENGINE line in .env also means SQLite.
+DB_ENGINE = config(&#x27;DB_ENGINE&#x27;, default=&#x27;&#x27;) or SQLITE
+if DB_ENGINE == SQLITE:
+    DATABASES = {
+        &#x27;default&#x27;: {
+            &#x27;ENGINE&#x27;: SQLITE,
+            &#x27;NAME&#x27;: BASE_DIR / &#x27;db.sqlite3&#x27;,
+        }
+    }
+else:
+    try:
+        DATABASES = {
+            &#x27;default&#x27;: {
+                &#x27;ENGINE&#x27;: DB_ENGINE,
+                &#x27;NAME&#x27;: config(&#x27;DB_NAME&#x27;),
+                &#x27;USER&#x27;: config(&#x27;DB_USER&#x27;),
+                &#x27;PASSWORD&#x27;: config(&#x27;DB_PASSWORD&#x27;),
+                &#x27;HOST&#x27;: config(&#x27;DB_HOST&#x27;, default=&#x27;localhost&#x27;),
+                &#x27;PORT&#x27;: config(&#x27;DB_PORT&#x27;, default=&#x27;5432&#x27;),
+            }
+        }
+    except UndefinedValueError as error:
+        raise ImproperlyConfigured(
+            f&#x27;{error} See .env.example.&#x27;
+        ) from None</code></pre><p class="" data-block="140">With <code>DB_ENGINE</code> missing or empty, nothing changes: Django uses SQLite, as every earlier chapter’s checkpoint expects. With <code>DB_ENGINE</code> set, the other five values are read, and a missing one stops Django with a message naming it, as a missing secret key has since Chapter 8. Add the six names, without the password, at the end of <code>.env.example</code>:</p><p class="code-label code-label--file" aria-hidden="true">.env.example (add at the end)</p><pre class="code-listing code-listing--file" data-block="141" tabindex="0"><code># The database (Chapter 32). Leave DB_ENGINE empty for
+# SQLite; for PostgreSQL set it and the five values below.
+DB_ENGINE=
+DB_NAME=otahque
+DB_USER=otahque
+DB_PASSWORD=
+DB_HOST=localhost
+DB_PORT=5432</code></pre><p class="" data-block="142">And the real values at the end of your own <code>.env</code>, which Git ignores:</p><p class="code-label code-label--file" aria-hidden="true">.env (add at the end)</p><pre class="code-listing code-listing--file" data-block="143" tabindex="0"><code>DB_ENGINE=django.db.backends.postgresql
+DB_NAME=otahque
+DB_USER=otahque
+DB_PASSWORD=the password you chose in Step 3
+DB_HOST=localhost
+DB_PORT=5432</code></pre><p class="" data-block="144">Put the password you chose in Step 3 after <code>DB_PASSWORD=</code>. Then let <code>check_environment.py</code>, the helper from Chapter 4, also say which database is in use. Replace the file with:</p><p class="code-label code-label--file" aria-hidden="true">check_environment.py</p><pre class="code-listing code-listing--file" data-block="145" tabindex="0"><code>&quot;&quot;&quot;Show the Python, environment, Django, and database in use.&quot;&quot;&quot;
+import os
+import sys
+
+import django
+
+
+def database():
+    &quot;&quot;&quot;Return the database Django uses here, and its version.&quot;&quot;&quot;
+    os.environ.setdefault(&#x27;DJANGO_SETTINGS_MODULE&#x27;,
+                          &#x27;config.settings&#x27;)
+    django.setup()
+    from django.db import connection
+
+    with connection.cursor() as cursor:
+        if connection.vendor == &#x27;postgresql&#x27;:
+            cursor.execute(&#x27;SHOW server_version&#x27;)
+        else:
+            cursor.execute(&#x27;SELECT sqlite_version()&#x27;)
+        return f&#x27;{connection.vendor} {cursor.fetchone()[0]}&#x27;
+
+
+print(sys.version.split()[0])
+print(sys.executable)
+print(sys.prefix != sys.base_prefix)
+print(django.get_version())
+print(database())</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="146" tabindex="0"><code>uv run python check_environment.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="147" tabindex="0"><code>3.14.9
+...\.venv\Scripts\python.exe
+True
+6.1.2
+postgresql 18.3</code></pre><p class="" data-block="148">The last line is the proof that Django now talks to PostgreSQL, not to SQLite. Run this check whenever you are unsure which database a terminal is using.</p><div class="callout callout--error"><p class="callout__title" data-block="149">Common Error: password authentication failed</p><p class="" data-block="150">A wrong password in <code>.env</code>, or a role name that does not match, ends in:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="151" tabindex="0"><code>psycopg.OperationalError: connection failed: connection to
+    server at &quot;127.0.0.1&quot;, port 5432 failed: FATAL:
+    password authentication failed for user &quot;otahque&quot;</code></pre><p class="" data-block="152">Compare <code>DB_USER</code> and <code>DB_PASSWORD</code> with Step 3. To set a new password, sign in as the administrator and run <code>\password otahque</code> again. If the message says the connection was refused instead, the server is not running or listens on another port: check <code>DB_PORT</code> and the service.</p></div><h4 data-block="153">Step 7: Create the tables on PostgreSQL</h4><p class="" data-block="154">The new database is empty. <code>migrate</code> runs every migration since Chapter 18 against it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="155" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="156" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+...
+  Applying socialaccount.0004_app_provider_id_settings... OK
+  Applying socialaccount.0005_socialtoken_nullable_app... OK
+  Applying
+    socialaccount.0006_alter_socialaccount_extra_data... OK</code></pre><p class="" data-block="157">Chapter 30’s data migration ran with the others, so the Organizers and Administrators groups already exist, with their permissions. So do the content types and permissions, with new ids: these are the rows Step 4 left out.</p><h4 data-block="158">Step 8: Load the data and compare</h4><p class="" data-block="159">The comparison is a small program of its own, kept in the project so that Chapter 62 can use it again. Create <code>compare_databases.py</code> beside <code>manage.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">compare_databases.py</p><pre class="code-listing code-listing--file" data-block="160" tabindex="0"><code>&quot;&quot;&quot;Compare Otahque&#x27;s database with a copy, table by table.
+
+Run: uv run python compare_databases.py OTHER
+OTHER is a SQLite file, such as db-before-32.sqlite3, or the
+name of another PostgreSQL database on the same server.
+&quot;&quot;&quot;
+import os
+import sys
+
+import django
+from django.conf import settings
+
+# Rows that migrations make again, with new ids.
+REMADE = {&#x27;contenttypes.contenttype&#x27;, &#x27;auth.permission&#x27;,
+          &#x27;auth.group&#x27;, &#x27;auth.group_permissions&#x27;}
+# Rows left behind on purpose.
+NOT_MOVED = {&#x27;sessions.session&#x27;: &#x27;everyone signs in again&#x27;}
+
+
+def other_database(name):
+    &quot;&quot;&quot;Return settings for the database to compare with.&quot;&quot;&quot;
+    if name.endswith(&#x27;.sqlite3&#x27;):
+        return {&#x27;ENGINE&#x27;: &#x27;django.db.backends.sqlite3&#x27;,
+                &#x27;NAME&#x27;: settings.BASE_DIR / name}
+    return {**settings.DATABASES[&#x27;default&#x27;], &#x27;NAME&#x27;: name}
+
+
+def value(obj, field):
+    &quot;&quot;&quot;Return a field&#x27;s value; a related row by natural key.&quot;&quot;&quot;
+    if field.is_relation:
+        related = getattr(obj, field.name)
+        if hasattr(related, &#x27;natural_key&#x27;):
+            return related.natural_key()
+    return field.value_from_object(obj)
+
+
+def rows(model, alias, limit):
+    &quot;&quot;&quot;Return up to limit rows of a model, as tuples.&quot;&quot;&quot;
+    remade = (model._meta.label_lower in REMADE
+              or model._meta.auto_created)
+    fields = [f for f in model._meta.concrete_fields
+              if not (remade and f.primary_key)]
+    found = [tuple(value(obj, f) for f in fields)
+             for obj in model._default_manager.using(alias)
+             .order_by(&#x27;pk&#x27;)[:limit]]
+    return sorted(found, key=repr) if remade else found
+
+
+def main():
+    &quot;&quot;&quot;Print one line per table; return how many differ.&quot;&quot;&quot;
+    from django.apps import apps
+    from django.db import connections
+
+    here = connections[&#x27;default&#x27;]
+    print(f&#x27;here:  {here.vendor} {here.settings_dict[&quot;NAME&quot;]}&#x27;)
+    print(f&#x27;other: {sys.argv[1]}&#x27;)
+    differ = 0
+    for model in apps.get_models(include_auto_created=True):
+        label = model._meta.label_lower
+        table = model._meta.db_table
+        if label in NOT_MOVED:
+            print(f&#x27;skip  {table}: {NOT_MOVED[label]}&#x27;)
+            continue
+        a = model._default_manager.using(&#x27;default&#x27;).count()
+        b = model._default_manager.using(&#x27;other&#x27;).count()
+        # Ten rows each, or every row that migrations remake.
+        limit = 10 if label not in REMADE else None
+        same = a == b and (rows(model, &#x27;default&#x27;, limit)
+                           == rows(model, &#x27;other&#x27;, limit))
+        differ += not same
+        mark = &#x27;ok  &#x27; if same else &#x27;DIFF&#x27;
+        print(f&#x27;{mark}  {table}: {a} / {b}&#x27;)
+    print(&#x27;every table matches&#x27; if not differ
+          else f&#x27;{differ} table(s) differ&#x27;)
+    return differ
+
+
+if __name__ == &#x27;__main__&#x27;:
+    os.environ.setdefault(&#x27;DJANGO_SETTINGS_MODULE&#x27;,
+                          &#x27;config.settings&#x27;)
+    # Add the second database before Django reads the list.
+    settings.DATABASES[&#x27;other&#x27;] = other_database(sys.argv[1])
+    django.setup()
+    sys.exit(1 if main() else 0)</code></pre><p class="" data-block="161">For every model, including the hidden tables behind many-to-many fields, the script counts the rows in both databases and compares the first ten, field by field. Rows that migrations made again have different ids on each side, so it compares those by natural key instead, and every one of them, so a group that lost a permission would show. Sessions are skipped on purpose. Now load and compare:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="162" tabindex="0"><code>uv run python manage.py loaddata ../otahque-data.xml
+uv run python compare_databases.py db-before-32.sqlite3</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="163" tabindex="0"><code>Installed 28 object(s) from 1 fixture(s)
+here:  postgresql otahque
+other: db-before-32.sqlite3
+ok    django_admin_log: 1 / 1
+ok    auth_permission: 66 / 66
+ok    auth_group_permissions: 14 / 14
+ok    auth_group: 2 / 2
+ok    django_content_type: 17 / 17
+skip  django_session: everyone signs in again
+ok    accounts_user_groups: 0 / 0
+ok    accounts_user_user_permissions: 0 / 0
+ok    accounts_user: 4 / 4
+ok    accounts_profile: 1 / 1
+ok    events_event: 7 / 7
+ok    events_organizerassignment: 2 / 2
+ok    registrations_registration: 6 / 6
+ok    audit_auditevent: 1 / 1
+ok    account_emailaddress: 4 / 4
+ok    account_emailconfirmation: 0 / 0
+ok    socialaccount_socialapp: 0 / 0
+ok    socialaccount_socialaccount: 0 / 0
+ok    socialaccount_socialtoken: 0 / 0
+ok    mfa_authenticator: 2 / 2
+every table matches</code></pre><p class="" data-block="164">Every table matches. Start the development server and sign in as Sam: Otahque asks for his two-factor code, because his authenticator moved with him. Everyone else is signed out once, since sessions stayed behind. Create a draft event as Sam: its address uses the next number after the highest event id, because <code>loaddata</code> reset the sequence. Delete the draft from its page afterwards. Then delete the move file, which has done its job:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="165" tabindex="0"><code># PowerShell
+Remove-Item ../otahque-data.xml</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="166" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+rm ../otahque-data.xml</code></pre><p class="" data-block="167">Keep <code>db-before-32.sqlite3</code> until you have used the new database for a while; it is ignored by Git and changes nothing.</p><h4 data-block="168">Step 9: Run the tests on PostgreSQL</h4><p class="" data-block="169">Running the tests now creates a test database on the server, <code>test_otahque</code>, and removes it afterwards. Before the whole suite, one new test: text must sort by code point, as it did on SQLite. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="170" tabindex="0"><code>class SortOrderTests(TestCase):
+    &quot;&quot;&quot;Text sorts the same way on every database and computer.&quot;&quot;&quot;
+
+    def test_titles_sort_by_code_point(self):
+        for title in (&#x27;apple day&#x27;, &#x27;Zebra talk&#x27;, &#x27;Émile meets&#x27;):
+            save_event(title=title)
+        titles = Event.objects.order_by(&#x27;title&#x27;).values_list(
+            &#x27;title&#x27;, flat=True
+        )
+        self.assertEqual(
+            list(titles),
+            [&#x27;Zebra talk&#x27;, &#x27;apple day&#x27;, &#x27;Émile meets&#x27;],
+        )</code></pre><p class="" data-block="171">Within a step, run only the tests you are working on:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="172" tabindex="0"><code>uv run python manage.py test events -k SortOrder</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="173" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...s
+
+FAILED (failures=1)</code></pre><p class="" data-block="174">It fails, although the <code>otahque</code> database sorts by code point. The test database is not a copy of it: Django asks PostgreSQL for a new database, and PostgreSQL copies its standard template, which has the server’s default sort order. The fix is a template of Otahque’s own, empty and with the right sort order:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="175" tabindex="0"><code># PowerShell
+createdb -h localhost -U otahque -T template0 `
+  --locale-provider=builtin --builtin-locale=C.UTF-8 `
+  otahque_template</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="176" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+createdb -h localhost -U otahque -T template0 \
+  --locale-provider=builtin --builtin-locale=C.UTF-8 \
+  otahque_template</code></pre><p class="" data-block="177">Then tell Django to build the test database from it. In <code>config/settings.py</code>, below the <code>&#x27;PORT&#x27;</code> line, add the <code>TEST</code> entry:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (in DATABASES, after &#x27;PORT&#x27;)</p><pre class="code-listing code-listing--file" data-block="178" tabindex="0"><code>                &#x27;PORT&#x27;: config(&#x27;DB_PORT&#x27;, default=&#x27;5432&#x27;),
+                # Tests copy this empty database, so they sort
+                # text as Otahque&#x27;s own database does.
+                &#x27;TEST&#x27;: {&#x27;TEMPLATE&#x27;: &#x27;otahque_template&#x27;},</code></pre><p class="" data-block="179"><code>TEST[&#x27;TEMPLATE&#x27;]</code> is a PostgreSQL setting: the template the test database is copied from. Leave <code>otahque_template</code> empty, and do not keep a psql session open in it, because PostgreSQL will not copy a database while someone is connected.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="180" tabindex="0"><code>uv run python manage.py test events -k SortOrder</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="181" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 1 test in ...s
+
+OK</code></pre><div class="callout callout--error"><p class="callout__title" data-block="182">Common Error: permission denied to create database</p><p class="" data-block="183">If the role was created without <code>CREATEDB</code>, every test run stops before the first test:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="184" tabindex="0"><code>Got an error creating the test database: permission denied to
+    create database</code></pre><p class="" data-block="185">Sign in as the administrator and run <code>ALTER ROLE otahque CREATEDB;</code>. The role needs this right only to make and remove test databases; Chapter 63 gives the production role far less.</p></div><p class="" data-block="186">Now the whole suite, as at every checkpoint:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="187" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="188" tabindex="0"><code>Found 343 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 343 tests in ...s
+
+OK</code></pre><p class="" data-block="189">All 343 tests pass on PostgreSQL, 342 of them unchanged since Chapter 31. On a server database the suite takes about twice as long as on SQLite when run in one process, because every test talks to the server over a connection; <code>--parallel</code> more than wins that back. Confirm that no model change is waiting for a migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="190" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="191" tabindex="0"><code>No changes detected</code></pre><h4 data-block="192">Step 10: A backup, restored and compared</h4><p class="" data-block="193">Make a backup of the live database in PostgreSQL’s own format, restore it into a new database built from the empty template, and compare the two with the same script. Figure 32.3 shows what each part proves.</p><figure data-block="194"><a href="/assets/chapter32/figure-32-3-restore.png" aria-label="Open Figure 32.3 at full size"><img src="/assets/chapter32/figure-32-3-restore.png" alt="Four numbered cards in a row, joined by arrows: 1, green, otahque, the live database; 2, orange, otahque.dump, pg_dump -F c; 3, green, otahque_restore, pg_restore into a new copy; 4, green, Compared, every table matches. Below, a grey card: only the restored copy and its comparison show that the backup can be used; then the copy is dropped and the file deleted, because it holds every member’s details; Chapter 65 schedules backups, and Chapter 62 repeats this with a container." width="1500" height="560" loading="lazy"></a><figcaption data-block="195">Figure 32.3 — A backup proves nothing until a restore has been compared.</figcaption></figure><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="196" tabindex="0"><code># PowerShell
+pg_dump -h localhost -U otahque -F c -f ../otahque.dump otahque
+createdb -h localhost -U otahque -T otahque_template `
+  otahque_restore
+pg_restore -h localhost -U otahque -d otahque_restore `
+  --no-owner ../otahque.dump
+uv run python compare_databases.py otahque_restore</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="197" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+pg_dump -h localhost -U otahque -F c -f ../otahque.dump otahque
+createdb -h localhost -U otahque -T otahque_template \
+  otahque_restore
+pg_restore -h localhost -U otahque -d otahque_restore \
+  --no-owner ../otahque.dump
+uv run python compare_databases.py otahque_restore</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="198" tabindex="0"><code>here:  postgresql otahque
+other: otahque_restore
+ok    django_admin_log: 1 / 1
+...
+ok    mfa_authenticator: 2 / 2
+every table matches</code></pre><p class="" data-block="199"><code>-F c</code> writes PostgreSQL’s compressed custom format, which <code>pg_restore</code> reads. <code>--no-owner</code> makes the signed-in role own the restored tables. The restore matches. Now remove the copy and the file, never the live database:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="200" tabindex="0"><code># PowerShell
+dropdb -h localhost -U otahque otahque_restore
+Remove-Item ../otahque.dump</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="201" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+dropdb -h localhost -U otahque otahque_restore
+rm ../otahque.dump</code></pre><p class="" data-block="202">Read the <code>dropdb</code> line twice before pressing Enter: it names <code>otahque_restore</code>.</p><h4 data-block="203">Step 11: Wider pages and forms</h4><p class="" data-block="204">Since Chapter 14 every page has been held to a column 672 pixels wide, so on a laptop most of the screen stays empty, and the event form is a long single column of thirteen fields with a button stretched across it. This chapter’s change to the interface is shared by every page: a wider column, forms in two columns on wider screens, buttons at their natural width, and a side panel on the account pages, where Cancel no longer looks like the main button.</p><p class="" data-block="205">In <code>templates/base.html</code>, replace the <code>&lt;main&gt;</code> line with:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html (the main element)</p><pre class="code-listing code-listing--file" data-block="206" tabindex="0"><code>  &lt;main class=&quot;mx-auto w-full max-w-6xl space-y-4 px-4 pt-6
+               pb-12 sm:px-6 lg:px-8&quot;&gt;</code></pre><p class="" data-block="207">The column grows with the window up to 1152 pixels, and the side margins grow on larger screens. In the same file, wrap the content block in a block named <code>page</code>, so that a layout can put something beside the content:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html (replace the content block)</p><pre class="code-listing code-listing--file" data-block="208" tabindex="0"><code>    {% block page %}
+      {% block content %}{% endblock %}
+    {% endblock %}</code></pre><p class="" data-block="209">Two shared rules go in <code>static/otahque/source.css</code>, in the components layer after the <code>.site-nav :focus-visible</code> rule:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (in @layer components, at the end)</p><pre class="code-listing code-listing--file" data-block="210" tabindex="0"><code>  /* A form&#x27;s fields in two columns on wider screens; long
+     text, check boxes, and the form&#x27;s errors take a row. */
+  .form-grid {
+    display: grid;
+    gap: 0.25rem 1.5rem;
+  }
+
+  @media (width &gt;= 48rem) {
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid &gt; :has(textarea, .checkbox),
+    .form-grid &gt; .errorlist {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* A form&#x27;s buttons side by side, at their natural width. */
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }</code></pre><p class="" data-block="211"><code>:has()</code> picks the field wrappers that hold a text area or a check box, so the description and “Ask for a phone number” take a whole row while short fields pair up. Help text under labels was pale; make it darker, in the utilities layer before the <code>.errorlist</code> rule:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (in @layer utilities, before .errorlist)</p><pre class="code-listing code-listing--file" data-block="212" tabindex="0"><code>  .fieldset .label {
+    color: color-mix(in oklab, var(--color-base-content)
+                     78%, transparent);
+  }</code></pre><p class="" data-block="213">In <code>events/templates/events/form.html</code>, replace the lines from <code>{% csrf_token %}</code> to the button with:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/form.html (inside the form)</p><pre class="code-listing code-listing--file" data-block="214" tabindex="0"><code>    {% csrf_token %}
+    &lt;div class=&quot;form-grid&quot;&gt;{{ form }}&lt;/div&gt;
+    &lt;div class=&quot;form-actions&quot;&gt;
+      &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+        Save draft&lt;/button&gt;
+    &lt;/div&gt;</code></pre><p class="" data-block="215">Make the same change in <code>events/templates/events/edit.html</code> and <code>accounts/templates/accounts/profile.html</code>, keeping each button’s own words, “Save changes” and “Save profile”. The account pages from django-allauth get the side panel. Replace <code>templates/allauth/layouts/base.html</code> with:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/layouts/base.html</p><pre class="code-listing code-listing--file" data-block="216" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}{% block head_title %}{% endblock %} |
+  Otahque{% endblock %}
+
+{% block page %}
+  &lt;div class=&quot;grid items-start gap-6
+              lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]&quot;&gt;
+    &lt;div class=&quot;space-y-4&quot;&gt;
+      {% block content %}{% endblock %}
+    &lt;/div&gt;
+    &lt;aside class=&quot;card space-y-2 border border-base-300
+                  bg-base-100 p-6 text-sm&quot;
+           aria-labelledby=&quot;account-help&quot;&gt;
+      &lt;h2 id=&quot;account-help&quot; class=&quot;font-semibold&quot;&gt;
+        Your Otahque account&lt;/h2&gt;
+      &lt;p&gt;One account for every event: register, see your
+         places under My registrations, and, if you
+         organize, manage your events.&lt;/p&gt;
+      &lt;p&gt;Two-factor sign-in asks for a code from an app on
+         your phone after your password. Turn it on from
+         your profile.&lt;/p&gt;
+    &lt;/aside&gt;
+  &lt;/div&gt;
+{% endblock %}</code></pre><p class="" data-block="217">In <code>templates/allauth/elements/form.html</code>, put the actions slot in a row:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/form.html (the actions slot)</p><pre class="code-listing code-listing--file" data-block="218" tabindex="0"><code>  &lt;div class=&quot;form-actions&quot;&gt;
+    {% slot actions %}{% endslot %}
+  &lt;/div&gt;</code></pre><p class="" data-block="219">And in <code>templates/allauth/elements/button.html</code>, give the secondary buttons that allauth marks <code>link</code> or <code>outline</code>, such as Cancel, an outline. Replace the first line of the <code>&lt;button&gt;</code> tag with:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/button.html (the button tag)</p><pre class="code-listing code-listing--file" data-block="220" tabindex="0"><code>&lt;button class=&quot;btn btn-primary
+  {% if &#x27;link&#x27; in attrs.tags or &#x27;outline&#x27; in attrs.tags %}
+    btn-outline{% endif %}&quot;</code></pre><p class="" data-block="221">Rebuild the stylesheet and run the tests of the two apps whose templates changed:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="222" tabindex="0"><code>npm run build
+uv run python manage.py test events accounts --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="223" tabindex="0"><code>Found 270 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 270 tests in ...s
+
+OK</code></pre><p class="" data-block="224">Open the New event page at full width and with the browser’s device toolbar at 390 pixels. At full width the fields pair up in two columns, the description spans both, and Save draft sits at the left at its own width. At 390 pixels everything is one column and the page does not scroll sideways. On the two-factor page, Cancel is an outline beside the filled Sign In button, and the account panel sits beside the form, or below it on a phone.</p><h4 data-block="225">Step 12: Record the decision and commit</h4><p class="" data-block="226">The move is an architecture decision with alternatives and consequences, so it gets an ADR, the fifth. Create <code>docs/adr/ADR-005-postgresql.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/adr/ADR-005-postgresql.md</p><pre class="code-listing code-listing--file" data-block="227" tabindex="0"><code># ADR-005: PostgreSQL as Otahque&#x27;s database
+
+## Status
+
+Proposed, November 2026 (Chapter 32). The choices follow
+the user&#x27;s decisions of 22 November 2026 (Chapter 32
+D32.1-D32.7); this record is not yet reviewed or accepted.
+
+## Context
+
+Since Chapter 18 Otahque has stored its data in SQLite, a
+single file that one process writes at a time. Chapter 33
+must prove that two members cannot both take the last
+place, which needs a database that runs separate
+connections at once and locks rows (select_for_update).
+SQLite does neither. Readers&#x27; practice data, including
+members&#x27; two-factor rows, must survive the move.
+
+## Options
+
+- A: PostgreSQL 18, installed natively on each computer,
+  reached through psycopg 3.
+- B: PostgreSQL in Docker now (Docker arrives in
+  Chapter 62).
+- C: a hosted PostgreSQL service on a free tier.
+- D: stay on SQLite and simulate the race.
+
+## Decision
+
+A. PostgreSQL 18 (18.7 was the newest patch on 22 November
+2026; 19.0 was three days old), installed natively, with
+psycopg[binary] 3.3.9. Settings read DB_ENGINE, DB_NAME,
+DB_USER, DB_PASSWORD, DB_HOST, and DB_PORT through
+python-decouple; with DB_ENGINE empty Django uses SQLite,
+so earlier checkpoints still run. The database and an
+empty template for tests use the builtin C.UTF-8
+collation, so text sorts by code point on every computer,
+as it did on SQLite. Data moved once, with dumpdata in XML
+(JSON keeps times only to the millisecond) and natural
+foreign keys, leaving out rows that migrations make again
+and sessions, then checked by compare_databases.py.
+
+## Consequences
+
+- Each reader installs and runs a database server, with
+  a role and password kept in .env, never in Git.
+- Tests create test_otahque from otahque_template; the
+  role needs CREATEDB. The whole suite runs with
+  --parallel at checkpoints, one app within steps.
+- contains lookups become case-sensitive; Chapter 56&#x27;s
+  search uses icontains or full-text search.
+- The dump and backup files hold password hashes, phone
+  numbers, and two-factor secrets: kept outside the
+  project and deleted after use.
+- Chapter 33 can lock rows; Chapter 62 moves the server
+  into a container; Chapter 66 adds connection pooling.
+
+## Revisit
+
+At the Django 6.2 upgrade or in Chapter 62, whichever
+comes first: PostgreSQL 19, once hosts and the official
+image offer it. If many readers cannot install a server,
+reconsider B.</code></pre><p class="" data-block="228">Chapter 29’s design note warns that any copy of the database gives away every member’s two-factor codes. This chapter made two such copies, so the note says so. In <code>docs/design/passwords-and-two-factor.md</code>, under “Known risks”, the first item now reads:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/passwords-and-two-factor.md (in Known risks)</p><pre class="code-listing code-listing--file" data-block="229" tabindex="0"><code>  a backup, or an export gives every member&#x27;s codes.
+  Chapter 32&#x27;s move file and backup are such copies:
+  they stay outside the project and are deleted after
+  use. Exports leave the table out (Chapter 41); Chapter</code></pre><p class="" data-block="230">In <code>docs/design/erd.md</code>, after the “Sources:” line, add:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (after Sources)</p><pre class="code-listing code-listing--file" data-block="231" tabindex="0"><code>Database: PostgreSQL 18 from Chapter 32 (ADR-005); SQLite
+before it. Text sorts by code point (C.UTF-8).</code></pre><p class="" data-block="232">Check and commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="233" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run
+git add .
+git status --short
+git commit -m &quot;Move to PostgreSQL&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="234" tabindex="0"><code>No changes detected
+M  .env.example
+M  .gitignore
+M  accounts/templates/accounts/profile.html
+M  check_environment.py
+A  compare_databases.py
+M  config/settings.py
+A  docs/adr/ADR-005-postgresql.md
+M  docs/design/erd.md
+M  docs/design/passwords-and-two-factor.md
+M  events/templates/events/edit.html
+M  events/templates/events/form.html
+M  events/tests.py
+M  pyproject.toml
+M  static/otahque/site.css
+M  static/otahque/source.css
+M  templates/allauth/elements/button.html
+M  templates/allauth/elements/form.html
+M  templates/allauth/layouts/base.html
+M  templates/base.html
+M  uv.lock
+[master 8c4db1c] Move to PostgreSQL
+ 20 files changed, 437 insertions(+), 47 deletions(-)
+ create mode 100644 compare_databases.py
+ create mode 100644 docs/adr/ADR-005-postgresql.md</code></pre><p class="" data-block="235">The commit holds no database file and no dump: <code>.env</code>, <code>db.sqlite3</code>, and <code>db-before-32.sqlite3</code> are ignored, and the dumps were written outside the project and deleted.</p><h3 class="" id="topic-236" data-block="236">When something goes wrong</h3><p class="" data-block="237">Every recovery in Table 32.4 keeps <code>db-before-32.sqlite3</code> and your committed work. None of them drops the <code>otahque</code> database once Step 8 has loaded it.</p><figure class="table-figure" data-block="238"><figcaption>Table 32.4 — Diagnosing the move</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 32.4 — Diagnosing the move"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">psql is not recognized</th>
+<td data-label="Likely cause">Programs not on PATH</td>
+<td data-label="Recovery">Add the bin folder to Path; open a new terminal</td>
+</tr>
+<tr><th scope="row">Connection refused</th>
+<td data-label="Likely cause">Server stopped, or another port</td>
+<td data-label="Recovery">Start the PostgreSQL service; check DB_PORT</td>
+</tr>
+<tr><th scope="row">Password authentication failed</th>
+<td data-label="Likely cause">Wrong .env value</td>
+<td data-label="Recovery">\password otahque as administrator; update .env</td>
+</tr>
+<tr><th scope="row">&#x27;charmap&#x27; codec in Step 4</th>
+<td data-label="Likely cause">No -X utf8</td>
+<td data-label="Recovery">Delete the partial file; dump again with -X utf8</td>
+</tr>
+<tr><th scope="row">Duplicate key on content types</th>
+<td data-label="Likely cause">Dumped without the exclusions</td>
+<td data-label="Recovery">Drop and recreate otahque (Step 3), migrate, load the right dump</td>
+</tr>
+<tr><th scope="row">Comparison shows DIFF</th>
+<td data-label="Likely cause">Wrong options, or rows changed since the dump</td>
+<td data-label="Recovery">Read which tables; dump and load again into a fresh otahque</td>
+</tr>
+<tr><th scope="row">Tests: permission denied</th>
+<td data-label="Likely cause">Role lacks CREATEDB</td>
+<td data-label="Recovery">ALTER ROLE otahque CREATEDB;</td>
+</tr>
+<tr><th scope="row">Tests: template does not exist</th>
+<td data-label="Likely cause">Step 9&#x27;s template missing</td>
+<td data-label="Recovery">Create otahque_template with createdb</td>
+</tr>
+<tr><th scope="row">Tests: template is being accessed</th>
+<td data-label="Likely cause">A psql session open in it</td>
+<td data-label="Recovery">Close that session, run again</td>
+</tr>
+<tr><th scope="row">Sort test fails</th>
+<td data-label="Likely cause">Template made without C.UTF-8</td>
+<td data-label="Recovery">Drop otahque_template, create it as in Step 9</td>
+</tr>
+<tr><th scope="row">Back on SQLite by mistake</th>
+<td data-label="Likely cause">DB_ENGINE empty in .env</td>
+<td data-label="Recovery">Check with check_environment.py; fix .env</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="239">Two rows mention dropping and recreating <code>otahque</code>. That is safe only before you have used the new database for real work, because until then the copy in <code>db-before-32.sqlite3</code> holds everything. After that, a damaged <code>otahque</code> is restored from a backup like Step 10’s.</p><h3 class="" id="topic-240" data-block="240">Optional lab: a table Otahque does not own</h3><p class="" data-block="241">Many Django projects must read tables that another system creates and owns: a city’s venue list, a membership database, an old application. Django’s <code>inspectdb</code> command reads such a table and writes a model for it, and <code>managed = False</code> tells migrations to leave the table alone. This lab makes a small venue table owned by another role, lets Otahque read it, and shows that a write is refused by the database itself. It changes no file in the project.</p><p class="" data-block="242">As the administrator, connected to the <code>otahque</code> database (<code>psql -h localhost -U postgres -d otahque</code> on Windows), run:</p><p class="code-label code-label--file" aria-hidden="true">psql, as the administrator, in otahque</p><pre class="code-listing code-listing--file" data-block="243" tabindex="0"><code>CREATE ROLE venues_owner;
+CREATE TABLE legacy_venue (
+  venue_id integer PRIMARY KEY,
+  name text NOT NULL,
+  city varchar(80),
+  seats smallint
+);
+ALTER TABLE legacy_venue OWNER TO venues_owner;
+INSERT INTO legacy_venue VALUES
+  (1, &#x27;Central Library hall&#x27;, &#x27;Leeds&#x27;, 120),
+  (2, &#x27;Riverside studio&#x27;, &#x27;Pune&#x27;, 40),
+  (3, &#x27;Online&#x27;, NULL, NULL);
+GRANT SELECT ON legacy_venue TO otahque;</code></pre><p class="" data-block="244">The table belongs to <code>venues_owner</code>; <code>otahque</code> may only read it. Ask Django what it sees:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="245" tabindex="0"><code>uv run python manage.py inspectdb legacy_venue</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="246" tabindex="0"><code>from django.db import models
+
+
+class LegacyVenue(models.Model):
+    venue_id = models.IntegerField(primary_key=True)
+    name = models.TextField()
+    city = models.CharField(max_length=80, blank=True,
+                                null=True)
+    seats = models.SmallIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = &#x27;legacy_venue&#x27;</code></pre><p class="" data-block="247">Read the generated model as a draft: the field types follow the table, <code>venue_id</code> is the primary key, <code>managed = False</code> and <code>db_table</code> keep the table’s own name, and the lines of advice that <code>inspectdb</code> prints first (left out above) list what to check. Save this practice file as <code>lab_venues.py</code>, which uses the model as <code>inspectdb</code> wrote it, run it like the other practice files, and delete it:</p><p class="code-label code-label--file" aria-hidden="true">lab_venues.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="248" tabindex="0"><code>&quot;&quot;&quot;Read a table Otahque does not own, then try to change it.&quot;&quot;&quot;
+from django.db import DatabaseError, models, transaction
+
+
+class LegacyVenue(models.Model):
+    &quot;&quot;&quot;A venue from the city&#x27;s system, read through Django.&quot;&quot;&quot;
+
+    venue_id = models.IntegerField(primary_key=True)
+    name = models.TextField()
+    city = models.CharField(max_length=80, blank=True,
+                            null=True)
+    seats = models.SmallIntegerField(blank=True, null=True)
+
+    class Meta:
+        app_label = &#x27;events&#x27;
+        managed = False
+        db_table = &#x27;legacy_venue&#x27;
+
+
+for venue in LegacyVenue.objects.order_by(&#x27;name&#x27;):
+    print(venue.venue_id, venue.name, venue.city, venue.seats)
+try:
+    with transaction.atomic():
+        LegacyVenue.objects.create(venue_id=9, name=&#x27;New hall&#x27;)
+except DatabaseError as error:
+    print(&#x27;write refused:&#x27;, str(error).splitlines()[0])</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="249" tabindex="0"><code>1 Central Library hall Leeds 120
+3 Online None None
+2 Riverside studio Pune 40
+write refused: permission denied for table legacy_venue</code></pre><p class="" data-block="250">The rows read, and the write is refused by PostgreSQL, not by Django: the permission belongs to the table’s owner. <code>makemigrations --check --dry-run</code> still prints <code>No changes detected</code>, because the model never entered <code>models.py</code>. Remove the lab as the administrator:</p><p class="code-label code-label--file" aria-hidden="true">psql, as the administrator, in otahque</p><pre class="code-listing code-listing--file" data-block="251" tabindex="0"><code>DROP TABLE legacy_venue;
+DROP ROLE venues_owner;</code></pre><p class="" data-block="252">Using several databases at once, with a router choosing between them, is a different topic; Chapter 67 takes it up.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2032%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter32/section-32-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter32/section-32-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter32/section-32-2/">← What You Need to Know</a><a href="/chapters/chapter32/section-32-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

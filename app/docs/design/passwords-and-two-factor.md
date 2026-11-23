@@ -63,7 +63,9 @@ Status: Drafted in Chapter 29, for review. Not approved.
   recovery codes are made from, are stored as plain
   text in mfa_authenticator. A copy of the database,
   a backup, or an export gives every member's codes.
-  Exports leave the table out (Chapter 41); Chapter
+  Chapter 32's move file and backup are such copies:
+  they stay outside the project and are deleted after
+  use. Exports leave the table out (Chapter 41); Chapter
   59 encrypts it before any deployment (Chapter 63).
 - Used codes and rate limits live in the local-memory
   cache, one per process. Before more than one

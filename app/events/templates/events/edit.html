@@ -13,9 +13,13 @@
   <form method="post" class="card space-y-4 border
         border-base-300 bg-base-100 p-6">
     {% csrf_token %}
-    {{ form }}
-    <button type="submit" class="btn btn-primary">
-      Save changes</button>
+    <input type="hidden" name="version"
+           value="{{ form.instance.version }}">
+    <div class="form-grid">{{ form }}</div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        Save changes</button>
+    </div>
   </form>
   <p>
     <a href="{% url 'events:detail' event_id %}">

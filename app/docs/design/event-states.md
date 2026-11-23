@@ -53,11 +53,23 @@ group since Chapter 30; see permissions.md.
   Event.objects.organized_by(user): current assignments
   only, drafts first.
 
+## Two organizers at once (Chapter 33)
+
+- Event.version starts at 1 and grows by one on each
+  save of the edit page or the admin's event form.
+- The edit page sends the version it was opened at.
+  The save locks the row and compares: a different
+  version is refused, nothing is saved, and the form
+  shows the event as it is now.
+- Publishing and cancelling do not change the version:
+  the edit form has no status field, so they cannot be
+  undone by an edit.
+
 ## Open
 
 - Done (Chapter 30): each move, and each refused attempt,
   is an AuditEvent.
 - Telling members of a cancellation: Chapters 43-44.
-- A version check for two organizers acting at once:
-  Chapter 33.
+- Done (Chapter 33): a version check for two
+  organizers acting at once.
 - The cover image joins what a copy carries: Chapter 42.

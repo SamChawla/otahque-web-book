@@ -7,11 +7,17 @@
     <p><a href="{% url 'registrations:cancel' place.pk %}">
       Cancel my place</a></p>
   {% elif reasons %}
-    <ul class="list-disc pl-5">
-      {% for reason in reasons %}
-        <li>{{ reason }}</li>
-      {% endfor %}
-    </ul>
+    <div class="alert alert-warning items-start"
+         role="status">
+      <div>
+        <p class="font-semibold">You cannot register now</p>
+        <ul class="list-disc pl-5">
+          {% for reason in reasons %}
+            <li>{{ reason }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
     {% if unverified %}
       <p><a href="{% url 'account_email' %}">Confirm your
         email address</a>, then come back.</p>

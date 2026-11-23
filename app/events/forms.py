@@ -256,3 +256,10 @@ class RemoveOrganizerForm(forms.Form):
             revoked_at__isnull=True
         )
         self.fields['assignment'].queryset = current
+
+
+class VersionForm(forms.Form):
+    """The event version the edit page was opened at."""
+
+    version = forms.IntegerField(min_value=1,
+                                 widget=forms.HiddenInput)

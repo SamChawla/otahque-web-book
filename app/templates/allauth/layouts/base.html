@@ -2,3 +2,24 @@
 
 {% block title %}{% block head_title %}{% endblock %} |
   Otahque{% endblock %}
+
+{% block page %}
+  <div class="grid items-start gap-6
+              lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
+    <div class="space-y-4">
+      {% block content %}{% endblock %}
+    </div>
+    <aside class="card space-y-2 border border-base-300
+                  bg-base-100 p-6 text-sm"
+           aria-labelledby="account-help">
+      <h2 id="account-help" class="font-semibold">
+        Your Otahque account</h2>
+      <p>One account for every event: register, see your
+         places under My registrations, and, if you
+         organize, manage your events.</p>
+      <p>Two-factor sign-in asks for a code from an app on
+         your phone after your password. Turn it on from
+         your profile.</p>
+    </aside>
+  </div>
+{% endblock %}

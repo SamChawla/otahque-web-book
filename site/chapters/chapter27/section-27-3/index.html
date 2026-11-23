@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 27: Authentication and account workflows: members sign up and sign in. Give members their own accounts with django-allauth...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter27/section-27-3/">
+<title>How We Build It · Chapter 27 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter27/">← Chapter 27 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-27-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-60">The Custom Way</a></li><li><a href="#topic-64">The Django Way</a></li></ul></li><li><a href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 8 figures · 4 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter27:27.3" data-progress-title="Section 27.3" data-reader-prev="section-27-2.html" data-reader-next="section-27-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 27.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter27/">Chapter 27 · Authentication and account workflows: members sign up and sign in</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter27/section-27-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter27/section-27-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter27/section-27-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter27/section-27-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter27/section-27-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-27-3" data-block="58">How We Build It</h2><p class="" data-block="59">Start from Chapter 26, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 165 passing tests, every migration applied, the Node.js packages from Chapter 14, and Sam’s superuser password from Chapter 18. Step 3 downloads packages, so you need an internet connection once. The new files are <code>accounts/forms.py</code>, <code>accounts/adapter.py</code>, <code>accounts/urls.py</code>, <code>accounts/templates/accounts/profile.html</code>, <code>accounts/migrations/0003_profile.py</code>, four templates under <code>templates/allauth/</code>, <code>docs/adr/ADR-003-accounts-allauth.md</code>, and <code>docs/design/sign-in.md</code>. The commands are written the same for Windows PowerShell, Git Bash, macOS, Linux, and WSL; the chapter’s checks ran in the first two. Each step with new behaviour writes its tests first and runs them to see them fail.</p><h3 class="" id="topic-60" data-block="60">The Custom Way</h3><p class="" data-block="61">Django has its own sign-in and sign-out views, and a sign-in page takes three lines of URL configuration. This illustration is not part of the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/urls.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="62" tabindex="0"><code>from django.contrib.auth import views as auth_views
+from django.urls import path
+
+urlpatterns = [
+    path(&#x27;login/&#x27;, auth_views.LoginView.as_view(),
+         name=&#x27;login&#x27;),
+    path(&#x27;logout/&#x27;, auth_views.LogoutView.as_view(),
+         name=&#x27;logout&#x27;),
+]</code></pre><p class="" data-block="63">That much works, and R3’s Django for Beginners builds its sign-up the same way, with a form based on Django’s <code>UserCreationForm</code>. Then the list grows: a sign-up form for the custom user, a confirmation email and its link, limits on failed sign-ins, email addresses a member can change, providers, and later two-factor sign-in. Each is a new view, form, template, and set of tests, and each is a new chance to get a security detail wrong. The Django Way for this chapter is a maintained package that already does them, configured for Otahque’s rules.</p><h3 class="" id="topic-64" data-block="64">The Django Way</h3><h4 data-block="65">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="66" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="67" tabindex="0"><code>Found 165 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 165 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="68" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="69" tabindex="0"><code>... Publish, cancel, delete, and copy events</code></pre><h4 data-block="70">Step 2: The journey on paper</h4><p class="" data-block="71">Before any code, follow Figure 27.1 with the four people. Sai signs up with her email and a password, gives the name Sai and her time zone, and lands on her profile. Raj tries a Mailinator address and is refused. Soni signs in with Google, and the sign-up form still asks for her name. Sam already has an account with a password, and his GitHub account uses the same address: Otahque asks him to sign in first, and then he connects GitHub from his profile. Each sentence becomes a test in the steps below.</p><h4 data-block="72">Step 3: Add django-allauth</h4><p class="" data-block="73">Add the two packages, pinned to exact versions. The <code>[socialaccount]</code> part asks for allauth’s optional pieces for providers, which bring a few more packages, such as <code>requests</code> and <code>cryptography</code>:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="74" tabindex="0"><code>uv add &quot;django-allauth[socialaccount]==65.22.1&quot;
+uv add &quot;disposable-email-domains==0.0.295&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="75" tabindex="0"><code>Resolved 17 packages in ...
+Installed 11 packages in ...
+ + certifi==2026.10.23
+ + cffi==2.1.1
+ + charset-normalizer==3.5.2
+ + cryptography==50.0.2
+ + django-allauth==65.22.1
+ + idna==3.20
+ + oauthlib==4.0.1
+ + pycparser==3.12
+ + pyjwt==2.15.1
+ + requests==2.34.2
+ + urllib3==2.8.0
+Resolved 18 packages in ...
+Installed 1 package in ...
+ + disposable-email-domains==0.0.295</code></pre><p class="" data-block="76"><code>uv add</code> writes each pin into <code>pyproject.toml</code> and every resolved version into <code>uv.lock</code>. Now tell Django about allauth. In <code>config/settings.py</code>, add allauth’s apps at the end of <code>INSTALLED_APPS</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (the end of INSTALLED_APPS)</p><pre class="code-listing code-listing--file" data-block="77" tabindex="0"><code>    &#x27;registrations.apps.RegistrationsConfig&#x27;,
+    &#x27;allauth&#x27;,
+    &#x27;allauth.account&#x27;,
+    &#x27;allauth.socialaccount&#x27;,
+    &#x27;allauth.socialaccount.providers.google&#x27;,
+    &#x27;allauth.socialaccount.providers.github&#x27;,
+]</code></pre><p class="" data-block="78">Add allauth’s middleware at the end of <code>MIDDLEWARE</code>. It keeps track of the request for allauth’s own code:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (the end of MIDDLEWARE)</p><pre class="code-listing code-listing--file" data-block="79" tabindex="0"><code>    &#x27;django.middleware.clickjacking.XFrameOptionsMiddleware&#x27;,
+    &#x27;allauth.account.middleware.AccountMiddleware&#x27;,
+]</code></pre><p class="" data-block="80">And add this block at the end of <code>settings.py</code>. The backends let Django check a password through allauth as well as its own way. The next three settings describe Otahque’s user: no username, sign-in by email, and a sign-up form with the email and the password twice. The last says that confirming an address is optional for now:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="81" tabindex="0"><code># Accounts: django-allauth, with Otahque&#x27;s email-only User.
+# See docs/adr/ADR-003-accounts-allauth.md.
+
+AUTHENTICATION_BACKENDS = [
+    &#x27;django.contrib.auth.backends.ModelBackend&#x27;,
+    &#x27;allauth.account.auth_backends.AuthenticationBackend&#x27;,
+]
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {&#x27;email&#x27;}
+ACCOUNT_SIGNUP_FIELDS = [
+    &#x27;email*&#x27;, &#x27;password1*&#x27;, &#x27;password2*&#x27;,
+]
+ACCOUNT_EMAIL_VERIFICATION = &#x27;optional&#x27;</code></pre><p class="" data-block="82">Give allauth its addresses: in <code>config/urls.py</code>, put allauth’s URLs before the events URLs:</p><p class="code-label code-label--file" aria-hidden="true">config/urls.py (replace the events line)</p><pre class="code-listing code-listing--file" data-block="83" tabindex="0"><code>    path(&#x27;accounts/&#x27;, include(&#x27;allauth.urls&#x27;)),
+    path(&#x27;&#x27;, include(&#x27;events.urls&#x27;)),</code></pre><p class="" data-block="84">allauth brings its own tables, for email addresses and provider accounts. Create them (the output below is shortened with <code>...</code>; nine <code>account</code> and six <code>socialaccount</code> migrations are applied):</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="85" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="86" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, auth,
+    contenttypes, events, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying account.0001_initial... OK
+  Applying account.0002_email_max_length... OK
+  ...
+  Applying socialaccount.0001_initial... OK
+  ...
+  Applying
+    socialaccount.0006_alter_socialaccount_extra_data... OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="87" tabindex="0"><code>uv run python manage.py check</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="88" tabindex="0"><code>System check identified no issues (0 silenced).</code></pre><p class="" data-block="89">Every earlier test still passes, because nothing visible has changed yet. Open <a href="http://127.0.0.1:8000/accounts/login/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/login/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/login/</code></a> in the development server: allauth’s sign-in page is there, plain for now.</p><div class="callout callout--error"><p class="callout__title" data-block="90">Common Error: an email setting from older tutorials</p><p class="" data-block="91">Many tutorials tell you to set <code>EMAIL_BACKEND</code> for allauth’s emails. Django 6.1 configures email with <code>MAILERS</code>, which Otahque has had since Chapter 6, and adding <code>EMAIL_BACKEND</code> beside it stops every command with <code>ImproperlyConfigured: Deprecated email settings are not allowed when MAILERS is defined</code>. Leave <code>MAILERS</code> as it is: allauth’s confirmation emails already appear in the terminal.</p></div><div class="callout callout--error"><p class="callout__title" data-block="92">Common Error: provider apps without their extra</p><p class="" data-block="93">Installing <code>django-allauth</code> without <code>[socialaccount]</code> and then listing the Google provider stops with <code>ModuleNotFoundError: No module named &#x27;requests&#x27;</code>. The providers need the optional packages. Run the <code>uv add</code> command above, with the extra.</p></div><h4 data-block="94">Step 4: The members’ sign-in page</h4><p class="" data-block="95">Chapter 24 sent people to the admin’s sign-in page, with <code>LOGIN_URL = &#x27;admin:login&#x27;</code>, and three tests check that address. They change in place first: in <code>events/tests.py</code>, replace each <code>reverse(&#x27;admin:login&#x27;)</code> with <code>reverse(&#x27;account_login&#x27;)</code>, the name allauth gives its sign-in page. There are three. Run the tests whose names mention a visitor:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="96" tabindex="0"><code>uv run python manage.py test events -k visitor</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="97" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="98">In <code>config/settings.py</code>, replace the three <code>LOGIN_URL</code> lines from Chapter 24:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (replace the LOGIN_URL lines)</p><pre class="code-listing code-listing--file" data-block="99" tabindex="0"><code># Pages for signed-in people send everyone else to the
+# members&#x27; sign-in page.
+LOGIN_URL = &#x27;account_login&#x27;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="100" tabindex="0"><code>uv run python manage.py test events -k visitor</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="101" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="102">Step 5: The profile, and signing in and out</h4><p class="" data-block="103">Signing in will land members on <code>/accounts/profile/</code>, so the profile comes next. The tests use allauth’s and Django’s test tools, so replace the imports at the top of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (replace the imports)</p><pre class="code-listing code-listing--file" data-block="104" tabindex="0"><code>from allauth.account.models import EmailAddress
+from allauth.core.context import request_context
+from allauth.socialaccount.adapter import (
+    get_adapter as get_social_adapter,
+)
+from allauth.socialaccount.helpers import (
+    complete_social_login,
+)
+from allauth.socialaccount.models import (
+    SocialAccount, SocialLogin,
+)
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import (
+    FallbackStorage,
+)
+from django.contrib.sessions.backends.db import SessionStore
+from django.core import mail
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.test import (
+    Client, RequestFactory, SimpleTestCase, TestCase,
+    override_settings,
+)
+from django.urls import reverse
+
+from events.tests import admin_url
+from .models import Profile, User</code></pre><p class="" data-block="105">Add the profile tests at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="106" tabindex="0"><code>PASSWORD = &#x27;a-long-safe-pass-123&#x27;
+
+
+class ProfileTests(TestCase):
+    &quot;&quot;&quot;The profile page: your own name and time zone.&quot;&quot;&quot;
+
+    url = &#x27;/accounts/profile/&#x27;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, PASSWORD, display_name=&#x27;Sai&#x27;
+        )
+
+    def test_a_visitor_is_sent_to_sign_in(self):
+        response = self.client.get(self.url)
+        sign_in = reverse(&#x27;account_login&#x27;)
+        self.assertRedirects(
+            response, f&#x27;{sign_in}?next={self.url}&#x27;,
+            fetch_redirect_response=False,
+        )
+
+    def test_a_profile_is_made_the_first_time(self):
+        self.assertFalse(Profile.objects.exists())
+        self.client.force_login(self.sai)
+        response = self.client.get(self.url)
+        self.assertContains(response, &#x27;value=&quot;Sai&quot;&#x27;)
+        made = Profile.objects.get()
+        self.assertEqual(made.user, self.sai)
+
+    def test_name_and_zone_are_saved(self):
+        self.client.force_login(self.sai)
+        response = self.client.post(self.url, {
+            &#x27;display_name&#x27;: &#x27;Sai K&#x27;,
+            &#x27;timezone&#x27;: &#x27;Europe/London&#x27;,
+        })
+        self.assertRedirects(response, self.url,
+                             fetch_redirect_response=False)
+        self.sai.refresh_from_db()
+        self.assertEqual(self.sai.display_name, &#x27;Sai K&#x27;)
+        self.assertEqual(self.sai.profile.timezone,
+                         &#x27;Europe/London&#x27;)
+
+    def test_an_unknown_zone_is_refused(self):
+        self.client.force_login(self.sai)
+        response = self.client.post(self.url, {
+            &#x27;display_name&#x27;: &#x27;Sai&#x27;, &#x27;timezone&#x27;: &#x27;Mars/Base&#x27;,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Profile.objects.filter(
+            timezone=&#x27;Mars/Base&#x27;).exists())
+
+    def test_crafted_fields_change_nothing(self):
+        self.client.force_login(self.sai)
+        self.client.post(self.url, {
+            &#x27;display_name&#x27;: &#x27;Sai&#x27;, &#x27;timezone&#x27;: &#x27;&#x27;,
+            &#x27;email&#x27;: &#x27;boss@example.org&#x27;, &#x27;is_staff&#x27;: &#x27;on&#x27;,
+            &#x27;user&#x27;: &#x27;999&#x27;,
+        })
+        self.sai.refresh_from_db()
+        self.assertEqual(self.sai.email, &#x27;sai@example.org&#x27;)
+        self.assertFalse(self.sai.is_staff)
+
+    def test_profile_csrf_is_checked(self):
+        browser = Client(enforce_csrf_checks=True)
+        browser.force_login(self.sai)
+        data = {&#x27;display_name&#x27;: &#x27;Forged&#x27;, &#x27;timezone&#x27;: &#x27;&#x27;}
+        refused = browser.post(self.url, data)
+        self.assertEqual(refused.status_code, 403)
+        page = browser.get(self.url)
+        token = str(page.context[&#x27;csrf_token&#x27;])
+        sent = browser.post(
+            self.url, data | {&#x27;csrfmiddlewaretoken&#x27;: token}
+        )
+        self.assertEqual(sent.status_code, 302)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="107" tabindex="0"><code>uv run python manage.py test accounts.tests.ProfileTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="108" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+ImportError: Failed to import test module: tests
+Ran 1 test in ...s
+
+FAILED (errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="109">The whole module fails to load, because <code>Profile</code> does not exist yet. Add the model. In <code>accounts/models.py</code>, the imports become:</p><p class="code-label code-label--file" aria-hidden="true">accounts/models.py (replace the imports)</p><pre class="code-listing code-listing--file" data-block="110" tabindex="0"><code>from django.conf import settings
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+)
+from django.db import models
+from django.db.models.functions import Lower
+from django.utils import timezone
+
+from events.models import validate_timezone_name
+
+from .managers import UserManager</code></pre><p class="" data-block="111">Add the model at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">accounts/models.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="112" tabindex="0"><code>class Profile(models.Model):
+    &quot;&quot;&quot;A member&#x27;s own settings, one row per member.&quot;&quot;&quot;
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name=&#x27;profile&#x27;,
+    )
+    timezone = models.CharField(
+        max_length=64, blank=True,
+        validators=[validate_timezone_name],
+        help_text=&#x27;Blank means not set.&#x27;,
+    )
+
+    def __str__(self):
+        return f&#x27;Profile of {self.user}&#x27;
+
+    @classmethod
+    def of(cls, user):
+        &quot;&quot;&quot;Return the member&#x27;s profile, making it if new.&quot;&quot;&quot;
+        return cls.objects.get_or_create(user=user)[0]</code></pre><p class="" data-block="113"><code>OneToOneField</code> is a foreign key that allows one profile per user, and <code>related_name=&#x27;profile&#x27;</code> lets you write <code>user.profile</code>. <code>on_delete=models.CASCADE</code> deletes the profile with its member, because a profile means nothing alone. The time zone reuses Chapter 21’s validator, and blank means “not set”. <code>Profile.of()</code> returns the member’s profile and makes it the first time.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="114" tabindex="0"><code>uv run python manage.py makemigrations accounts -n profile</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="115" tabindex="0"><code>Migrations for &#x27;accounts&#x27;:
+  accounts\migrations\0003_profile.py
+    + Create model Profile</code></pre><p class="" data-block="116">Apply it with <code>uv run python manage.py migrate</code>. Now the form, in a new file, <code>accounts/forms.py</code>. It reuses the list of time zones from Chapter 24’s event form:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py</p><pre class="code-listing code-listing--file" data-block="117" tabindex="0"><code>&quot;&quot;&quot;The accounts app&#x27;s forms.&quot;&quot;&quot;
+from django import forms
+
+from events.forms import ZONE_CHOICES
+
+from .models import Profile
+
+NAME_HELP = (&#x27;Shown to other members, and on the pages of &#x27;
+             &#x27;events you organize.&#x27;)
+
+
+class ProfileForm(forms.Form):
+    &quot;&quot;&quot;The signed-in member&#x27;s own name and time zone.&quot;&quot;&quot;
+
+    display_name = forms.CharField(
+        max_length=100, help_text=NAME_HELP,
+    )
+    timezone = forms.ChoiceField(
+        choices=ZONE_CHOICES, required=False,
+        label=&#x27;Time zone (optional)&#x27;,
+    )
+
+    def save(self, user):
+        &quot;&quot;&quot;Save the name to the user, the zone to Profile.&quot;&quot;&quot;
+        user.display_name = self.cleaned_data[&#x27;display_name&#x27;]
+        user.save(update_fields=[&#x27;display_name&#x27;])
+        profile = Profile.of(user)
+        profile.timezone = self.cleaned_data[&#x27;timezone&#x27;]
+        profile.full_clean()
+        profile.save()</code></pre><p class="" data-block="118">The view is in <code>accounts/views.py</code>. It reads no id; <code>request.user</code> is the member:</p><p class="code-label code-label--file" aria-hidden="true">accounts/views.py</p><pre class="code-listing code-listing--file" data-block="119" tabindex="0"><code>&quot;&quot;&quot;The accounts app&#x27;s own views; allauth has the rest.&quot;&quot;&quot;
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+
+from .forms import ProfileForm
+from .models import Profile
+
+
+@login_required
+def profile(request):
+    &quot;&quot;&quot;Show the signed-in member&#x27;s profile; no id is read.&quot;&quot;&quot;
+    user = request.user
+    if request.method == &#x27;POST&#x27;:
+        form = ProfileForm(request.POST)
+        if form.is_valid():
+            form.save(user)
+            messages.success(request, &#x27;Profile saved.&#x27;)
+            return redirect(&#x27;accounts:profile&#x27;)
+    else:
+        form = ProfileForm(initial={
+            &#x27;display_name&#x27;: user.display_name,
+            &#x27;timezone&#x27;: Profile.of(user).timezone,
+        })
+    return render(request, &#x27;accounts/profile.html&#x27;, {
+        &#x27;form&#x27;: form,
+    })</code></pre><p class="" data-block="120">Give it an address in a new <code>accounts/urls.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/urls.py</p><pre class="code-listing code-listing--file" data-block="121" tabindex="0"><code>&quot;&quot;&quot;Addresses of the accounts app&#x27;s own pages.&quot;&quot;&quot;
+from django.urls import path
+
+from . import views
+
+app_name = &#x27;accounts&#x27;
+
+urlpatterns = [
+    path(&#x27;accounts/profile/&#x27;, views.profile, name=&#x27;profile&#x27;),
+]</code></pre><p class="" data-block="122">Include it in <code>config/urls.py</code>, before allauth’s URLs, so that <code>/accounts/profile/</code> is Otahque’s:</p><p class="code-label code-label--file" aria-hidden="true">config/urls.py (replace the two lines)</p><pre class="code-listing code-listing--file" data-block="123" tabindex="0"><code>    path(&#x27;&#x27;, include(&#x27;accounts.urls&#x27;)),
+    path(&#x27;accounts/&#x27;, include(&#x27;allauth.urls&#x27;)),
+    path(&#x27;&#x27;, include(&#x27;events.urls&#x27;)),</code></pre><p class="" data-block="124">The template, <code>accounts/templates/accounts/profile.html</code>, also links to allauth’s pages for email addresses and connected accounts:</p><p class="code-label code-label--file" aria-hidden="true">accounts/templates/accounts/profile.html</p><pre class="code-listing code-listing--file" data-block="125" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Your profile | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Your profile&lt;/h1&gt;
+  &lt;p&gt;Signed in as {{ user.email }}. Your display name is
+     public on the pages of events you organize.&lt;/p&gt;
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    {{ form }}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+      Save profile&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;p class=&quot;flex flex-wrap gap-4&quot;&gt;
+    &lt;a href=&quot;{% url &#x27;account_email&#x27; %}&quot;&gt;Email addresses&lt;/a&gt;
+    &lt;a href=&quot;{% url &#x27;socialaccount_connections&#x27; %}&quot;&gt;
+      Connected accounts&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="126">Last, tell allauth where members land after signing in. Add at the end of <code>settings.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="127" tabindex="0"><code># After signing in, members land on their own profile.
+LOGIN_REDIRECT_URL = &#x27;accounts:profile&#x27;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="128" tabindex="0"><code>uv run python manage.py test accounts.tests.ProfileTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="129" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="130">Members need to sign in and out from every page. In <code>templates/includes/site_nav.html</code>, add this block just before <code>&lt;/nav&gt;</code>. Signing out is a form with the CSRF token, never a link:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html (before &lt;/nav&gt;)</p><pre class="code-listing code-listing--file" data-block="131" tabindex="0"><code>  &lt;span class=&quot;ml-auto flex items-center gap-5&quot;&gt;
+    {% if user.is_authenticated %}
+      &lt;a href=&quot;{% url &#x27;accounts:profile&#x27; %}&quot;&gt;
+        {{ user.display_name|default:&quot;Profile&quot; }}&lt;/a&gt;
+      &lt;form method=&quot;post&quot;
+            action=&quot;{% url &#x27;account_logout&#x27; %}&quot;&gt;
+        {% csrf_token %}
+        &lt;button type=&quot;submit&quot; class=&quot;underline&quot;&gt;
+          Sign out&lt;/button&gt;
+      &lt;/form&gt;
+    {% else %}
+      &lt;a href=&quot;{% url &#x27;account_login&#x27; %}&quot;&gt;Sign in&lt;/a&gt;
+      &lt;a href=&quot;{% url &#x27;account_signup&#x27; %}&quot;&gt;Sign up&lt;/a&gt;
+    {% endif %}
+  &lt;/span&gt;</code></pre><p class="" data-block="132">Now prove what signing in and out do. These tests pass at once, because allauth and Django already behave this way; they hold the behaviour in place for every later chapter. Add them at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="133" tabindex="0"><code>class SignInTests(TestCase):
+    &quot;&quot;&quot;Signing in with an email and password.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, PASSWORD, display_name=&#x27;Sai&#x27;
+        )
+
+    def sign_in(self, email, password=PASSWORD):
+        &quot;&quot;&quot;Post the sign-in form for email.&quot;&quot;&quot;
+        return self.client.post(&#x27;/accounts/login/&#x27;, {
+            &#x27;login&#x27;: email, &#x27;password&#x27;: password,
+        })
+
+    def test_any_letter_case_signs_in(self):
+        response = self.sign_in(&#x27;Sai@EXAMPLE.org&#x27;)
+        self.assertRedirects(
+            response, reverse(&#x27;accounts:profile&#x27;),
+            fetch_redirect_response=False,
+        )
+
+    def test_a_wrong_password_is_refused(self):
+        response = self.sign_in(&#x27;sai@example.org&#x27;, &#x27;wrong&#x27;)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(&#x27;_auth_user_id&#x27;,
+                         self.client.session)
+
+    def test_the_session_key_changes(self):
+        self.client.get(&#x27;/accounts/login/&#x27;)
+        session = self.client.session
+        session[&#x27;seen&#x27;] = True
+        session.save()
+        before = session.session_key
+        self.sign_in(&#x27;sai@example.org&#x27;)
+        self.assertNotEqual(self.client.session.session_key,
+                            before)
+
+    def test_sign_out_needs_a_post(self):
+        self.client.force_login(self.sai)
+        self.client.get(&#x27;/accounts/logout/&#x27;)
+        self.assertIn(&#x27;_auth_user_id&#x27;, self.client.session)
+        self.client.post(&#x27;/accounts/logout/&#x27;)
+        self.assertNotIn(&#x27;_auth_user_id&#x27;,
+                         self.client.session)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="134" tabindex="0"><code>uv run python manage.py test accounts.tests.SignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="135" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="136">Common Error: a sign-out link</p><p class="" data-block="137"><code>&lt;a href=&quot;{% url &#x27;account_logout&#x27; %}&quot;&gt;Sign out&lt;/a&gt;</code> looks like it works: it opens allauth’s page, which asks for confirmation and signs out only when that page’s button sends a POST. A link that signed out on a GET would let any page sign a member out with an image tag. Keep the form.</p></div><h4 data-block="138">Step 6: Sign-up asks for a name and a time zone</h4><p class="" data-block="139">Without help, allauth’s sign-up saves the display name as an empty text, because it does not know the field exists. Tests first. These go at the end of <code>accounts/tests.py</code>, with a helper that the next steps reuse:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="140" tabindex="0"><code>def signup_data(**changes):
+    &quot;&quot;&quot;Return what the sign-up page sends.&quot;&quot;&quot;
+    return {&#x27;email&#x27;: &#x27;sai@example.org&#x27;,
+            &#x27;display_name&#x27;: &#x27;Sai&#x27;,
+            &#x27;timezone&#x27;: &#x27;Asia/Kolkata&#x27;,
+            &#x27;password1&#x27;: PASSWORD,
+            &#x27;password2&#x27;: PASSWORD} | changes
+
+
+class SignUpTests(TestCase):
+    &quot;&quot;&quot;Signing up: what is asked, and what is saved.&quot;&quot;&quot;
+
+    url = &#x27;/accounts/signup/&#x27;
+
+    def test_the_page_asks_for_name_and_zone(self):
+        response = self.client.get(self.url)
+        for name in (&#x27;email&#x27;, &#x27;display_name&#x27;, &#x27;timezone&#x27;,
+                     &#x27;password1&#x27;, &#x27;password2&#x27;):
+            self.assertContains(response, f&#x27;name=&quot;{name}&quot;&#x27;)
+
+    def test_sign_up_saves_name_zone_and_lower_case(self):
+        response = self.client.post(
+            self.url, signup_data(email=&#x27;SAI@Example.ORG&#x27;)
+        )
+        self.assertRedirects(
+            response, reverse(&#x27;accounts:profile&#x27;),
+            fetch_redirect_response=False,
+        )
+        sai = User.objects.get()
+        self.assertEqual(sai.email, &#x27;sai@example.org&#x27;)
+        self.assertEqual(sai.display_name, &#x27;Sai&#x27;)
+        self.assertEqual(sai.profile.timezone,
+                         &#x27;Asia/Kolkata&#x27;)
+        self.assertTrue(sai.check_password(PASSWORD))
+
+    def test_a_display_name_is_required(self):
+        response = self.client.post(
+            self.url, signup_data(display_name=&#x27;&#x27;)
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.exists())
+
+    def test_a_confirmation_email_is_sent(self):
+        self.client.post(self.url, signup_data())
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to,
+                         [&#x27;sai@example.org&#x27;])
+
+    def test_an_address_in_use_is_refused(self):
+        User.objects.create_user(&#x27;sai@example.org&#x27;,
+                                 display_name=&#x27;Sai&#x27;)
+        response = self.client.post(
+            self.url, signup_data(email=&#x27;Sai@example.org&#x27;)
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(User.objects.count(), 1)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="141" tabindex="0"><code>uv run python manage.py test accounts.tests.SignUpTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="142" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 302 != 200
+AssertionError: &#x27;&#x27; != &#x27;Sai&#x27;
+Ran 5 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="143">Add the sign-up form to <code>accounts/forms.py</code>, between <code>NAME_HELP</code> and <code>ProfileForm</code>. allauth adds its fields to these and calls <code>signup()</code> once the account exists:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (add before ProfileForm)</p><pre class="code-listing code-listing--file" data-block="144" tabindex="0"><code>class SignupForm(forms.Form):
+    &quot;&quot;&quot;What Otahque asks at sign-up, beside the email.&quot;&quot;&quot;
+
+    display_name = forms.CharField(
+        max_length=100, help_text=NAME_HELP,
+    )
+    timezone = forms.ChoiceField(
+        choices=ZONE_CHOICES, required=False,
+        label=&#x27;Time zone (optional)&#x27;,
+    )
+
+    def signup(self, request, user):
+        &quot;&quot;&quot;Save the extra answers once the account exists.&quot;&quot;&quot;
+        user.display_name = self.cleaned_data[&#x27;display_name&#x27;]
+        user.save(update_fields=[&#x27;display_name&#x27;])
+        profile = Profile.of(user)
+        profile.timezone = self.cleaned_data[&#x27;timezone&#x27;]
+        profile.save()</code></pre><p class="" data-block="145">Name it in <code>settings.py</code>, just after <code>ACCOUNT_SIGNUP_FIELDS</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (after ACCOUNT_SIGNUP_FIELDS)</p><pre class="code-listing code-listing--file" data-block="146" tabindex="0"><code>ACCOUNT_SIGNUP_FORM_CLASS = &#x27;accounts.forms.SignupForm&#x27;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="147" tabindex="0"><code>uv run python manage.py test accounts.tests.SignUpTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="148" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="149">The confirmation email appears in the terminal where the development server runs, because <code>MAILERS</code> uses the console. Confirming is optional until Chapter 43 sends real email.</p><h4 data-block="150">Step 7: Valid, permanent addresses only</h4><p class="" data-block="151">Tests first. Add the adapter’s message to the imports of <code>accounts/tests.py</code>, just above the models import:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add above the models import)</p><pre class="code-listing code-listing--file" data-block="152" tabindex="0"><code>from .adapter import DISPOSABLE</code></pre><p class="" data-block="153">and the tests at the end:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>class AddressCheckTests(TestCase):
+    &quot;&quot;&quot;Disposable email domains are refused.&quot;&quot;&quot;
+
+    url = &#x27;/accounts/signup/&#x27;
+
+    def errors(self, email):
+        &quot;&quot;&quot;Return the sign-up page&#x27;s errors for email.&quot;&quot;&quot;
+        response = self.client.post(
+            self.url, signup_data(email=email)
+        )
+        return response.context[&#x27;form&#x27;].errors.get(&#x27;email&#x27;)
+
+    def test_an_invalid_address_is_refused(self):
+        self.assertEqual(self.errors(&#x27;not-an-email&#x27;),
+                         [&#x27;Enter a valid email address.&#x27;])
+
+    def test_a_disposable_address_is_refused(self):
+        self.assertEqual(self.errors(&#x27;raj@mailinator.com&#x27;),
+                         [DISPOSABLE])
+        self.assertFalse(User.objects.exists())
+
+    @override_settings(
+        EMAIL_DOMAINS_ALLOWED=[&#x27;mailinator.com&#x27;]
+    )
+    def test_an_allowed_domain_is_accepted(self):
+        self.client.post(
+            self.url, signup_data(email=&#x27;raj@mailinator.com&#x27;)
+        )
+        self.assertTrue(User.objects.exists())</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="155" tabindex="0"><code>uv run python manage.py test accounts.tests.AddressCheckTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="156" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+ImportError: Failed to import test module: tests
+ModuleNotFoundError: No module named &#x27;accounts.adapter&#x27;
+Ran 1 test in ...s
+
+FAILED (errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="157">The adapter goes in a new file, <code>accounts/adapter.py</code>. allauth calls <code>clean_email()</code> with each address at sign-up, after Django’s own check:</p><p class="code-label code-label--file" aria-hidden="true">accounts/adapter.py</p><pre class="code-listing code-listing--file" data-block="158" tabindex="0"><code>&quot;&quot;&quot;Otahque&#x27;s changes to how allauth signs members up.&quot;&quot;&quot;
+from allauth.account.adapter import DefaultAccountAdapter
+from disposable_email_domains import blocklist
+from django import forms
+from django.conf import settings
+
+DISPOSABLE = &#x27;Please use a permanent email address.&#x27;
+
+
+class AccountAdapter(DefaultAccountAdapter):
+    &quot;&quot;&quot;Otahque&#x27;s choices inside allauth&#x27;s sign-up.&quot;&quot;&quot;
+
+    def clean_email(self, email):
+        &quot;&quot;&quot;Refuse disposable domains unless allowed.&quot;&quot;&quot;
+        email = super().clean_email(email)
+        domain = email.rsplit(&#x27;@&#x27;, 1)[-1].lower()
+        allowed = settings.EMAIL_DOMAINS_ALLOWED
+        if domain in blocklist and domain not in allowed:
+            raise forms.ValidationError(DISPOSABLE)
+        return email</code></pre><p class="" data-block="159">Name the adapter, and read the domains to accept anyway from <code>.env</code>. Add at the end of <code>settings.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="160" tabindex="0"><code>ACCOUNT_ADAPTER = &#x27;accounts.adapter.AccountAdapter&#x27;
+
+# Domains accepted even when a disposable-address list
+# names them; separated by commas.
+EMAIL_DOMAINS_ALLOWED = config(
+    &#x27;DJANGO_EMAIL_DOMAINS_ALLOWED&#x27;, default=&#x27;&#x27;, cast=Csv()
+)</code></pre><p class="" data-block="161">And document the name in <code>.env.example</code>, at the end:</p><p class="code-label code-label--file" aria-hidden="true">.env.example (add at the end)</p><pre class="code-listing code-listing--file" data-block="162" tabindex="0"><code># Domains to accept although a disposable-address list
+# names them, separated by commas; usually empty.
+DJANGO_EMAIL_DOMAINS_ALLOWED=</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="163" tabindex="0"><code>uv run python manage.py test accounts.tests.AddressCheckTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="164" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="165">Step 8: allauth’s pages, in Otahque’s style</h4><p class="" data-block="166">allauth draws its pages with its own plain layout. Django looks in the project’s <code>templates/</code> folder before each app’s own templates, so a file at the same path replaces allauth’s. Four small files are enough. The layout uses Otahque’s <code>base.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/layouts/base.html</p><pre class="code-listing code-listing--file" data-block="167" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}{% block head_title %}{% endblock %} |
+  Otahque{% endblock %}</code></pre><p class="" data-block="168">Forms are drawn with Chapter 24’s field templates instead of allauth’s paragraphs:</p><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/fields.html</p><pre class="code-listing code-listing--file" data-block="169" tabindex="0"><code>{{ attrs.form }}</code></pre><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/form.html</p><pre class="code-listing code-listing--file" data-block="170" tabindex="0"><code>{% load allauth %}
+&lt;form method=&quot;{{ attrs.method }}&quot;
+      class=&quot;card space-y-4 border border-base-300
+             bg-base-100 p-6&quot;
+      {% if attrs.action %}
+        action=&quot;{{ attrs.action }}&quot;
+      {% endif %}&gt;
+  {% slot body %}{% endslot %}
+  {% slot actions %}{% endslot %}
+&lt;/form&gt;</code></pre><p class="code-label code-label--file" aria-hidden="true">templates/allauth/elements/button.html</p><pre class="code-listing code-listing--file" data-block="171" tabindex="0"><code>{% load allauth %}
+{% if attrs.href %}
+&lt;a href=&quot;{{ attrs.href }}&quot; class=&quot;link&quot;&gt;
+  {% slot %}{% endslot %}&lt;/a&gt;
+{% else %}
+&lt;button class=&quot;btn btn-primary&quot;
+  {% if attrs.form %}form=&quot;{{ attrs.form }}&quot;{% endif %}
+  {% if attrs.name %}name=&quot;{{ attrs.name }}&quot;{% endif %}
+  {% if attrs.value %}value=&quot;{{ attrs.value }}&quot;{% endif %}
+  type=&quot;{{ attrs.type|default:&#x27;submit&#x27; }}&quot;&gt;
+  {% slot %}{% endslot %}&lt;/button&gt;
+{% endif %}</code></pre><p class="" data-block="172">Rebuild the stylesheet with <code>npm run build</code>, and run every test:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="173" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="174" tabindex="0"><code>Found 183 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 183 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="175">Open the sign-up page at a phone’s width and a desktop’s: it has Otahque’s navigation, the same fields as the New event page, and a primary button.</p><h4 data-block="176">Step 9: Google and GitHub</h4><figure data-block="177"><a href="/assets/chapter27/figure-27-4-provider.png" aria-label="Open Figure 27.4 at full size"><img src="/assets/chapter27/figure-27-4-provider.png" alt="Five numbered cards in a column joined by arrows. 1, a blue Button card: Sai chooses GitHub on the sign-in page, a POST. 2, a blue GitHub card: Sai signs in there and allows Otahque to read her email. 3, a purple Callback card: allauth checks the answer and reads the confirmed email. 4, an orange Sign-up form card: as a new member, the form asks a display name and a time zone. 5, a green Signed in card: the user, profile, and GitHub link are saved, and she sees her profile page." width="1500" height="980" loading="lazy"></a><figcaption data-block="178">Figure 27.4 — Signing in with a provider, step by step.</figcaption></figure><p class="" data-block="179">The tests cannot reach GitHub, and should not. Instead, a helper builds what allauth would have received from the provider, a confirmed email for a new or an existing member, and hands it to allauth’s own code. Add this at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="180" tabindex="0"><code>PROVIDERS = {
+    &#x27;google&#x27;: {&#x27;APPS&#x27;: [{&#x27;client_id&#x27;: &#x27;test-id&#x27;,
+                         &#x27;secret&#x27;: &#x27;test-secret&#x27;}]},
+    &#x27;github&#x27;: {&#x27;APPS&#x27;: [{&#x27;client_id&#x27;: &#x27;test-id&#x27;,
+                         &#x27;secret&#x27;: &#x27;test-secret&#x27;}]},
+}
+
+
+def provider_sign_in(provider, email, uid=&#x27;1&#x27;):
+    &quot;&quot;&quot;Sign in as if the provider confirmed this email.
+
+    Returns the response and a client on that session.
+    &quot;&quot;&quot;
+    request = RequestFactory().get(&#x27;/&#x27;)
+    request.session = SessionStore()
+    request.session.save()
+    request._messages = FallbackStorage(request)
+    request.user = AnonymousUser()
+    found = get_social_adapter().get_provider(request,
+                                              provider)
+    login = SocialLogin(
+        user=User(email=email),
+        account=SocialAccount(provider=provider, uid=uid,
+                              extra_data={&#x27;email&#x27;: email}),
+        email_addresses=[EmailAddress(
+            email=email, verified=True, primary=True,
+        )],
+        provider=found,
+    )
+    with request_context(request):
+        response = complete_social_login(request, login)
+    request.session.save()
+    browser = Client()
+    key = request.session.session_key
+    browser.cookies[&#x27;sessionid&#x27;] = key
+    return response, browser
+
+
+@override_settings(SOCIALACCOUNT_PROVIDERS=PROVIDERS)
+class SocialSignInTests(TestCase):
+    &quot;&quot;&quot;Signing in through a provider.&quot;&quot;&quot;
+
+    def test_buttons_for_configured_providers(self):
+        response = self.client.get(&#x27;/accounts/login/&#x27;)
+        for name in (&#x27;Google&#x27;, &#x27;GitHub&#x27;):
+            self.assertContains(response, name)
+
+    def test_a_new_member_still_gives_name_and_zone(self):
+        response, browser = provider_sign_in(
+            &#x27;google&#x27;, &#x27;soni@example.org&#x27;
+        )
+        self.assertEqual(response[&#x27;Location&#x27;],
+                         &#x27;/accounts/3rdparty/signup/&#x27;)
+        page = browser.get(response[&#x27;Location&#x27;])
+        self.assertContains(page, &#x27;name=&quot;display_name&quot;&#x27;)
+        browser.post(response[&#x27;Location&#x27;], {
+            &#x27;email&#x27;: &#x27;soni@example.org&#x27;,
+            &#x27;display_name&#x27;: &#x27;Soni&#x27;, &#x27;timezone&#x27;: &#x27;&#x27;,
+        })
+        soni = User.objects.get()
+        self.assertEqual(soni.display_name, &#x27;Soni&#x27;)
+        account = soni.socialaccount_set.get()
+        self.assertEqual(account.provider, &#x27;google&#x27;)
+
+    def test_a_registered_email_is_asked_to_sign_in(self):
+        User.objects.create_user(&#x27;sam@example.org&#x27;, PASSWORD,
+                                 display_name=&#x27;Sam&#x27;)
+        response, browser = provider_sign_in(
+            &#x27;github&#x27;, &#x27;sam@example.org&#x27;
+        )
+        page = browser.post(response[&#x27;Location&#x27;], {
+            &#x27;email&#x27;: &#x27;sam@example.org&#x27;,
+            &#x27;display_name&#x27;: &#x27;Sam&#x27;, &#x27;timezone&#x27;: &#x27;&#x27;,
+        })
+        self.assertContains(
+            page, &#x27;An account already exists with this email&#x27;
+        )
+        self.assertEqual(User.objects.count(), 1)
+        self.assertFalse(SocialAccount.objects.exists())
+
+    def test_a_signed_in_member_may_connect(self):
+        sam = User.objects.create_user(
+            &#x27;sam@example.org&#x27;, PASSWORD, display_name=&#x27;Sam&#x27;
+        )
+        self.client.force_login(sam)
+        response = self.client.get(&#x27;/accounts/3rdparty/&#x27;)
+        self.assertContains(response, &#x27;GitHub&#x27;)
+        self.assertContains(response, &#x27;Google&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="181" tabindex="0"><code>uv run python manage.py test accounts.tests.SocialSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="182" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: &#x27;/accounts/profile/&#x27; !=
+    &#x27;/accounts/3rdparty/signup/&#x27;
+Ran 4 tests in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="183">The new member was signed up straight away, with no display name, because allauth signs new provider members up automatically by default. Turn that off, and read the providers’ credentials from <code>.env</code>. Add at the end of <code>settings.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="184" tabindex="0"><code># A first sign-in with a provider still shows the sign-up
+# form, so every member gives a display name.
+SOCIALACCOUNT_AUTO_SIGNUP = False
+
+# Sign-in with Google and GitHub, only for the providers
+# whose client ID is in .env. Secrets never go in Git.
+SOCIALACCOUNT_PROVIDERS = {}
+for provider in (&#x27;google&#x27;, &#x27;github&#x27;):
+    client_id = config(
+        f&#x27;DJANGO_{provider.upper()}_CLIENT_ID&#x27;, default=&#x27;&#x27;
+    )
+    if client_id:
+        SOCIALACCOUNT_PROVIDERS[provider] = {&#x27;APPS&#x27;: [{
+            &#x27;client_id&#x27;: client_id,
+            &#x27;secret&#x27;: config(
+                f&#x27;DJANGO_{provider.upper()}_SECRET&#x27;
+            ),
+        }]}</code></pre><p class="" data-block="185">A provider appears only when its client ID is set, so a reader without credentials sees no broken buttons. Document the names in <code>.env.example</code>:</p><p class="code-label code-label--file" aria-hidden="true">.env.example (add at the end)</p><pre class="code-listing code-listing--file" data-block="186" tabindex="0"><code># Sign-in with Google and GitHub (Chapter 27). Leave the
+# client IDs empty to hide a provider&#x27;s button.
+DJANGO_GOOGLE_CLIENT_ID=
+DJANGO_GOOGLE_SECRET=
+DJANGO_GITHUB_CLIENT_ID=
+DJANGO_GITHUB_SECRET=</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="187" tabindex="0"><code>uv run python manage.py test accounts.tests.SocialSignInTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="188" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="189">To try it for real, which is optional, create an OAuth app at GitHub (Settings, Developer settings, OAuth Apps) with the callback address <a href="http://127.0.0.1:8000/accounts/github/login/callback/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/github/login/callback/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/github/login/callback/</code></a>, and a Google one in the Google Cloud console with <a href="http://127.0.0.1:8000/accounts/google/login/callback/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/google/login/callback/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/google/login/callback/</code></a>. Put each client ID and secret in your <code>.env</code>, never in Git, and restart the server.</p><p class="" data-block="190">Google and GitHub are two of more than a hundred providers in allauth 65.22.1. Others include Apple, Microsoft, Amazon, Facebook, GitLab, Bitbucket, Discord, Slack, LinkedIn, X, Okta, and Auth0, and any service that speaks OpenID Connect or SAML, two common sign-in standards. Each one added is one more line in <code>INSTALLED_APPS</code>, credentials in <code>.env</code>, and a test like the ones above, and one more company trusted with members’ email addresses.</p><h4 data-block="191">Step 10: Organized by, the design, and the commit</h4><p class="" data-block="192">Members now choose their names, so event pages can say who organizes them, as decided when profiles were planned. Tests first, at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="193" tabindex="0"><code>class OrganizedByTests(TestCase):
+    &quot;&quot;&quot;An event&#x27;s page names its current organizers.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.event = save_event()
+        cls.place = cls.event.add_organizer(cls.sam)
+
+    def page(self):
+        &quot;&quot;&quot;Return the address of the event&#x27;s own page.&quot;&quot;&quot;
+        return self.client.get(self.event.get_absolute_url())
+
+    def test_the_organizer_is_named(self):
+        self.assertContains(self.page(), &#x27;Organized by Sam&#x27;)
+
+    def test_the_name_follows_the_profile(self):
+        self.sam.display_name = &#x27;Sam Chen&#x27;
+        self.sam.save()
+        page = self.page()
+        self.assertContains(page, &#x27;Organized by Sam Chen&#x27;)
+
+    def test_a_revoked_organizer_is_not_named(self):
+        self.place.revoked_at = timezone.now()
+        self.place.save()
+        self.assertNotContains(self.page(), &#x27;Organized by&#x27;)</code></pre><p class="" data-block="194">The names cost one more query on the event page, so Chapter 22’s query count in <code>PlacesLeftTests.test_pages_show_places_left</code> changes in place: the second <code>assertNumQueries(1)</code> becomes <code>assertNumQueries(2)</code>.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="195" tabindex="0"><code>uv run python manage.py test events -k Organized -k PlacesLeft</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="196" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False is not true : Couldn&#x27;t find &#x27;Organized
+    by Sam&#x27; in the following response
+AssertionError: 1 != 2 : 1 queries executed, 2 expected
+Ran 5 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="197">Add the method to <code>Event</code> in <code>events/models.py</code>, before <code>can_be_edited_by</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, add before can_be_edited_by)</p><pre class="code-listing code-listing--file" data-block="198" tabindex="0"><code>    def organizer_names(self):
+        &quot;&quot;&quot;List the current organizers&#x27; names, in order.&quot;&quot;&quot;
+        return list(self.organizer_assignments.filter(
+            revoked_at__isnull=True
+        ).values_list(&#x27;member__display_name&#x27;, flat=True))</code></pre><p class="" data-block="199">And show the names on the event page, after the location, in <code>events/templates/events/detail.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (after the location)</p><pre class="code-listing code-listing--file" data-block="200" tabindex="0"><code>    {% with names=event.organizer_names %}
+      {% if names %}
+        &lt;p&gt;Organized by {{ names|join:&quot;, &quot; }}&lt;/p&gt;
+      {% endif %}
+    {% endwith %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="201" tabindex="0"><code>uv run python manage.py test events -k Organized -k PlacesLeft</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="202" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="203">Record the decision in <code>docs/adr/ADR-003-accounts-allauth.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/adr/ADR-003-accounts-allauth.md</p><pre class="code-listing code-listing--file" data-block="204" tabindex="0"><code># ADR-003: Member accounts with django-allauth
+
+## Status
+
+Proposed, November 2026 (Chapter 27). The choice of
+django-allauth is the user&#x27;s decision of 13 November 2026;
+this record is not yet reviewed or accepted.
+
+## Context
+
+Members need to sign up, sign in, and sign out on Otahque&#x27;s
+own pages, with the email-only user of ADR-002, and to sign
+in with Google or GitHub. Accounts must not be linked by an
+email address alone, temporary addresses are refused, and
+two-factor sign-in follows in Chapter 29.
+
+## Options
+
+- A: Django&#x27;s own views (LoginView, LogoutView) and forms
+  written for sign-up; social sign-in added later by hand.
+- B: social-auth-app-django for providers, with Django&#x27;s
+  views for everything else.
+- C: django-allauth for sign-up, sign-in, sign-out, email
+  addresses, providers, rate limits, and later two-factor
+  sign-in.
+
+## Decision
+
+Option C: `django-allauth[socialaccount]==65.22.1`, with
+`disposable-email-domains==0.0.295` for refusing temporary
+addresses. Email-only settings (no username field); an
+extra sign-up form for the display name and time zone; an
+account adapter that refuses disposable domains; provider
+credentials read from .env; automatic sign-up through a
+provider turned off, so every member gives a display name;
+an email already registered is never connected without
+signing in to that account first.
+
+## Consequences
+
+- Eleven more packages (the social extra brings requests,
+  pyjwt, cryptography, and their dependencies); each pin is
+  upgraded on purpose, with the test suite run first.
+- allauth&#x27;s templates are overridden in templates/allauth/
+  to use Otahque&#x27;s layout and field styles.
+- The admin&#x27;s own sign-in page bypasses allauth until
+  Chapter 29 wraps it with secure_admin_login.
+- Rate limits use the cache; one process is enough locally,
+  and a shared cache is needed in production (Chapter 57).
+
+## Revisit when
+
+allauth stops supporting the pinned Django series, a
+provider changes its sign-in rules, or the community needs
+sign-in that allauth cannot provide.</code></pre><p class="" data-block="205">and the design in <code>docs/design/sign-in.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/sign-in.md</p><pre class="code-listing code-listing--file" data-block="206" tabindex="0"><code># Sign-up and sign-in: low-level design
+
+Status: Drafted in Chapter 27, for review. Not approved.
+Library: django-allauth (ADR-003), with accounts.User
+(ADR-002).
+
+## Pages
+
+- /accounts/signup/: email, display name, time zone
+  (optional), password twice. allauth&#x27;s form plus
+  accounts.forms.SignupForm. The email passes Django&#x27;s
+  validator, then AccountAdapter.clean_email(): refused if
+  its domain is on the disposable-domains list and not in
+  EMAIL_DOMAINS_ALLOWED. The address is stored in lower
+  case (Chapter 21). A confirmation email is sent;
+  verification is optional until Chapter 43.
+- /accounts/login/: email (any letter case) and password.
+  The session key changes on sign-in. Rate limits apply.
+- /accounts/logout/: GET asks; POST signs out.
+- /accounts/profile/: login required; edits the signed-in
+  member&#x27;s display name and Profile.timezone; reads no id
+  from the address, so no other member can be reached.
+  Profile.of(user) makes the profile the first time.
+- /accounts/email/, /accounts/password/...: allauth&#x27;s
+  pages; taught in Chapter 29.
+
+## Providers
+
+- Google and GitHub, shown only when their client IDs are
+  in .env; secrets never in Git or the database.
+- A first sign-in shows the sign-up form (automatic
+  sign-up is off), so a display name is always given.
+- An email that already has an account: &quot;An account already
+  exists with this email address. Please sign in to that
+  account first, then connect your ... account.&quot; Nothing is
+  linked by email alone.
+- A signed-in member connects a provider at
+  /accounts/3rdparty/.
+
+## Open
+
+- Mandatory verification, with existing members marked
+  verified: Chapter 43.
+- Password change and reset, two-factor sign-in, and the
+  admin&#x27;s sign-in page: Chapter 29.
+- Shared rate limits across processes: Chapter 57.
+- Profile image: Chapter 42.</code></pre><p class="" data-block="207">Check, test, and commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="208" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run
+uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="209" tabindex="0"><code>No changes detected
+Found 190 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 190 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="210" tabindex="0"><code>git add .
+git status --short
+git commit -m &quot;Add member accounts with django-allauth&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="211" tabindex="0"><code>M  .env.example
+A  accounts/adapter.py
+A  accounts/forms.py
+A  accounts/migrations/0003_profile.py
+M  accounts/models.py
+A  accounts/templates/accounts/profile.html
+M  accounts/tests.py
+A  accounts/urls.py
+M  accounts/views.py
+M  config/settings.py
+M  config/urls.py
+A  docs/adr/ADR-003-accounts-allauth.md
+A  docs/design/sign-in.md
+M  events/models.py
+M  events/templates/events/detail.html
+M  events/tests.py
+M  pyproject.toml
+M  static/otahque/site.css
+A  templates/allauth/elements/button.html
+A  templates/allauth/elements/fields.html
+A  templates/allauth/elements/form.html
+A  templates/allauth/layouts/base.html
+M  templates/includes/site_nav.html
+M  uv.lock</code></pre><p class="" data-block="212"><code>.env</code> is not in the list, because Chapter 8’s <code>.gitignore</code> keeps it out of Git, with any provider secrets you added.</p><p class="" data-block="213">Table 27.2 lists what to do when a step does not go as described.</p><figure class="table-figure" data-block="214"><figcaption>Table 27.2 — When a step goes wrong</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 27.2 — When a step goes wrong"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">ModuleNotFoundError: requests</th>
+<td data-label="Likely cause">allauth installed without [socialaccount]</td>
+<td data-label="Recovery">Run Step 3&#x27;s uv add command again, with the extra</td>
+</tr>
+<tr><th scope="row">ImproperlyConfigured: Deprecated email settings</th>
+<td data-label="Likely cause">EMAIL_BACKEND added beside MAILERS</td>
+<td data-label="Recovery">Remove EMAIL_BACKEND; keep MAILERS</td>
+</tr>
+<tr><th scope="row">Signing in leads to Page not found</th>
+<td data-label="Likely cause">LOGIN_REDIRECT_URL set before the profile exists</td>
+<td data-label="Recovery">Complete Step 5, or check its URL name</td>
+</tr>
+<tr><th scope="row">The sign-up page has no Display name</th>
+<td data-label="Likely cause">ACCOUNT_SIGNUP_FORM_CLASS missing or misspelled</td>
+<td data-label="Recovery">Compare it with Step 6; the path is accounts.forms.SignupForm</td>
+</tr>
+<tr><th scope="row">A Google button that fails</th>
+<td data-label="Likely cause">A client ID in .env without the matching secret, or the wrong callback address</td>
+<td data-label="Recovery">Check both values and the callback; or leave the ID empty to hide the button</td>
+</tr>
+<tr><th scope="row">Pages look unstyled</th>
+<td data-label="Likely cause">The stylesheet was not rebuilt</td>
+<td data-label="Recovery">Run npm run build, then reload</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2027%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter27/section-27-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter27/section-27-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter27/section-27-2/">← What You Need to Know</a><a href="/chapters/chapter27/section-27-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

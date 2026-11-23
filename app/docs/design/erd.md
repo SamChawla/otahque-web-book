@@ -3,6 +3,8 @@
 Status: Proposed, for review. No table exists yet.
 Scope: the first release (one community, free events).
 Sources: Chapter 2 rules PR-1 to PR-6.
+Database: PostgreSQL 18 from Chapter 32 (ADR-005); SQLite
+before it. Text sorts by code point (C.UTF-8).
 
 ## Diagram
 
@@ -38,6 +40,7 @@ erDiagram
         datetime registration_closes_at "needed to publish"
         datetime cancellation_deadline "needed to publish"
         bool phone_required
+        int version "grows by one on each edit"
     }
     REGISTRATION {
         int id PK

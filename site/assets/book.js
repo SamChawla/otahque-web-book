@@ -41,8 +41,10 @@ if (moved) {
 
 // Notebook page turns use links as the fallback, with a short slide for pointer,
 // touch, and keyboard navigation when JavaScript is available.
+// In the open-book layout (assets/book-reader.js) pages turn inside the book, so the section-to-section slide is skipped.
+const inBook = document.documentElement.classList.contains('is-book');
 const readerPage = document.querySelector('.reading[data-reader-prev]');
-if (readerPage) {
+if (readerPage && !inBook) {
   const previous = readerPage.querySelector('.page-thumb-prev');
   const next = readerPage.querySelector('.page-thumb-next');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -242,7 +244,7 @@ if (bookResume) {
 }
 
 const reading = document.querySelector('[data-progress-key]');
-if (reading) {
+if (reading && !inBook) {
   const key = reading.dataset.progressKey;
   const article = reading.querySelector('article');
   const bar = reading.querySelector('.reading-progress');

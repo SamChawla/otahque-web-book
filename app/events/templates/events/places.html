@@ -1,7 +1,11 @@
 {% if event.places_left > 0 %}
-<span class="places text-sm">
+<span class="places inline-flex items-center gap-2 text-sm">
+  <progress class="progress progress-primary w-20"
+            value="{{ event.places_left }}"
+            max="{{ event.capacity }}"
+            aria-hidden="true"></progress>
   {{ event.places_left }} of {{ event.capacity }} places left
 </span>
 {% else %}
-<span class="places badge">Full</span>
+<span class="places badge badge-warning">Full</span>
 {% endif %}

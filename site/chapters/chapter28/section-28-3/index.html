@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 28: Sessions, cookies, and time zones: Otahque remembers each visitor. Make Otahque remember each visitor: what cookies and...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter28/section-28-3/">
+<title>How We Build It · Chapter 28 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter28/">← Chapter 28 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-28-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-71">The Custom Way</a></li><li><a href="#topic-75">The Django Way</a></li></ul></li><li><a href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 9 figures · 4 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter28:28.3" data-progress-title="Section 28.3" data-reader-prev="section-28-2.html" data-reader-next="section-28-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 28.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter28/">Chapter 28 · Sessions, cookies, and time zones: Otahque remembers each visitor</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter28/section-28-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter28/section-28-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter28/section-28-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter28/section-28-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter28/section-28-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-28-3" data-block="69">How We Build It</h2><p class="" data-block="70">Start from Chapter 27, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 190 passing tests, every migration applied, the Node.js packages from Chapter 14, and Sam’s superuser password from Chapter 18. No package is added and no migration is made. The new files are <code>accounts/timezones.py</code>, <code>accounts/middleware.py</code>, <code>static/otahque/site.js</code>, <code>events/templates/events/when.html</code>, and <code>docs/design/sessions-and-time-zones.md</code>. The commands are written the same for Windows PowerShell, Git Bash, macOS, Linux, and WSL; the chapter’s checks ran in the first two. Each step with new behaviour writes its tests first and runs them to see them fail. Steps 2 and 5 hold behaviour Django already has, so their tests pass at once.</p><h3 class="" id="topic-71" data-block="71">The Custom Way</h3><p class="" data-block="72">Without the session, a remembered filter is often written as a cookie of its own. This illustration is not part of the project:</p><p class="code-label code-label--file" aria-hidden="true">illustration_only/views.py (not part of the project)</p><pre class="code-listing code-listing--file" data-block="73" tabindex="0"><code>def event_list(request):
+    places_only = request.COOKIES.get(&#x27;places&#x27;) == &#x27;1&#x27;
+    response = render(request, &#x27;events/list.html&#x27;, {
+        &#x27;places_only&#x27;: places_only,
+    })
+    if &#x27;places&#x27; in request.GET:
+        response.set_cookie(&#x27;places&#x27;, request.GET[&#x27;places&#x27;],
+                            max_age=60 * 60 * 24 * 365)
+    return response</code></pre><p class="" data-block="74">It works, and it starts a habit that grows: every preference becomes another cookie with its own name, lifetime, and rules, each one readable and changeable in the browser, and none of them cleared when the person signs out, so the next person at a shared computer inherits them. The Django Way keeps such values in the one session that Django already protects, ends with sign-out, and expires on a schedule.</p><h3 class="" id="topic-75" data-block="75">The Django Way</h3><h4 data-block="76">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="77" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="78" tabindex="0"><code>Found 190 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 190 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="79" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="80" tabindex="0"><code>... Add member accounts with django-allauth</code></pre><h4 data-block="81">Step 2: Look at a session</h4><p class="" data-block="82">Start the development server with <code>uv run python manage.py runserver</code>, sign in as Sam at <a href="http://127.0.0.1:8000/accounts/login/" rel="noopener noreferrer" target="_blank" aria-label="http://127.0.0.1:8000/accounts/login/ (opens in a new tab)"><code>http://127.0.0.1:8000/accounts/login/</code></a>, and open the browser’s developer tools: in Microsoft Edge and Chrome, press F12 and choose Application, then Cookies. You will see <code>sessionid</code>, <code>csrftoken</code>, and, until the next page, <code>messages</code>. Select <code>sessionid</code>: its value is a key, and the HttpOnly and SameSite columns show Django’s defaults.</p><p class="" data-block="83">To see the server’s side, a practice file signs in a demo member with Django’s test client, prints what each side holds, and undoes its work. Save it as <code>s2_session.py</code> beside <code>manage.py</code>, run it with <code>uv run python manage.py shell -c &quot;exec(open(&#x27;s2_session.py&#x27;).read())&quot;</code>, and delete it:</p><p class="code-label code-label--file" aria-hidden="true">s2_session.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="84" tabindex="0"><code>from django.contrib.sessions.models import Session
+from django.db import transaction
+from django.test import Client
+from django.test.utils import setup_test_environment
+from django.utils import timezone
+
+from accounts.models import User
+
+setup_test_environment()
+PASSWORD = &#x27;a-long-safe-pass-123&#x27;
+with transaction.atomic():
+    User.objects.create_user(&#x27;demo@example.org&#x27;, PASSWORD,
+                             display_name=&#x27;Demo&#x27;)
+    web = Client()
+    web.post(&#x27;/accounts/login/&#x27;, {
+        &#x27;login&#x27;: &#x27;demo@example.org&#x27;, &#x27;password&#x27;: PASSWORD,
+    })
+    print(&#x27;browser holds:&#x27;, sorted(web.cookies))
+    key = web.cookies[&#x27;sessionid&#x27;].value
+    print(&#x27;the key:&#x27;, len(key), &#x27;random characters&#x27;)
+    row = Session.objects.get(session_key=key)
+    print(&#x27;server holds:&#x27;, sorted(row.get_decoded()))
+    left = row.expire_date - timezone.now()
+    days = round(left.total_seconds() / 86400)
+    print(&#x27;the row expires in:&#x27;, days, &#x27;days&#x27;)
+    transaction.set_rollback(True)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="85" tabindex="0"><code>browser holds: [&#x27;csrftoken&#x27;, &#x27;messages&#x27;, &#x27;sessionid&#x27;]
+the key: 32 random characters
+server holds: [&#x27;_auth_user_backend&#x27;, &#x27;_auth_user_hash&#x27;,
+    &#x27;_auth_user_id&#x27;, &#x27;_session_expiry&#x27;,
+    &#x27;account_authentication_methods&#x27;,
+    &#x27;account_authentication_methods_user&#x27;]
+the row expires in: 14 days</code></pre><p class="" data-block="86">The browser holds three cookies; the session row holds who signed in, how, and <code>_session_expiry</code>, which allauth sets to 0 when Remember me is clear, meaning “end with the browser”. The row itself still expires in two weeks.</p><p class="" data-block="87">Now hold the rules in place with tests. In <code>events/tests.py</code>, add one import after the <code>Permission</code> import:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (after the Permission import)</p><pre class="code-listing code-listing--file" data-block="88" tabindex="0"><code>from django.contrib.sessions.models import Session</code></pre><p class="" data-block="89">and these tests at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="90" tabindex="0"><code>SAI_PASSWORD = &#x27;a-long-safe-pass-123&#x27;
+
+
+class SessionCookieTests(TestCase):
+    &quot;&quot;&quot;What the session cookie keeps, and when it ends.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, SAI_PASSWORD,
+            display_name=&#x27;Sai&#x27;,
+        )
+
+    def sign_in(self, **extra):
+        &quot;&quot;&quot;Sign Sai in, with any extra form fields.&quot;&quot;&quot;
+        return self.client.post(&#x27;/accounts/login/&#x27;, {
+            &#x27;login&#x27;: &#x27;sai@example.org&#x27;,
+            &#x27;password&#x27;: SAI_PASSWORD, **extra,
+        })
+
+    def test_the_cookie_is_kept_from_scripts(self):
+        response = self.sign_in(remember=&#x27;on&#x27;)
+        cookie = response.cookies[&#x27;sessionid&#x27;]
+        self.assertTrue(cookie[&#x27;httponly&#x27;])
+        self.assertEqual(cookie[&#x27;samesite&#x27;], &#x27;Lax&#x27;)
+        self.assertEqual(cookie[&#x27;max-age&#x27;], 1209600)
+        self.assertFalse(cookie[&#x27;secure&#x27;])
+
+    def test_without_remember_me_it_ends_with_the_browser(
+            self):
+        cookie = self.sign_in().cookies[&#x27;sessionid&#x27;]
+        self.assertEqual(cookie[&#x27;max-age&#x27;], &#x27;&#x27;)
+        self.assertTrue(self.client.session
+                        .get_expire_at_browser_close())
+
+    def test_the_row_holds_the_data(self):
+        self.sign_in()
+        key = self.client.cookies[&#x27;sessionid&#x27;].value
+        row = Session.objects.get(session_key=key)
+        data = row.get_decoded()
+        self.assertEqual(data[&#x27;_auth_user_id&#x27;],
+                         str(self.sai.pk))
+        self.assertNotIn(SAI_PASSWORD, str(data))</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="91" tabindex="0"><code>uv run python manage.py test events.tests.SessionCookieTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="92" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="93">Step 3: Messages, and a close button</h4><p class="" data-block="94">Tests first. They follow “Draft saved.” through Figure 28.1, change the signed cookie, and look for the close button. Add them at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="95" tabindex="0"><code>class MessageTests(TestCase):
+    &quot;&quot;&quot;Messages: shown once, in a signed cookie.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+
+    def save_draft(self, **kw):
+        &quot;&quot;&quot;Post the new-event form, with any options.&quot;&quot;&quot;
+        return self.client.post(reverse(&#x27;events:create&#x27;),
+                                NEW_EVENT, **kw)
+
+    def test_a_message_is_shown_once(self):
+        response = self.save_draft()
+        page = self.client.get(response[&#x27;Location&#x27;])
+        self.assertContains(page, &#x27;Draft saved.&#x27;, count=1)
+        again = self.client.get(response[&#x27;Location&#x27;])
+        self.assertNotContains(again, &#x27;Draft saved.&#x27;)
+
+    def test_it_waits_in_a_signed_cookie(self):
+        response = self.save_draft()
+        cookie = response.cookies[&#x27;messages&#x27;]
+        self.assertIn(&#x27;:&#x27;, cookie.value)
+        self.assertTrue(cookie[&#x27;httponly&#x27;])
+        shown = self.client.get(response[&#x27;Location&#x27;])
+        self.assertEqual(
+            shown.cookies[&#x27;messages&#x27;][&#x27;max-age&#x27;], 0
+        )
+
+    def test_a_changed_cookie_is_ignored(self):
+        response = self.save_draft()
+        value = response.cookies[&#x27;messages&#x27;].value
+        self.client.cookies[&#x27;messages&#x27;] = &#x27;x&#x27; + value
+        page = self.client.get(response[&#x27;Location&#x27;])
+        self.assertNotContains(page, &#x27;Draft saved.&#x27;)
+
+    def test_a_message_can_be_closed(self):
+        page = self.save_draft(follow=True)
+        self.assertContains(page, &#x27;alert-success&#x27;)
+        self.assertContains(page, &#x27;data-close&#x27;)
+        self.assertContains(page, &#x27;otahque/site.js&#x27;)
+
+    def test_an_error_has_the_error_style(self):
+        draft = future_draft(self.sam, description=&#x27;&#x27;)
+        page = self.client.post(
+            action_url(&#x27;publish&#x27;, draft), follow=True
+        )
+        self.assertContains(page, &#x27;alert-error&#x27;)
+        self.assertContains(page, &#x27;Add a description.&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="96" tabindex="0"><code>uv run python manage.py test events.tests.MessageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="97" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False is not true : Couldn&#x27;t find &#x27;data-
+    close&#x27; in the following response
+Ran 5 tests in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="98">Four of the five pass already, because Django’s messages framework behaves this way: a message is shown once, waits in a signed cookie, and is ignored if the cookie is changed. Only the close button is missing. In <code>templates/base.html</code>, replace the messages block from Chapter 24 with this one, which gives each message a button:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html (replace the messages block)</p><pre class="code-listing code-listing--file" data-block="99" tabindex="0"><code>    {% if messages %}
+      &lt;div role=&quot;status&quot; class=&quot;space-y-2&quot;&gt;
+        {% for message in messages %}
+          &lt;div class=&quot;alert
+            {% if message.level_tag == &#x27;error&#x27; %}alert-error
+            {% else %}alert-success{% endif %}&quot;&gt;
+            &lt;span&gt;{{ message }}&lt;/span&gt;
+            &lt;button type=&quot;button&quot; data-close
+                    class=&quot;btn btn-ghost btn-sm ml-auto&quot;&gt;
+              Close&lt;/button&gt;
+          &lt;/div&gt;
+        {% endfor %}
+      &lt;/div&gt;
+    {% endif %}</code></pre><p class="" data-block="100">The button does nothing yet. Otahque’s first script for every page will do the work. Load it in <code>base.html</code>, just after the stylesheet’s <code>&lt;link&gt;</code>, with <code>defer</code>, so that it runs once the page has been read:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html (after the stylesheet link)</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>  &lt;script src=&quot;{% static &#x27;otahque/site.js&#x27; %}&quot;
+          defer&gt;&lt;/script&gt;</code></pre><p class="" data-block="102">Create <code>static/otahque/site.js</code>:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/site.js</p><pre class="code-listing code-listing--file" data-block="103" tabindex="0"><code>// Otahque&#x27;s script for every page (Chapter 28).
+
+// Close a message. The server has already used it up;
+// this only hides it on the page in front of you.
+for (const button of
+     document.querySelectorAll(&#x27;[data-close]&#x27;)) {
+  button.addEventListener(&#x27;click&#x27;, () =&gt; {
+    button.closest(&#x27;.alert&#x27;).remove();
+  });
+}</code></pre><p class="" data-block="104"><code>document.querySelectorAll(&#x27;[data-close]&#x27;)</code> finds every element with a <code>data-close</code> attribute, and each button’s click removes the nearest element with the class <code>alert</code>. Rebuild the stylesheet with <code>npm run build</code>, for the button’s classes, and run the tests again:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="105" tabindex="0"><code>uv run python manage.py test events.tests.MessageTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="106" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="107">Step 4: Remember a filter in the session</h4><p class="" data-block="108">Tests first, with one event that has places and one that is full. Add them at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="109" tabindex="0"><code>class PlacesFilterTests(TestCase):
+    &quot;&quot;&quot;The places filter, remembered in the session.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        start = timezone.now() + timedelta(days=7)
+        save_event(starts_at=start, capacity=2)
+        cls.full = save_event(title=&#x27;Django workshop&#x27;,
+                              starts_at=start, capacity=1)
+        sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        Registration.objects.create(event=cls.full,
+                                    member=sai)
+
+    def test_the_filter_is_remembered(self):
+        self.client.get(&#x27;/events/?places=1&#x27;)
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(page, &#x27;Python meetup&#x27;)
+        self.assertNotContains(page, &#x27;Django workshop&#x27;)
+        self.assertContains(
+            page, &#x27;Showing only events with places left.&#x27;
+        )
+
+    def test_show_all_clears_it(self):
+        self.client.get(&#x27;/events/?places=1&#x27;)
+        self.client.get(&#x27;/events/?places=0&#x27;)
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(page, &#x27;Django workshop&#x27;)
+        self.assertFalse(self.client.session[&#x27;places_only&#x27;])
+
+    def test_viewing_alone_saves_no_session(self):
+        response = self.client.get(&#x27;/events/&#x27;)
+        self.assertNotIn(&#x27;sessionid&#x27;, response.cookies)
+        self.assertFalse(Session.objects.exists())
+
+    def test_places_are_read_from_the_database(self):
+        self.client.get(&#x27;/events/?places=1&#x27;)
+        self.assertNotContains(self.client.get(&#x27;/events/&#x27;),
+                               &#x27;Django workshop&#x27;)
+        self.full.registrations.update(
+            status=Registration.Status.CANCELLED,
+            cancelled_at=timezone.now(),
+        )
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(page, &#x27;Django workshop&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="110" tabindex="0"><code>uv run python manage.py test events.tests.PlacesFilterTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="111" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+KeyError: &#x27;places_only&#x27;
+AssertionError: 1 != 0 :&#x27;Django workshop&#x27; unexpectedly found
+    in the following response
+Ran 4 tests in ...s
+
+FAILED (failures=2, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="112">In <code>events/views.py</code>, replace <code>event_list()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_list)</p><pre class="code-listing code-listing--file" data-block="113" tabindex="0"><code>def event_list(request):
+    &quot;&quot;&quot;List published events; remember the places filter.&quot;&quot;&quot;
+    choice = request.GET.get(&#x27;places&#x27;)
+    if choice in (&#x27;0&#x27;, &#x27;1&#x27;):
+        # Saved only when the visitor changes the filter.
+        request.session[&#x27;places_only&#x27;] = choice == &#x27;1&#x27;
+    places_only = request.session.get(&#x27;places_only&#x27;, False)
+    now = timezone.now()
+    events = Event.objects.published().with_places()
+    upcoming = events.upcoming(now)
+    if places_only:
+        upcoming = upcoming.filter(places_left__gt=0)
+    return render(request, &#x27;events/list.html&#x27;, {
+        &#x27;upcoming&#x27;: upcoming,
+        &#x27;past&#x27;: events.past(now),
+        &#x27;now&#x27;: now,
+        &#x27;places_only&#x27;: places_only,
+    })</code></pre><p class="" data-block="114"><code>request.session</code> behaves like a dictionary. The view writes to it only when <code>places</code> is <code>0</code> or <code>1</code> in the address, so an ordinary visit saves nothing, and reads it with <code>.get()</code>, so a visitor without a session gets <code>False</code>. The filter applies to upcoming events, using Chapter 22’s <code>places_left</code>, which the database counts afresh on every request. Past events are listed as before.</p><p class="" data-block="115">The form goes in <code>events/templates/events/list.html</code>, just after <code>&lt;h1&gt;Events&lt;/h1&gt;</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/list.html (after the h1)</p><pre class="code-listing code-listing--file" data-block="116" tabindex="0"><code>  &lt;form method=&quot;get&quot;
+        class=&quot;flex flex-wrap items-center gap-3&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;places&quot; value=&quot;0&quot;&gt;
+    &lt;label class=&quot;flex items-center gap-2&quot;&gt;
+      &lt;input type=&quot;checkbox&quot; name=&quot;places&quot; value=&quot;1&quot;
+             class=&quot;checkbox&quot;
+             {% if places_only %}checked{% endif %}&gt;
+      Only events with places left
+    &lt;/label&gt;
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-sm&quot;&gt;Filter&lt;/button&gt;
+  &lt;/form&gt;
+  {% if places_only %}
+    &lt;p class=&quot;filter-note text-sm&quot;&gt;
+      Showing only events with places left.
+      &lt;a href=&quot;?places=0&quot;&gt;Show all&lt;/a&gt;&lt;/p&gt;
+  {% endif %}</code></pre><p class="" data-block="117">A checkbox that is not ticked sends nothing at all, so the form also sends a hidden <code>places=0</code>. When the box is ticked, the browser sends both, <code>places=0&amp;places=1</code>, and Django’s <code>request.GET.get()</code> returns the last value for a repeated name, which is <code>1</code>. Rebuild the stylesheet with <code>npm run build</code>, and run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="118" tabindex="0"><code>uv run python manage.py test events.tests.PlacesFilterTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="119" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="120">Common Error: modifying a value inside the session</p><p class="" data-block="121"><code>request.session[&#x27;filters&#x27;][&#x27;places&#x27;] = True</code> changes a dictionary inside the session, and Django does not notice: it saves a session only when a key of the session itself is set or deleted. Set the whole value again, as Step 4 does, or set <code>request.session.modified = True</code> after changing something inside it.</p></div><h4 data-block="122">Step 5: Sign-out and expiry</h4><p class="" data-block="123">Signing out flushes the session: Django deletes the row and the cookie, so Raj’s filter goes with them. The zone cookie of the next step is separate, and stays. An expired session is the same as none. These tests pass at once, because Django already behaves this way; they keep it so. Add them at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="124" tabindex="0"><code>class SessionEndTests(TestCase):
+    &quot;&quot;&quot;What signing out and expiry forget.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        start = timezone.now() + timedelta(days=7)
+        full = save_event(title=&#x27;Django workshop&#x27;,
+                          starts_at=start, capacity=1)
+        cls.sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        Registration.objects.create(event=full,
+                                    member=cls.sai)
+
+    def test_sign_out_clears_the_filter_not_the_zone(self):
+        self.client.force_login(self.sai)
+        self.client.cookies[&#x27;otahque_tz&#x27;] = &#x27;Asia/Kolkata&#x27;
+        self.client.get(&#x27;/events/?places=1&#x27;)
+        self.client.post(&#x27;/accounts/logout/&#x27;)
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(page, &#x27;Django workshop&#x27;)
+        self.assertEqual(
+            self.client.cookies[&#x27;otahque_tz&#x27;].value,
+            &#x27;Asia/Kolkata&#x27;,
+        )
+
+    def test_an_expired_session_is_forgotten(self):
+        self.client.get(&#x27;/events/?places=1&#x27;)
+        session = self.client.session
+        session.set_expiry(-1)
+        session.save()
+        page = self.client.get(&#x27;/events/&#x27;)
+        self.assertContains(page, &#x27;Django workshop&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="125" tabindex="0"><code>uv run python manage.py test events.tests.SessionEndTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="126" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="127"><code>set_expiry(-1)</code> makes the session one second past its end, as if two weeks had gone by. The next request finds no row it may use, and starts again with an empty session.</p><h4 data-block="128">Step 6: The browser’s time zone</h4><p class="" data-block="129">The zone tests go in <code>accounts/tests.py</code>, and need a few more imports. Put these at the very top of the file, above the <code>allauth</code> imports; Steps 7 and 10 use the ones this step does not:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (at the very top)</p><pre class="code-listing code-listing--file" data-block="130" tabindex="0"><code>import base64
+import time
+from datetime import UTC, datetime
+from unittest import mock
+from zoneinfo import ZoneInfo</code></pre><p class="" data-block="131">and this one after <code>from .models import Profile, User</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (after the models import)</p><pre class="code-listing code-listing--file" data-block="132" tabindex="0"><code>from .timezones import (
+    COOKIE, resolve_timezone, to_user_time,
+)</code></pre><p class="" data-block="133">Then the tests, at the end. <code>request_with()</code> builds a request as the middleware will see it, with a cookie and a member:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="134" tabindex="0"><code>def request_with(cookie=None, user=None):
+    &quot;&quot;&quot;Build a request as the middleware sees it.&quot;&quot;&quot;
+    request = RequestFactory().get(&#x27;/&#x27;)
+    if cookie is not None:
+        request.COOKIES[COOKIE] = cookie
+    request.user = user or AnonymousUser()
+    return request
+
+
+class BrowserZoneTests(TestCase):
+    &quot;&quot;&quot;Which zone a viewer gets: profile, cookie, UTC.&quot;&quot;&quot;
+
+    def test_a_real_zone_is_used(self):
+        zone = resolve_timezone(request_with(&#x27;Asia/Kolkata&#x27;))
+        self.assertEqual(zone, ZoneInfo(&#x27;Asia/Kolkata&#x27;))
+
+    def test_an_alias_is_a_real_zone(self):
+        request = request_with(&#x27;Asia/Calcutta&#x27;)
+        zone = resolve_timezone(request)
+        self.assertEqual(str(zone), &#x27;Asia/Calcutta&#x27;)
+
+    def test_anything_else_means_utc(self):
+        for value in (None, &#x27;&#x27;, &#x27;Mars/Base&#x27;,
+                      &#x27;../../etc/passwd&#x27;):
+            with self.subTest(value=value):
+                zone = resolve_timezone(request_with(value))
+                self.assertEqual(zone, ZoneInfo(&#x27;UTC&#x27;))
+
+    def test_the_profile_zone_comes_first(self):
+        sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+        Profile.objects.create(user=sai,
+                               timezone=&#x27;Europe/London&#x27;)
+        request = request_with(&#x27;Asia/Kolkata&#x27;, sai)
+        self.assertEqual(resolve_timezone(request),
+                         ZoneInfo(&#x27;Europe/London&#x27;))
+
+    def test_to_user_time(self):
+        moment = datetime(2026, 12, 3, 12, 30, tzinfo=UTC)
+        request = request_with(&#x27;Asia/Kolkata&#x27;)
+        local = to_user_time(moment, request)
+        self.assertEqual(f&#x27;{local:%H:%M %Z}&#x27;, &#x27;18:00 IST&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="135" tabindex="0"><code>uv run python manage.py test accounts.tests.BrowserZoneTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="136" tabindex="0"><code>Found 1 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+ImportError: Failed to import test module: tests
+ModuleNotFoundError: No module named &#x27;accounts.timezones&#x27;
+Ran 1 test in ...s
+
+FAILED (errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="137">The module does not exist yet. Create <code>accounts/timezones.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/timezones.py</p><pre class="code-listing code-listing--file" data-block="138" tabindex="0"><code>&quot;&quot;&quot;Which time zone to show a viewer, and times in it.&quot;&quot;&quot;
+from zoneinfo import ZoneInfo, available_timezones
+
+from django.utils import timezone
+
+from .models import Profile
+
+# The cookie site.js writes with the browser&#x27;s time zone.
+COOKIE = &#x27;otahque_tz&#x27;
+KNOWN = frozenset(available_timezones())
+UTC = ZoneInfo(&#x27;UTC&#x27;)
+
+
+def resolve_timezone(request):
+    &quot;&quot;&quot;Return the zone to show times in.
+
+    The member&#x27;s profile, then the browser&#x27;s cookie,
+    then UTC.
+    &quot;&quot;&quot;
+    user = request.user
+    if user.is_authenticated:
+        saved = Profile.objects.filter(
+            user=user
+        ).values_list(&#x27;timezone&#x27;, flat=True).first()
+        if saved:
+            return ZoneInfo(saved)
+    name = request.COOKIES.get(COOKIE, &#x27;&#x27;)
+    if name in KNOWN:
+        return ZoneInfo(name)
+    return UTC
+
+
+def to_user_time(value, request):
+    &quot;&quot;&quot;value, an aware datetime, in the viewer&#x27;s zone.&quot;&quot;&quot;
+    zone = resolve_timezone(request)
+    return timezone.localtime(value, zone)</code></pre><p class="" data-block="139"><code>KNOWN</code> is the set of real zone names, built once when the module is loaded, because building it reads hundreds of files. The profile is read with <code>.filter(...).values_list(...).first()</code>, which returns <code>None</code> instead of making a profile, so a page view never writes to the database. <code>to_user_time()</code> is for Python code that needs a time in the viewer’s zone, such as a message; templates get the zone from the middleware of Step 7.</p><p class="" data-block="140">Now the script writes the cookie. In <code>static/otahque/site.js</code>, add this block after the first comment line, above the close-button block:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/site.js (after the first comment)</p><pre class="code-listing code-listing--file" data-block="141" tabindex="0"><code>// Tell the server this browser&#x27;s time zone. The cookie is
+// a display preference: the server checks it is a real
+// zone name, and a member&#x27;s profile zone comes first.
+const browserZone = Intl.DateTimeFormat()
+  .resolvedOptions().timeZone;
+if (browserZone) {
+  document.cookie = &#x27;otahque_tz=&#x27; + browserZone
+    + &#x27;; path=/; max-age=31536000; samesite=lax&#x27;;
+}</code></pre><p class="" data-block="142"><code>path=/</code> sends the cookie to every page, <code>max-age=31536000</code> is one year in seconds, and <code>samesite=lax</code> is the same rule as the session’s. A script cannot set HttpOnly, and does not need to: the value is not a secret.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="143" tabindex="0"><code>uv run python manage.py test accounts.tests.BrowserZoneTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="144" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="145">Step 7: One zone for every request</h4><p class="" data-block="146">Tests first. They check where the middleware sits, that Sam’s profile zone reaches his pages, and that the admin still reads typed times as UTC. In <code>accounts/tests.py</code>, add <code>from django.conf import settings</code> above <code>from django.contrib.auth import get_user_model</code>, and replace <code>from events.tests import admin_url</code> with:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (replace the events.tests import)</p><pre class="code-listing code-listing--file" data-block="147" tabindex="0"><code>from events.models import Event
+from events.tests import admin_url, event_form, save_event</code></pre><p class="" data-block="148">Then the tests, at the end:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="149" tabindex="0"><code>class TimezoneMiddlewareTests(TestCase):
+    &quot;&quot;&quot;Pages in the viewer&#x27;s zone; the admin in UTC.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = User.objects.create_superuser(
+            &#x27;sam@example.org&#x27;, PASSWORD, display_name=&#x27;Sam&#x27;
+        )
+        Profile.objects.create(user=cls.sam,
+                               timezone=&#x27;Asia/Kolkata&#x27;)
+
+    def setUp(self):
+        self.client.force_login(self.sam)
+
+    def test_it_runs_after_authentication(self):
+        names = settings.MIDDLEWARE
+        ours = &#x27;accounts.middleware.TimezoneMiddleware&#x27;
+        auth = (&#x27;django.contrib.auth.middleware.&#x27;
+                &#x27;AuthenticationMiddleware&#x27;)
+        self.assertGreater(names.index(ours),
+                           names.index(auth))
+
+    def test_pages_use_the_profile_zone(self):
+        page = self.client.get(&#x27;/accounts/profile/&#x27;)
+        self.assertRegex(page.content.decode(),
+                         r&#x27;shown to you in\s+Asia/Kolkata&#x27;)
+
+    def test_the_admin_stays_in_utc(self):
+        event = save_event(
+            starts_at=datetime(2026, 12, 3, 9, tzinfo=UTC),
+            timezone=&#x27;Asia/Kolkata&#x27;,
+        )
+        url = admin_url(Event, &#x27;change&#x27;, event.pk)
+        self.client.post(url, event_form(
+            event, starts_at_1=&#x27;15:00&#x27;, ends_at_1=&#x27;17:00&#x27;,
+        ))
+        event.refresh_from_db()
+        typed = datetime(2026, 12, 3, 15, tzinfo=UTC)
+        self.assertEqual(event.starts_at, typed)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="150" tabindex="0"><code>uv run python manage.py test accounts -k TimezoneMiddleware</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="151" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+ValueError: list.index(x): x not in list
+Ran 3 tests in ...s
+
+FAILED (failures=1, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="152">The admin test already passes, because no zone is active yet; it is there to keep it so. The middleware is a class that Django creates once, with the next step in the chain as <code>get_response</code>, and calls once for each request. Create <code>accounts/middleware.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/middleware.py</p><pre class="code-listing code-listing--file" data-block="153" tabindex="0"><code>&quot;&quot;&quot;Middleware that shows pages in the viewer&#x27;s zone.&quot;&quot;&quot;
+from django.urls import reverse
+from django.utils import timezone
+
+from .timezones import resolve_timezone
+
+
+class TimezoneMiddleware:
+    &quot;&quot;&quot;Show every page in the viewer&#x27;s zone.
+
+    The admin is the exception: it stays in UTC (Chapter 23).
+    &quot;&quot;&quot;
+
+    def __init__(self, get_response):
+        &quot;&quot;&quot;Keep the next handler in the chain.&quot;&quot;&quot;
+        self.get_response = get_response
+
+    def __call__(self, request):
+        &quot;&quot;&quot;Turn on the viewer&#x27;s zone for this request.&quot;&quot;&quot;
+        if request.path.startswith(reverse(&#x27;admin:index&#x27;)):
+            timezone.deactivate()
+        else:
+            timezone.activate(resolve_timezone(request))
+        return self.get_response(request)</code></pre><p class="" data-block="154"><code>reverse(&#x27;admin:index&#x27;)</code> gives the admin’s address, which Chapter 23 reads from <code>DJANGO_ADMIN_URL</code>, so the check follows it if it changes. <code>timezone.deactivate()</code> returns to <code>TIME_ZONE</code>, UTC. In <code>config/settings.py</code>, add the middleware to <code>MIDDLEWARE</code>, on the line after <code>AuthenticationMiddleware</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (MIDDLEWARE, after AuthenticationMiddleware)</p><pre class="code-listing code-listing--file" data-block="155" tabindex="0"><code>    &#x27;accounts.middleware.TimezoneMiddleware&#x27;,</code></pre><p class="" data-block="156">Last, tell members which zone they see. In <code>accounts/templates/accounts/profile.html</code>, add <code>{% load tz %}</code> after the <code>extends</code> line, and these lines after the first paragraph:</p><p class="code-label code-label--file" aria-hidden="true">accounts/templates/accounts/profile.html (after the first paragraph)</p><pre class="code-listing code-listing--file" data-block="157" tabindex="0"><code>  {% get_current_timezone as zone %}
+  &lt;p class=&quot;text-sm&quot;&gt;Event times are shown to you in
+     {{ zone }}: your profile&#x27;s zone if you chose one,
+     otherwise your browser&#x27;s, otherwise UTC.&lt;/p&gt;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="158" tabindex="0"><code>uv run python manage.py test accounts -k TimezoneMiddleware
+uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="159" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...
+Found 212 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 212 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="160">Common Error: the middleware above AuthenticationMiddleware</p><p class="" data-block="161">Middleware runs in the order of the list. Put <code>TimezoneMiddleware</code> above <code>AuthenticationMiddleware</code> and <code>request.user</code> does not exist yet when it runs, so every page fails with <code>AttributeError: &#x27;WSGIRequest&#x27; object has no attribute &#x27;user&#x27;</code>. Move the line below <code>AuthenticationMiddleware</code>, as above.</p></div><div class="callout callout--error"><p class="callout__title" data-block="162">Common Error: an admin in the viewer’s zone</p><p class="" data-block="163">Without the admin check, the admin’s forms read typed times in Sam’s zone, while their help text still says “In UTC”. Sam types 15:00 meaning UTC, and Django stores 15:00 in Asia/Kolkata, which is 09:30 UTC. Nothing warns him; only Step 7’s test sees it, failing with <code>datetime(2026, 12, 3, 9, 30, ...)</code> where it expected 15:00. Keep the <code>admin:index</code> check in the middleware.</p></div><h4 data-block="164">Step 8: Typed times in the event’s zone</h4><p class="" data-block="165">Since Step 7, the New event page reads typed times in the viewer’s zone before Chapter 24’s <code>in_zone()</code> sees them, as Figure 28.4 shows. Tests first. In <code>events/tests.py</code>, add <code>from zoneinfo import ZoneInfo</code> after <code>from pathlib import Path</code>, and change <code>from .forms import EventForm</code> to <code>from .forms import CopyForm, EventForm</code>. Then add the tests at the end. <code>timezone.override()</code> makes a zone current for the length of a <code>with</code> block, as the middleware does for a request:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="166" tabindex="0"><code>NEW_YORK = ZoneInfo(&#x27;America/New_York&#x27;)
+
+
+class ViewerZoneFormTests(TestCase):
+    &quot;&quot;&quot;Typed times belong to the event&#x27;s zone.
+
+    That holds whatever zone the viewer&#x27;s page uses.
+    &quot;&quot;&quot;
+
+    def test_a_new_york_viewer_creates_a_delhi_event(self):
+        with timezone.override(NEW_YORK):
+            form = new_event_form(
+                timezone=&#x27;Asia/Kolkata&#x27;,
+                starts_at=&#x27;2027-03-14T02:30&#x27;,
+                ends_at=&#x27;2027-03-14T04:00&#x27;,
+            )
+            self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            in_utc(form, &#x27;starts_at&#x27;),
+            datetime(2027, 3, 13, 21, 0, tzinfo=UTC),
+        )
+
+    def test_the_event_zone_still_refuses_its_own_gap(self):
+        with timezone.override(NEW_YORK):
+            form = new_event_form(
+                timezone=&#x27;Europe/London&#x27;,
+                starts_at=&#x27;2027-03-28T01:30&#x27;,
+                ends_at=&#x27;2027-03-28T03:00&#x27;,
+            )
+            self.assertFormError(
+                form, &#x27;starts_at&#x27;,
+                &#x27;01:30 does not exist in Europe/London &#x27;
+                &#x27;that day: the clocks go forward.&#x27;,
+            )
+
+    def test_the_copy_form_too(self):
+        event = save_event(timezone=&#x27;Asia/Kolkata&#x27;)
+        with timezone.override(NEW_YORK):
+            form = CopyForm(
+                {&#x27;starts_at&#x27;: &#x27;2027-11-07T01:30&#x27;},
+                event=event,
+            )
+            self.assertTrue(form.is_valid(), form.errors)
+
+    def test_the_new_event_page_with_a_new_york_cookie(self):
+        self.client.force_login(editor())
+        self.client.cookies[&#x27;otahque_tz&#x27;] = str(NEW_YORK)
+        self.client.post(reverse(&#x27;events:create&#x27;), {
+            **NEW_EVENT, &#x27;timezone&#x27;: &#x27;Asia/Kolkata&#x27;,
+            &#x27;starts_at&#x27;: &#x27;2027-03-14T02:30&#x27;,
+            &#x27;ends_at&#x27;: &#x27;2027-03-14T04:00&#x27;,
+        })
+        self.assertTrue(Event.objects.exists())</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="167" tabindex="0"><code>uv run python manage.py test events.tests.ViewerZoneFormTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="168" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False is not true
+Ran 4 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="169">Three fail. The output above is shortened; in yours, each failure ends with Django’s own message, such as <code>2027-03-14 02:30:00 couldn’t be interpreted in time zone America/New_York; it may be ambiguous or it may not exist.</code> The London test passes: 01:30 on 28 March 2027 does not exist in London, and Otahque’s message says so, as it should. In <code>events/forms.py</code>, add this class just before <code>EventForm</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (add before EventForm)</p><pre class="code-listing code-listing--file" data-block="170" tabindex="0"><code>class UtcCleaning:
+    &quot;&quot;&quot;Clean typed times under UTC.
+
+    UTC has no clock changes; in_zone() then reads them in
+    the event&#x27;s zone, whatever zone the viewer&#x27;s page uses.
+    &quot;&quot;&quot;
+
+    def full_clean(self):
+        &quot;&quot;&quot;Run every check with UTC as the current zone.&quot;&quot;&quot;
+        with timezone.override(UTC):
+            super().full_clean()</code></pre><p class="" data-block="171">and put it first in both forms’ parents, so that its <code>full_clean()</code> runs around theirs:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (the two class lines)</p><pre class="code-listing code-listing--file" data-block="172" tabindex="0"><code>class EventForm(UtcCleaning, forms.ModelForm):
+class CopyForm(UtcCleaning, forms.Form):</code></pre><p class="" data-block="173"><code>full_clean()</code> is the method <code>is_valid()</code> calls to run every check, from Chapter 25’s validation lifecycle. Inside <code>timezone.override(UTC)</code>, the field stage reads typed text in UTC, where no time is missing or doubled, and <code>in_zone()</code> then reads the same clock time in the event’s zone, as it always has.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="174" tabindex="0"><code>uv run python manage.py test events.tests.ViewerZoneFormTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="175" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="176">Step 9: The venue’s time and yours</h4><p class="" data-block="177">Tests first, with a Delhi clinic seen from four browsers. Add them at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="178" tabindex="0"><code>class BothTimesTests(TestCase):
+    &quot;&quot;&quot;When an event shows the viewer&#x27;s time as well.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.clinic = save_event(
+            title=&#x27;Delhi clinic&#x27;, timezone=&#x27;Asia/Kolkata&#x27;,
+            starts_at=datetime(2026, 12, 3, 12, 30,
+                               tzinfo=UTC),
+        )
+
+    def page(self, zone):
+        &quot;&quot;&quot;Open the clinic&#x27;s page for a viewer in zone.&quot;&quot;&quot;
+        self.client.cookies[&#x27;otahque_tz&#x27;] = zone
+        url = self.clinic.get_absolute_url()
+        return self.client.get(url)
+
+    def test_the_venue_zone_shows_one_time(self):
+        page = self.page(&#x27;Asia/Kolkata&#x27;)
+        self.assertContains(
+            page, &#x27;Thursday 3 December 2026, 18:00 IST&#x27;
+        )
+        self.assertNotContains(page, &#x27;Your time&#x27;)
+
+    def test_another_zone_shows_both(self):
+        page = self.page(&#x27;America/New_York&#x27;)
+        self.assertContains(
+            page, &#x27;Thursday 3 December 2026, 18:00 IST&#x27;
+        )
+        self.assertContains(
+            page,
+            &#x27;Your time: Thursday 3 December 2026, 07:30 EST&#x27;,
+        )
+
+    def test_an_alias_shows_one_time(self):
+        page = self.page(&#x27;Asia/Calcutta&#x27;)
+        self.assertNotContains(page, &#x27;Your time&#x27;)
+
+    def test_summer_time_counts(self):
+        july = save_event(
+            starts_at=datetime(2027, 7, 1, 17, tzinfo=UTC)
+        )
+        winter = save_event(
+            starts_at=datetime(2027, 1, 14, 18, tzinfo=UTC)
+        )
+        utc = ZoneInfo(&#x27;UTC&#x27;)
+        self.assertTrue(july.differs_for(utc))
+        self.assertFalse(winter.differs_for(utc))</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="179" tabindex="0"><code>uv run python manage.py test events.tests.BothTimesTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="180" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute &#x27;differs_for&#x27;
+Ran 4 tests in ...s
+
+FAILED (failures=1, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="181">The rule goes on the model. In <code>events/models.py</code>, change the first line to <code>from zoneinfo import ZoneInfo, available_timezones</code>, and add this method to <code>Event</code>, before <code>can_be_edited_by</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (Event, add before can_be_edited_by)</p><pre class="code-listing code-listing--file" data-block="182" tabindex="0"><code>    def differs_for(self, zone=None):
+        &quot;&quot;&quot;Return whether zone shows another start time.
+
+        It is compared with the venue&#x27;s zone; by default,
+        zone is the viewer&#x27;s.
+        &quot;&quot;&quot;
+        zone = zone or timezone.get_current_timezone()
+        start = self.starts_at
+        venue = start.astimezone(ZoneInfo(self.timezone))
+        return start.astimezone(zone).utcoffset() != (
+            venue.utcoffset()
+        )</code></pre><p class="" data-block="183">With no argument, it compares with the current zone, so a template can call it. <code>utcoffset()</code> is the clock’s distance from UTC at that moment, such as +5:30 in Delhi, so two names for the same clock compare equal.</p><p class="" data-block="184">Three pages show times: the list, the event page, and My events. One small template shows a time for all three. Create <code>events/templates/events/when.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/when.html</p><pre class="code-listing code-listing--file" data-block="185" tabindex="0"><code>{% load tz %}
+{% with moment=at|default:event.starts_at %}
+{% with shape=format|default:&quot;D j M Y, H:i T&quot; %}
+  {% timezone event.timezone %}
+    {{ moment|date:shape }}
+  {% endtimezone %}
+  {% if event.differs_for %}
+    &lt;span class=&quot;your-time block text-sm&quot;&gt;
+      Your time: {{ moment|date:shape }}&lt;/span&gt;
+  {% endif %}
+{% endwith %}
+{% endwith %}</code></pre><p class="" data-block="186">It shows <code>at</code>, or the event’s start when <code>at</code> is not given, in the <code>format</code> given, or in the list’s short format. <code>{% timezone event.timezone %}</code> shows the venue’s time, as Chapter 19 did; the line below it, outside that block, is in the zone the middleware activated. Now use it. In <code>events/templates/events/list.html</code>, replace the <code>{% timezone %}</code> block in the row with:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/list.html (replace the row&#x27;s timezone block)</p><pre class="code-listing code-listing--file" data-block="187" tabindex="0"><code>          &lt;span class=&quot;text-sm&quot;&gt;
+            {% include &quot;events/when.html&quot; %}
+          &lt;/span&gt;</code></pre><p class="" data-block="188">In <code>events/templates/events/detail.html</code>, replace the <code>{% timezone %}</code> block with:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (replace the timezone block)</p><pre class="code-listing code-listing--file" data-block="189" tabindex="0"><code>    {% with format=&quot;l j F Y, H:i T&quot; %}
+    &lt;p&gt;From {% include &quot;events/when.html&quot; %}&lt;/p&gt;
+    &lt;p&gt;Until
+      {% include &quot;events/when.html&quot; with at=event.ends_at %}
+    &lt;/p&gt;
+    {% endwith %}</code></pre><p class="" data-block="190">and in <code>events/templates/events/manage.html</code>, replace its <code>{% timezone %}</code> block with:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/manage.html (replace the timezone block)</p><pre class="code-listing code-listing--file" data-block="191" tabindex="0"><code>        &lt;p class=&quot;text-sm&quot;&gt;
+          {% include &quot;events/when.html&quot; %}&lt;/p&gt;</code></pre><p class="" data-block="192">The three templates no longer use the <code>timezone</code> tag themselves, so delete the <code>{% load tz %}</code> line from each. Rebuild the stylesheet with <code>npm run build</code>, and run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="193" tabindex="0"><code>uv run python manage.py test events.tests.BothTimesTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="194" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="195">Step 10: Signing, the design, and the commit</h4><p class="" data-block="196">See what a signed value is with a practice file. Save it as <code>s10_signing.py</code>, run it like the one in Step 2, and delete it:</p><p class="code-label code-label--file" aria-hidden="true">s10_signing.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="197" tabindex="0"><code>import base64
+
+from django.core import signing
+
+SALT = &#x27;otahque.demo&#x27;
+value = signing.dumps({&#x27;places_only&#x27;: True}, salt=SALT)
+data, stamp, signature = value.split(&#x27;:&#x27;)
+print(&#x27;parts:&#x27;, len(data), len(stamp), len(signature))
+padded = data + &#x27;=&#x27; * (-len(data) % 4)
+print(&#x27;anyone can read:&#x27;, base64.urlsafe_b64decode(padded))
+print(&#x27;loads():&#x27;, signing.loads(value, salt=SALT))
+changed = value.replace(data, data[:-1] + &#x27;1&#x27;, 1)
+cases = [(&#x27;one letter changed&#x27;, changed, SALT),
+         (&#x27;another salt&#x27;, value, &#x27;other&#x27;)]
+for label, text, salt in cases:
+    try:
+        signing.loads(text, salt=salt)
+    except signing.BadSignature as error:
+        print(f&#x27;{label}:&#x27;, type(error).__name__)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="198" tabindex="0"><code>parts: 27 6 43
+anyone can read: b&#x27;{&quot;places_only&quot;:true}&#x27;
+loads(): {&#x27;places_only&#x27;: True}
+one letter changed: BadSignature
+another salt: BadSignature</code></pre><p class="" data-block="199">The value has three parts, separated by colons: the data, a time, and the signature. The data decodes without any key. Change one letter, or use another salt, and <code>loads()</code> refuses. The tests add expiry and key rotation, which need a clock and a second key. In <code>accounts/tests.py</code>, change <code>from django.core import mail</code> to <code>from django.core import mail, signing</code>, and add at the end:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="200" tabindex="0"><code>SALT = &#x27;otahque.demo&#x27;
+
+
+class SigningTests(SimpleTestCase):
+    &quot;&quot;&quot;Signed values: read, refused if changed, expire.&quot;&quot;&quot;
+
+    def test_a_signed_value_can_be_read(self):
+        value = signing.dumps({&#x27;places_only&#x27;: True},
+                              salt=SALT)
+        data = value.split(&#x27;:&#x27;)[0]
+        data += &#x27;=&#x27; * (-len(data) % 4)
+        self.assertEqual(base64.urlsafe_b64decode(data),
+                         b&#x27;{&quot;places_only&quot;:true}&#x27;)
+
+    def test_a_changed_value_is_refused(self):
+        value = signing.dumps({&#x27;places_only&#x27;: True},
+                              salt=SALT)
+        signature = value.split(&#x27;:&#x27;, 1)[1]
+        forged = base64.urlsafe_b64encode(
+            b&#x27;{&quot;places_only&quot;:false}&#x27;
+        ).decode().rstrip(&#x27;=&#x27;)
+        with self.assertRaises(signing.BadSignature):
+            signing.loads(f&#x27;{forged}:{signature}&#x27;, salt=SALT)
+
+    def test_an_old_value_expires(self):
+        two_minutes_ago = time.time() - 120
+        with mock.patch(&#x27;time.time&#x27;,
+                        return_value=two_minutes_ago):
+            value = signing.dumps(&#x27;x&#x27;, salt=SALT)
+        with self.assertRaises(signing.SignatureExpired):
+            signing.loads(value, salt=SALT, max_age=60)
+        self.assertEqual(
+            signing.loads(value, salt=SALT, max_age=600), &#x27;x&#x27;
+        )
+
+    def test_a_new_key_needs_the_old_one_as_fallback(self):
+        value = signing.dumps(&#x27;x&#x27;, salt=SALT)
+        old = settings.SECRET_KEY
+        new = &#x27;a-new-secret-key-&#x27; + &#x27;n&#x27; * 40
+        with override_settings(SECRET_KEY=new):
+            with self.assertRaises(signing.BadSignature):
+                signing.loads(value, salt=SALT)
+        with override_settings(SECRET_KEY=new,
+                               SECRET_KEY_FALLBACKS=[old]):
+            self.assertEqual(signing.loads(value, salt=SALT),
+                             &#x27;x&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="201" tabindex="0"><code>uv run python manage.py test accounts.tests.SigningTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="202" tabindex="0"><code>Found 4 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 4 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="203"><code>mock.patch(&#x27;time.time&#x27;, ...)</code> makes Python’s clock say two minutes ago while the value is signed, so it is two minutes old when it is checked. <code>override_settings()</code> changes a setting for one block, here the secret key. These tests describe Django’s behaviour, so they pass at once; the chapter’s interview questions build on them.</p><p class="" data-block="204">Record the design in <code>docs/design/sessions-and-time-zones.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/sessions-and-time-zones.md</p><pre class="code-listing code-listing--file" data-block="205" tabindex="0"><code># Sessions, cookies, and time zones: low-level design
+
+Status: Drafted in Chapter 28, for review. Not approved.
+
+## What each place holds
+
+- sessionid cookie: the session key only. Two weeks;
+  until the browser closes for a member who signs in
+  without ticking Remember me. HttpOnly, SameSite=Lax.
+- django_session row: who is signed in, and
+  places_only. Two weeks from the last change.
+- messages cookie: signed messages, until shown.
+- otahque_tz cookie: the browser&#x27;s zone, one year.
+- Database: events, registrations, and profiles.
+
+Registrations and places left are always read from the
+database. The session holds only what may be lost.
+
+## The places filter
+
+- /events/?places=1 saves places_only = True in the
+  session; ?places=0 saves False. A plain visit saves
+  nothing, so no session is made for a visitor.
+- Signing out flushes the session, and the filter with
+  it. An expired session is the same as none.
+
+## Time zones
+
+- site.js writes otahque_tz on every page (path /,
+  max-age one year, SameSite=Lax; not HttpOnly, not
+  signed: the browser writes it).
+- accounts.timezones.resolve_timezone(request): the
+  profile&#x27;s zone, then the cookie if it names a real
+  zone, then UTC. to_user_time() converts one value.
+- accounts.middleware.TimezoneMiddleware, after
+  AuthenticationMiddleware, activates that zone; admin
+  pages are skipped and stay in UTC (Chapter 23).
+- events/when.html shows the venue&#x27;s time, and &quot;Your
+  time&quot; when Event.differs_for() finds another UTC
+  offset at the start.
+- EventForm and CopyForm clean under UTC (UtcCleaning);
+  in_zone() reads typed times in the event&#x27;s zone.
+
+## Signing
+
+Signed values (the messages cookie, signing.dumps())
+can be read but not changed; TimestampSigner adds an
+expiry; SECRET_KEY_FALLBACKS keeps old values valid
+during a key change. Nothing is encrypted.
+
+## Open
+
+- Secure cookie settings: Chapter 63.
+- Session timeouts and SameSite review: Chapter 59.
+- Tokens for outside clients: Chapter 50.
+- The zone cookie in a consent notice: a later chapter.</code></pre><p class="" data-block="206">Check, test, and commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="207" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run
+uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="208" tabindex="0"><code>No changes detected
+Found 224 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 224 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="209" tabindex="0"><code>git add .
+git status --short
+git commit -m &quot;Remember visitors: sessions and time zones&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="210" tabindex="0"><code>A  accounts/middleware.py
+M  accounts/templates/accounts/profile.html
+M  accounts/tests.py
+A  accounts/timezones.py
+M  config/settings.py
+A  docs/design/sessions-and-time-zones.md
+M  events/forms.py
+M  events/models.py
+M  events/templates/events/detail.html
+M  events/templates/events/list.html
+M  events/templates/events/manage.html
+A  events/templates/events/when.html
+M  events/tests.py
+M  events/views.py
+M  static/otahque/site.css
+A  static/otahque/site.js
+M  templates/base.html</code></pre><div class="callout callout--error"><p class="callout__title" data-block="211">Common Error: two scripts declaring the same name</p><p class="" data-block="212">Scripts loaded with ordinary <code>&lt;script&gt;</code> tags share one set of top-level names. Chapter 24’s <code>event-zone.js</code> declares <code>const zone</code>; if <code>site.js</code> declared <code>const zone</code> too, the New event page would stop the second script with a SyntaxError, <code>Identifier &#x27;zone&#x27; has already been declared</code>, in the browser’s console, and the form would no longer choose Sam’s time zone for him. That is why <code>site.js</code> uses <code>browserZone</code>. Give each top-level name in a shared script a name no other script uses.</p></div><p class="" data-block="213">Table 28.2 lists what to do when a step does not go as described.</p><figure class="table-figure" data-block="214"><figcaption>Table 28.2 — When a step goes wrong</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 28.2 — When a step goes wrong"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">AttributeError: no attribute &#x27;user&#x27;</th>
+<td data-label="Likely cause">TimezoneMiddleware above AuthenticationMiddleware</td>
+<td data-label="Recovery">Move it to the line after AuthenticationMiddleware</td>
+</tr>
+<tr><th scope="row">Admin times shifted by hours</th>
+<td data-label="Likely cause">The admin check missing from the middleware</td>
+<td data-label="Recovery">Restore the admin:index check from Step 7</td>
+</tr>
+<tr><th scope="row">couldn&#x27;t be interpreted in time zone America/New_York</th>
+<td data-label="Likely cause">UtcCleaning missing from a form</td>
+<td data-label="Recovery">Put UtcCleaning first in the form&#x27;s parents, as in Step 8</td>
+</tr>
+<tr><th scope="row">The filter is forgotten at once</th>
+<td data-label="Likely cause">The view does not write to request.session</td>
+<td data-label="Recovery">Compare event_list with Step 4</td>
+</tr>
+<tr><th scope="row">No &quot;Your time&quot; line anywhere</th>
+<td data-label="Likely cause">Script blocked, or the cookie not yet sent</td>
+<td data-label="Recovery">Reload once; check site.js loads in the developer tools</td>
+</tr>
+<tr><th scope="row">The close button does nothing</th>
+<td data-label="Likely cause">site.js not loaded, or a name declared twice</td>
+<td data-label="Recovery">Check the console in the developer tools</td>
+</tr>
+</tbody></table></div></figure></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2028%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter28/section-28-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter28/section-28-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter28/section-28-2/">← What You Need to Know</a><a href="/chapters/chapter28/section-28-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

@@ -4,7 +4,10 @@ from zoneinfo import ZoneInfo, available_timezones
 from allauth.account.utils import has_verified_email
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, models, transaction
+from django.db import (
+    IntegrityError, OperationalError, connection, models,
+    transaction,
+)
 from django.urls import reverse
 from django.utils import timezone
 
@@ -39,7 +42,14 @@ REASONS = {
                   'register.',
     'phone_missing': 'This event asks for your phone '
                      'number.',
+    'busy': 'Otahque is busy. Please try again.',
 }
+
+# How long a request waits for an event row that another
+# request has locked, before Otahque says it is busy.
+LOCK_TIMEOUT = '3s'
+# PostgreSQL's error code for "lock not available".
+LOCK_NOT_AVAILABLE = '55P03'
 
 
 def refusal(codes):
@@ -154,6 +164,11 @@ class Event(models.Model):
         null=True, blank=True,
         help_text='Needed to publish; by the start. Later '
                   'cancellations count as late.',
+    )
+    # Counts saves of the edit page and the admin, so a
+    # save from an out-of-date page is refused (Chapter 33).
+    version = models.PositiveIntegerField(
+        default=1, editable=False
     )
     phone_required = models.BooleanField(
         'ask for a phone number', default=False,
@@ -338,25 +353,39 @@ class Event(models.Model):
         return problems
 
     def publish(self):
-        """Draft to published, or ValidationError."""
-        if self.status != self.Status.DRAFT:
-            raise ValidationError(
-                'Only a draft can be published.'
-            )
-        problems = self.readiness_problems()
-        if problems:
-            raise ValidationError(problems)
-        self.status = self.Status.PUBLISHED
-        self.save(update_fields=['status'])
+        """Draft to published, or ValidationError.
+
+        Reads the status under the lock, so a copy loaded
+        earlier cannot publish twice or publish a change.
+        """
+        with transaction.atomic():
+            event = self.locked()
+            if event.status != self.Status.DRAFT:
+                raise ValidationError(
+                    'Only a draft can be published.'
+                )
+            problems = event.readiness_problems()
+            if problems:
+                raise ValidationError(problems)
+            event.status = self.Status.PUBLISHED
+            event.save(update_fields=['status'])
+        self.status = event.status
 
     def cancel(self):
-        """Cancel if published, or raise ValidationError."""
-        if self.status != self.Status.PUBLISHED:
-            raise ValidationError(
-                'Only a published event can be cancelled.'
-            )
-        self.status = self.Status.CANCELLED
-        self.save(update_fields=['status'])
+        """Cancel if published, or raise ValidationError.
+
+        Reads the status under the lock, like publish().
+        """
+        with transaction.atomic():
+            event = self.locked()
+            if event.status != self.Status.PUBLISHED:
+                raise ValidationError(
+                    'Only a published event can be '
+                    'cancelled.'
+                )
+            event.status = self.Status.CANCELLED
+            event.save(update_fields=['status'])
+        self.status = event.status
 
     def delete_draft(self):
         """Delete a draft nobody registered for."""
@@ -445,26 +474,53 @@ class Event(models.Model):
             problems.append('phone_missing')
         return problems
 
+    def locked(self):
+        """Return this event's row, locked until commit.
+
+        Another request that asks for the row waits until
+        this transaction ends, for at most LOCK_TIMEOUT;
+        then it is told Otahque is busy. Call it inside
+        atomic(). SQLite ignores both.
+        """
+        if connection.vendor == 'postgresql':
+            with connection.cursor() as cursor:
+                cursor.execute('SET LOCAL lock_timeout = %s',
+                               [LOCK_TIMEOUT])
+        try:
+            return Event.objects.select_for_update().get(
+                pk=self.pk
+            )
+        except OperationalError as error:
+            # Only the lock timeout means busy; any other
+            # database error is raised again.
+            code = getattr(error.__cause__, 'sqlstate', None)
+            if code != LOCK_NOT_AVAILABLE:
+                raise
+            raise refusal(['busy']) from None
+
     def register(self, member, now):
         """Give member a place, or raise ValidationError.
 
-        The unique rule is the backstop for a place made
-        between the check and the insert. Chapter 33 locks
-        the event before counting.
+        The event row is locked first, so requests for it
+        take turns, and every check reads the locked row,
+        not this copy, which may be out of date. The unique
+        rule is still the backstop for the same member.
         """
         with transaction.atomic():
-            problems = self.registration_problems(member, now)
+            event = self.locked()
+            problems = event.registration_problems(member,
+                                                   now)
             if problems:
                 raise refusal(problems)
             try:
                 with transaction.atomic():
-                    return self.registrations.create(
+                    return event.registrations.create(
                         member=member, registered_at=now
                     )
             except IntegrityError:
                 # Only the one-active-place rule means a
                 # repeat; any other failure is re-raised.
-                if self.place_of(member) is None:
+                if event.place_of(member) is None:
                     raise
             raise refusal(['already_registered'])
 

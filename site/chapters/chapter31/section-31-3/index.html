@@ -1,0 +1,1980 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 31: Event registration and cancellation. Let members take and give back places: registration times required before publishing...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter31/section-31-3/">
+<title>How We Build It · Chapter 31 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>34. Testing fundamentals and first-release acceptance</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li class="book-nav-planned"><span>35. Class-based views and dispatch</span><small>Planned</small></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter31/">← Chapter 31 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-31-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-66">The Custom Way</a></li><li><a href="#topic-71">The Django Way</a></li><li><a href="#topic-387">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 8 figures · 5 tables<br>Working towards: First release (Chapter 34)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter31:31.3" data-progress-title="Section 31.3" data-reader-prev="section-31-2.html" data-reader-next="section-31-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 31.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter31/">Chapter 31 · Event registration and cancellation</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter31/section-31-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter31/section-31-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter31/section-31-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter31/section-31-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter31/section-31-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-31-3" data-block="63">How We Build It</h2><p class="" data-block="64">Start from Chapter 30, in the folder containing <code>manage.py</code>, with your own <code>.env</code>, the locked environment, 288 passing tests, every migration applied, and the Organizers and Administrators groups. One package is added, django-phonenumber-field. The new files are <code>docs/design/registration.md</code>, <code>registrations/urls.py</code>, seven templates in <code>registrations/templates/registrations/</code>, and five migrations, one of which fills in existing events. The visible result is a Register button on each open event, a “My registrations” link in the menu, and, for organizers, an “Attendee list” link on their events. The commands are written the same for Windows PowerShell, Git Bash, macOS, Linux, and WSL; the chapter’s checks ran in the first two. Each step with new behaviour writes its tests first and runs them to see them fail.</p><p class="" data-block="65">The new tests use helpers from Chapter 30, <code>in_group()</code> and <code>outcome()</code>, and four of their own: <code>verified()</code> makes a member whose email address is confirmed, <code>clinic()</code> Sam’s published clinic with fixed times, <code>soon()</code> the same clinic a week from now, open for registration, and <code>url()</code> the address of a registrations page.</p><h3 class="" id="topic-66" data-block="66">The Custom Way</h3><p class="" data-block="67">The registration code in most tutorials counts the places in the view and inserts a row if there is room, often behind a link. Save this practice file as <code>s_count.py</code> beside <code>manage.py</code>, run it with <code>uv run python manage.py shell -c &quot;exec(open(&#x27;s_count.py&#x27;).read())&quot;</code>, and delete it. It works inside a transaction that it rolls back, so your rows are unchanged:</p><p class="code-label code-label--file" aria-hidden="true">s_count.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="68" tabindex="0"><code>&quot;&quot;&quot;Practice: the Custom Way, counting before inserting.&quot;&quot;&quot;
+from datetime import timedelta
+
+from django.db import IntegrityError, transaction
+from django.utils import timezone
+
+from accounts.models import User
+from events.models import Event
+
+
+def count_then_insert(event, member, counted):
+    &quot;&quot;&quot;Insert a place if the count taken earlier had room.&quot;&quot;&quot;
+    if counted &lt; event.capacity:
+        return event.registrations.create(member=member)
+    return None
+
+
+with transaction.atomic():
+    start = timezone.now() + timedelta(days=7)
+    event = Event.objects.create(
+        title=&#x27;Practice clinic&#x27;, starts_at=start,
+        ends_at=start + timedelta(hours=1), timezone=&#x27;UTC&#x27;,
+        location=&#x27;Online&#x27;, capacity=2, status=&#x27;published&#x27;,
+    )
+    a, b, c = [User.objects.create_user(
+        f&#x27;{name}@example.net&#x27;, display_name=name)
+        for name in (&#x27;ann&#x27;, &#x27;ben&#x27;, &#x27;cal&#x27;)]
+    event.registrations.create(member=a)
+    # Two requests arrive together; each counts first.
+    seen_by_b = event.places_taken()
+    seen_by_c = event.places_taken()
+    count_then_insert(event, b, seen_by_b)
+    count_then_insert(event, c, seen_by_c)
+    print(&#x27;capacity 2, places taken:&#x27;, event.places_taken())
+    try:
+        with transaction.atomic():
+            count_then_insert(event, b, 0)
+    except IntegrityError:
+        print(&#x27;same member twice: refused by the database&#x27;)
+    transaction.set_rollback(True)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="69" tabindex="0"><code>capacity 2, places taken: 3
+same member twice: refused by the database</code></pre><p class="" data-block="70">Two requests that count before either inserts both see room, and a clinic for two now has three places. The database refused the second place for the same member, because Chapter 21’s unique rule holds whatever the code does, but no rule limits the total. Behind a GET link the code would also run whenever a browser prefetched the link or a chat app built a preview of it. The Django Way keeps the count and the insert inside one transaction in one model method, answers only POST, and states plainly what remains open: on SQLite two overlapping requests cannot be reproduced, so the total under load is proved in Chapter 33.</p><h3 class="" id="topic-71" data-block="71">The Django Way</h3><h4 data-block="72">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="73" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="74" tabindex="0"><code>Found 288 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 288 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="75" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="76" tabindex="0"><code>... Add roles, organizer access, and an audit trail</code></pre><h4 data-block="77">Step 2: The rules on paper</h4><p class="" data-block="78">Before code, write down what Table 31.1 decided in the terms the code will use: each reason by its code, each state of a place, each page, and who sees what. Create <code>docs/design/registration.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/registration.md</p><pre class="code-listing code-listing--file" data-block="79" tabindex="0"><code># Registration and cancellation: low-level design
+
+Status: Drafted in Chapter 31, for review. Not approved.
+Rules: PR-1 (one active place each), PR-2 (cancel your
+own place; history kept), PR-3 (no more places than
+capacity), PR-4 (own places; organizers see their
+events&#x27; lists). Timing: Chapter 2, decided 21 November
+2026.
+
+## Registration times (on Event)
+
+- registration_opens_at: optional; blank means open as
+  soon as the event is published. Inclusive.
+- registration_closes_at: needed to publish. Exclusive:
+  at that instant registration has closed.
+- cancellation_deadline: needed to publish. Cancelling
+  stays possible until the start; from the deadline on,
+  a cancellation counts as late.
+- Opening before closing; closing and deadline no later
+  than the start (CHECK constraints). Typed in the
+  event&#x27;s own zone; moved with the start by a copy.
+
+## Who may register, and why not
+
+Event.registration_problems(member, now) returns codes,
+checked in this order. Test: RegistrationRuleTests.
+
+| Code               | When                                   |
+|--------------------|----------------------------------------|
+| already_registered | member holds an active place           |
+| not_published      | a draft or a cancelled event           |
+| not_open           | before registration_opens_at           |
+| closed             | at or after registration_closes_at     |
+| full               | active places reach capacity           |
+| unverified         | the account email is not confirmed     |
+| phone_missing      | phone_required, and no number on file  |
+
+No code: Event.register() makes the place, inside a
+transaction. A repeat finds the place and says &quot;You
+already have a place&quot;. The unique rule
+registration_one_active (code already_registered) is the
+backstop; only that error is read as a repeat.
+
+## States of a place
+
+| State     | Counts as taken | Shown to the member      |
+|-----------|-----------------|--------------------------|
+| active    | yes             | You have a place         |
+| cancelled | no              | Cancelled, or Cancelled  |
+|           |                 | late (from the deadline) |
+
+Lateness is worked out from cancelled_at and the
+deadline; no field stores it. Registering again after
+cancelling makes a new row, under the same rules.
+Registration.cancel(now) changes only an active row, in
+one UPDATE: a repeat changes nothing.
+
+## Pages
+
+- POST events/&lt;id&gt;/register/: Register (signed in).
+- GET/POST events/&lt;id&gt;/register/phone/: asks once for a
+  phone number, keeps it on the Profile, then registers.
+- GET registrations/: My registrations.
+- GET/POST registrations/&lt;id&gt;/cancel/: confirm, cancel.
+- GET events/&lt;id&gt;/registrations/: the attendee list.
+
+## Who sees what
+
+- A member: their own places only. Another member&#x27;s
+  place: 404, recorded as a refused AuditEvent.
+- The attendee list (display name, email, phone, time
+  of registration; counts of cancellations and late
+  ones): the event&#x27;s current organizers and the
+  administrator. Members are told at registration.
+- No public attendee list; contacts on no other page.
+
+## Not here
+
+- Two requests at the same moment: Chapter 33.
+- Emails to members: Chapters 43-44.
+- Waitlist and check-in: Chapter 46.
+- Registration questions: Chapter 38; download: 41.</code></pre><p class="" data-block="80">Each row of the reasons table becomes a test in Step 5, and the “Who sees what” list becomes the matrix in Step 11. The note says what is not decided here and where it will be, so a reader of the design is not left guessing.</p><h4 data-block="81">Step 3: Registration times, a constraint code, and a phone number</h4><p class="" data-block="82">Tests first. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="83" tabindex="0"><code>class RegistrationWindowTests(TestCase):
+    &quot;&quot;&quot;The registration times and their database rules.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.event = future_draft(cls.sam)
+
+    def test_the_order_holds_in_the_database(self):
+        rows = Event.objects.filter(pk=self.event.pk)
+        start = self.event.starts_at
+        hour = timedelta(hours=1)
+        for changes in (
+            {&#x27;registration_closes_at&#x27;: start + hour},
+            {&#x27;cancellation_deadline&#x27;: start + hour},
+            {&#x27;registration_opens_at&#x27;: start,
+             &#x27;registration_closes_at&#x27;: start - hour},
+        ):
+            with self.subTest(changes=changes):
+                with self.assertRaises(IntegrityError):
+                    with transaction.atomic():
+                        rows.update(**changes)
+
+    def test_blank_times_pass_the_rules(self):
+        Event.objects.filter(pk=self.event.pk).update(
+            registration_opens_at=None,
+            registration_closes_at=None,
+            cancellation_deadline=None,
+        )
+        self.event.refresh_from_db()
+        self.event.full_clean()</code></pre><p class="" data-block="84">The first test writes each wrong order straight to the database with <code>update()</code>, which skips every Python check, so only a database rule can refuse it. The second shows that blank times pass the same rules: a draft may leave them empty.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="85" tabindex="0"><code>uv run python manage.py test events -k RegistrationWindow</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="86" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+KeyError: &#x27;registration_opens_at&#x27;
+KeyError: &#x27;registration_closes_at&#x27;
+KeyError: &#x27;cancellation_deadline&#x27;
+Ran 2 tests in ...s
+
+FAILED (errors=4)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="87">In <code>events/models.py</code>, add three times and the phone setting to <code>Event</code>, after the <code>status</code> field:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in Event, after status)</p><pre class="code-listing code-listing--file" data-block="88" tabindex="0"><code>    registration_opens_at = models.DateTimeField(
+        &#x27;registration opens&#x27;, null=True, blank=True,
+        help_text=&#x27;Blank: when the event is published.&#x27;,
+    )
+    registration_closes_at = models.DateTimeField(
+        &#x27;registration closes&#x27;, null=True, blank=True,
+        help_text=&#x27;Needed to publish; by the start.&#x27;,
+    )
+    cancellation_deadline = models.DateTimeField(
+        null=True, blank=True,
+        help_text=&#x27;Needed to publish; by the start. Later &#x27;
+                  &#x27;cancellations count as late.&#x27;,
+    )
+    phone_required = models.BooleanField(
+        &#x27;ask for a phone number&#x27;, default=False,
+    )</code></pre><p class="" data-block="89">All three times allow NULL, because a draft may not have them yet; Step 4 makes the closing time and the deadline required to publish. <code>help_text</code> appears on the event form and in the admin. Then add three rules at the end of <code>Meta.constraints</code>, after <code>event_status_valid</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in Event.Meta.constraints, at the end)</p><pre class="code-listing code-listing--file" data-block="90" tabindex="0"><code>            models.CheckConstraint(
+                condition=(
+                    models.Q(registration_opens_at=None)
+                    | models.Q(registration_closes_at=None)
+                    | models.Q(registration_opens_at__lt=(
+                        models.F(&#x27;registration_closes_at&#x27;)
+                    ))
+                ),
+                name=&#x27;event_opens_before_closes&#x27;,
+                violation_error_message=(
+                    &#x27;Registration must open before it &#x27;
+                    &#x27;closes.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(registration_closes_at=None)
+                    | models.Q(registration_closes_at__lte=(
+                        models.F(&#x27;starts_at&#x27;)
+                    ))
+                ),
+                name=&#x27;event_closes_by_start&#x27;,
+                violation_error_message=(
+                    &#x27;Registration must close by the start.&#x27;
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(cancellation_deadline=None)
+                    | models.Q(cancellation_deadline__lte=(
+                        models.F(&#x27;starts_at&#x27;)
+                    ))
+                ),
+                name=&#x27;event_deadline_by_start&#x27;,
+                violation_error_message=(
+                    &#x27;The cancellation deadline must be by &#x27;
+                    &#x27;the start.&#x27;
+                ),
+            ),</code></pre><p class="" data-block="91">Each rule has a branch for a blank value, as Chapter 22’s rules did: <code>Q(registration_closes_at=None)</code> means “is NULL”, so an empty time passes. Without the branch the rule would still pass, because a comparison with NULL is unknown and a CHECK refuses only false, but the intent would be hidden. Make the migration:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="92" tabindex="0"><code>uv run python manage.py makemigrations events --name registration</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="93" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events/migrations/0006_registration.py
+    + Add field cancellation_deadline to event
+    + Add field phone_required to event
+    + Add field registration_closes_at to event
+    + Add field registration_opens_at to event
+    + Create constraint event_opens_before_closes on model
+    event
+    + Create constraint event_closes_by_start on model event
+    + Create constraint event_deadline_by_start on model
+    event</code></pre><p class="" data-block="94">To see what SQLite is asked to do, print the SQL with <code>uv run python manage.py sqlmigrate events 0006</code>. The output is long, because SQLite cannot add a CHECK rule to an existing table: Django builds a new table with every rule, copies the rows across, and renames it. One rule in it reads:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="95" tabindex="0"><code>... CONSTRAINT &quot;event_closes_by_start&quot; CHECK
+  ((&quot;registration_closes_at&quot; IS NULL OR
+    &quot;registration_closes_at&quot; &lt;= (&quot;starts_at&quot;))) ...</code></pre><p class="" data-block="96">Events that are already published have no closing time and no deadline, and from Step 4 a published event is expected to have both. Fill them with a <strong>data migration</strong>, a migration that changes rows rather than tables, as Chapter 30 did for groups:</p><p class="" data-block="97">The command is split; in PowerShell the backtick continues it, with no space after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="98" tabindex="0"><code>uv run python manage.py makemigrations events `
+  --empty --name fill_window</code></pre><p class="" data-block="99">In Git Bash, macOS, Linux, or WSL, the backslash does the same:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="100" tabindex="0"><code>uv run python manage.py makemigrations events \
+  --empty --name fill_window</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="101" tabindex="0"><code>Migrations for &#x27;events&#x27;:
+  events/migrations/0007_fill_window.py</code></pre><p class="" data-block="102">Keep the generated first line, and replace the rest of <code>events/migrations/0007_fill_window.py</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/migrations/0007_fill_window.py (below the first line)</p><pre class="code-listing code-listing--file" data-block="103" tabindex="0"><code>from django.db import migrations
+from django.db.models import F
+
+
+def fill_window(apps, schema_editor):
+    &quot;&quot;&quot;Close registration at the start of older events.
+
+    Drafts are left blank: publishing asks for both times.
+    &quot;&quot;&quot;
+    Event = apps.get_model(&#x27;events&#x27;, &#x27;Event&#x27;)
+    Event.objects.exclude(status=&#x27;draft&#x27;).filter(
+        registration_closes_at=None,
+    ).update(registration_closes_at=F(&#x27;starts_at&#x27;))
+    Event.objects.exclude(status=&#x27;draft&#x27;).filter(
+        cancellation_deadline=None,
+    ).update(cancellation_deadline=F(&#x27;starts_at&#x27;))
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        (&#x27;events&#x27;, &#x27;0006_registration&#x27;),
+    ]
+
+    operations = [
+        migrations.RunPython(
+            fill_window, migrations.RunPython.noop
+        ),
+    ]</code></pre><p class="" data-block="104">For published and cancelled events, registration closes and cancellation becomes late at the start, which is what was true before this chapter: nobody could register after an event began. <code>F(&#x27;starts_at&#x27;)</code> copies each event’s own start inside the database, in one UPDATE. Drafts keep blank times, and publishing will ask for them. The reverse is <code>noop</code>, because removing the columns on the way back removes the values too. Apply both migrations and look at the result:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="105" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="106" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying events.0006_registration... OK
+  Applying events.0007_fill_window... OK</code></pre><p class="" data-block="107">To look, save this practice file as <code>s_look.py</code> beside <code>manage.py</code>, run it with <code>uv run python manage.py shell -c &quot;exec(open(&#x27;s_look.py&#x27;).read())&quot;</code>, and delete it:</p><p class="code-label code-label--file" aria-hidden="true">s_look.py (practice file; delete it afterwards)</p><pre class="code-listing code-listing--file" data-block="108" tabindex="0"><code>&quot;&quot;&quot;Practice: which events have a closing time now.&quot;&quot;&quot;
+from events.models import Event
+
+for event in Event.objects.all():
+    filled = event.registration_closes_at == event.starts_at
+    print(event.status, filled)</code></pre><p class="" data-block="109">Your list shows your own events; in the chapter’s copy there was one published event and one draft:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="110" tabindex="0"><code>published True
+published True
+draft False
+published True
+published True
+draft False
+draft False</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="111" tabindex="0"><code>uv run python manage.py test events -k RegistrationWindow</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="112" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="113">Next, give Chapter 21’s unique rule a code. In <code>registrations/models.py</code>, add one line to the <code>registration_one_active</code> constraint, after its name:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py (in registration_one_active)</p><pre class="code-listing code-listing--file" data-block="114" tabindex="0"><code>                name=&#x27;registration_one_active&#x27;,
+                violation_error_code=&#x27;already_registered&#x27;,</code></pre><p class="" data-block="115">A conditional unique rule has no code unless you give one, so a form or test that needs to recognize it would have to match its message. With a code, Step 6’s test can ask for <code>already_registered</code>. The migration records the change with an <code>AlterConstraint</code> operation, which leaves the table alone, because the code lives only in Python:</p><p class="" data-block="116">The command is split; in PowerShell the backtick continues it, with no space after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="117" tabindex="0"><code>uv run python manage.py makemigrations registrations `
+  --name constraint_code</code></pre><p class="" data-block="118">In Git Bash, macOS, Linux, or WSL, the backslash does the same:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="119" tabindex="0"><code>uv run python manage.py makemigrations registrations \
+  --name constraint_code</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="120" tabindex="0"><code>Migrations for &#x27;registrations&#x27;:
+  registrations/migrations/0003_constraint_code.py
+    ~ Alter constraint registration_one_active on
+    registration</code></pre><p class="" data-block="121">Now the phone number. Add the package at the exact version checked for this chapter, together with phonenumbers, the library it uses, also pinned:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="122" tabindex="0"><code># PowerShell
+uv add &quot;django-phonenumber-field[phonenumbers]==9.0.0&quot; `
+  &quot;phonenumbers==9.0.44&quot;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="123" tabindex="0"><code># macOS/Linux/WSL and Git Bash
+uv add &quot;django-phonenumber-field[phonenumbers]==9.0.0&quot; \
+  &quot;phonenumbers==9.0.44&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="124" tabindex="0"><code>Resolved 23 packages in 16ms
+Installed 2 packages in 1.01s
+ + django-phonenumber-field==9.0.0
+ + phonenumbers==9.0.44</code></pre><p class="" data-block="125">In <code>config/settings.py</code>, add the app at the end of <code>INSTALLED_APPS</code>, after <code>&#x27;allauth.mfa&#x27;,</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (in INSTALLED_APPS, at the end)</p><pre class="code-listing code-listing--file" data-block="126" tabindex="0"><code>    &#x27;phonenumber_field&#x27;,</code></pre><p class="" data-block="127">and add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">config/settings.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="128" tabindex="0"><code># Phone numbers (Chapter 31): a number typed without a
+# country code is read as an Indian number.
+PHONENUMBER_DEFAULT_REGION = &#x27;IN&#x27;</code></pre><p class="" data-block="129">In <code>accounts/models.py</code>, import the model field after the <code>django.utils</code> import:</p><p class="code-label code-label--file" aria-hidden="true">accounts/models.py (imports)</p><pre class="code-listing code-listing--file" data-block="130" tabindex="0"><code>from phonenumber_field.modelfields import PhoneNumberField</code></pre><p class="" data-block="131">and add the field to <code>Profile</code>, after <code>timezone</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/models.py (in Profile, after timezone)</p><pre class="code-listing code-listing--file" data-block="132" tabindex="0"><code>    phone = PhoneNumberField(
+        blank=True,
+        help_text=&#x27;Shown only to the organizers of events &#x27;
+                  &#x27;you register for.&#x27;,
+    )</code></pre><p class="" data-block="133"><code>blank=True</code> makes the number optional; an empty value is stored as an empty string, as Django does for text. Make the migration and apply everything:</p><p class="" data-block="134">The command is split; in PowerShell the backtick continues it, with no space after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="135" tabindex="0"><code>uv run python manage.py makemigrations accounts `
+  --name profile_phone</code></pre><p class="" data-block="136">In Git Bash, macOS, Linux, or WSL, the backslash does the same:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="137" tabindex="0"><code>uv run python manage.py makemigrations accounts \
+  --name profile_phone</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="138" tabindex="0"><code>Migrations for &#x27;accounts&#x27;:
+  accounts/migrations/0005_profile_phone.py
+    + Add field phone to profile</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="139" tabindex="0"><code>uv run python manage.py migrate</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="140" tabindex="0"><code>Operations to perform:
+  Apply all migrations: account, accounts, admin, audit,
+    auth, contenttypes, events, mfa, registrations, sessions,
+    socialaccount
+Running migrations:
+  Applying accounts.0005_profile_phone... OK
+  Applying registrations.0003_constraint_code... OK</code></pre><h4 data-block="141">Step 4: The event form, publishing, copies, and the profile</h4><p class="" data-block="142">Three earlier helpers need the new times. In <code>events/tests.py</code>, replace <code>future_draft()</code>, which makes a complete draft, with:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (replace future_draft)</p><pre class="code-listing code-listing--file" data-block="143" tabindex="0"><code>def future_draft(organizer=None, **changes):
+    &quot;&quot;&quot;Create a complete draft that starts next week.
+
+    Registration and cancellation close at the start.
+    &quot;&quot;&quot;
+    fields = {
+        &#x27;status&#x27;: Event.Status.DRAFT,
+        &#x27;starts_at&#x27;: timezone.now() + timedelta(days=7),
+        &#x27;description&#x27;: &#x27;Bring a laptop and a question.&#x27;,
+    } | changes
+    fields.setdefault(&#x27;registration_closes_at&#x27;,
+                      fields[&#x27;starts_at&#x27;])
+    fields.setdefault(&#x27;cancellation_deadline&#x27;,
+                      fields[&#x27;starts_at&#x27;])
+    event = save_event(**fields)
+    if organizer:
+        event.add_organizer(organizer)
+    return event</code></pre><p class="" data-block="144">A complete draft now has a closing time and a deadline, at its start unless a test says otherwise. Replace <code>as_sent()</code>, which builds what the edit page sends, with:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (replace as_sent)</p><pre class="code-listing code-listing--file" data-block="145" tabindex="0"><code>def as_sent(event, **changes):
+    &quot;&quot;&quot;Return what the edit page sends, before any change.&quot;&quot;&quot;
+    form = EventForm(instance=event)
+    data = {}
+    for name in form.fields:
+        value = form[name].value()
+        if isinstance(value, datetime):
+            value = f&#x27;{value:%Y-%m-%dT%H:%M}&#x27;
+        # A blank time is sent as an empty box.
+        data[name] = &#x27;&#x27; if value is None else value
+    return data | changes</code></pre><p class="" data-block="146">The test client refuses <code>None</code> as a form value, and an empty time box sends an empty string. Now the new tests. Add at the end of <code>events/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="147" tabindex="0"><code>class WindowFormTests(TestCase):
+    &quot;&quot;&quot;Readiness, copies, and the form learn the window.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = editor()
+        cls.event = future_draft(cls.sam)
+
+    def test_publishing_needs_both_times(self):
+        event = future_draft(
+            self.sam, registration_closes_at=None,
+            cancellation_deadline=None,
+        )
+        self.assertEqual(event.readiness_problems(), [
+            &#x27;Set when registration closes.&#x27;,
+            &#x27;Set a cancellation deadline.&#x27;,
+        ])
+
+    def test_a_copy_moves_the_window(self):
+        week = timedelta(days=7)
+        self.event.registration_opens_at = (
+            self.event.starts_at - week
+        )
+        self.event.save()
+        copy = self.event.copy_as_draft(
+            self.sam, self.event.starts_at + week
+        )
+        for name in (&#x27;registration_opens_at&#x27;,
+                     &#x27;registration_closes_at&#x27;,
+                     &#x27;cancellation_deadline&#x27;):
+            with self.subTest(name=name):
+                self.assertEqual(
+                    getattr(copy, name),
+                    getattr(self.event, name) + week,
+                )
+
+    def test_the_form_reads_times_in_the_event_zone(self):
+        form = new_event_form(
+            registration_closes_at=&#x27;2026-12-03T12:00&#x27;,
+            cancellation_deadline=&#x27;2026-12-02T18:00&#x27;,
+            phone_required=&#x27;on&#x27;,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        event = form.save()
+        self.assertEqual(
+            event.registration_closes_at,
+            datetime(2026, 12, 3, 17, 0, tzinfo=UTC),
+        )
+        self.assertIsNone(event.registration_opens_at)
+        self.assertTrue(event.phone_required)
+
+    def test_the_form_refuses_a_late_closing(self):
+        form = new_event_form(
+            registration_closes_at=&#x27;2026-12-03T20:00&#x27;
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.non_field_errors(),
+                         [&#x27;Registration must close by the &#x27;
+                          &#x27;start.&#x27;])</code></pre><p class="" data-block="148">and at the end of <code>accounts/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="149" tabindex="0"><code>class ProfilePhoneTests(TestCase):
+    &quot;&quot;&quot;A phone number on the profile, checked and kept.&quot;&quot;&quot;
+
+    url = &#x27;/accounts/profile/&#x27;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, PASSWORD, display_name=&#x27;Sai&#x27;
+        )
+
+    def setUp(self):
+        self.client.force_login(self.sai)
+
+    def save(self, phone):
+        &quot;&quot;&quot;Send the profile form with this phone number.&quot;&quot;&quot;
+        return self.client.post(self.url, {
+            &#x27;display_name&#x27;: &#x27;Sai&#x27;, &#x27;timezone&#x27;: &#x27;&#x27;,
+            &#x27;phone&#x27;: phone,
+        })
+
+    def test_a_national_number_is_kept_in_full(self):
+        self.save(&#x27;098765 43210&#x27;)
+        self.assertEqual(Profile.of(self.sai).phone,
+                         &#x27;+919876543210&#x27;)
+        page = self.client.get(self.url)
+        self.assertContains(page, &#x27;type=&quot;tel&quot;&#x27;)
+
+    def test_another_country_needs_its_code(self):
+        self.save(&#x27;+44 113 496 0000&#x27;)
+        self.assertEqual(Profile.of(self.sai).phone.as_e164,
+                         &#x27;+441134960000&#x27;)
+
+    def test_a_wrong_number_is_refused(self):
+        response = self.save(&#x27;12345&#x27;)
+        self.assertContains(response, &#x27;Enter a valid phone&#x27;)
+        self.assertEqual(Profile.of(self.sai).phone, &#x27;&#x27;)
+
+    def test_the_number_may_stay_blank(self):
+        response = self.save(&#x27;&#x27;)
+        self.assertEqual(response.status_code, 302)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="150" tabindex="0"><code>uv run python manage.py test -k WindowForm -k ProfilePhone</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="151" tabindex="0"><code>Found 8 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;str&#x27; object has no attribute &#x27;as_e164&#x27;
+AssertionError: &#x27;&#x27; != &#x27;+919876543210&#x27;
+AssertionError: 302 != 200 : Couldn&#x27;t retrieve content:
+    Response code was 302 (expected 200)
+Ran 8 tests in ...s
+
+FAILED (failures=8, errors=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="152">The event form reads typed times in the event’s own zone (Chapter 24), and the new times must be read the same way. In <code>events/forms.py</code>, add a list of every time the form reads, after <code>BOX_FORMAT</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (after BOX_FORMAT)</p><pre class="code-listing code-listing--file" data-block="153" tabindex="0"><code># Every time the event form reads in the event&#x27;s zone.
+TIMES = [&#x27;starts_at&#x27;, &#x27;ends_at&#x27;, &#x27;registration_opens_at&#x27;,
+         &#x27;registration_closes_at&#x27;, &#x27;cancellation_deadline&#x27;]</code></pre><p class="" data-block="154">Replace <code>EventForm</code>’s <code>Meta</code> from <code>fields</code> to the end of <code>widgets</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (in EventForm.Meta)</p><pre class="code-listing code-listing--file" data-block="155" tabindex="0"><code>        fields = [&#x27;title&#x27;, &#x27;description&#x27;, &#x27;timezone&#x27;,
+                  &#x27;starts_at&#x27;, &#x27;ends_at&#x27;, &#x27;location&#x27;,
+                  &#x27;capacity&#x27;, &#x27;registration_opens_at&#x27;,
+                  &#x27;registration_closes_at&#x27;,
+                  &#x27;cancellation_deadline&#x27;, &#x27;phone_required&#x27;]
+        labels = {&#x27;starts_at&#x27;: &#x27;Starts&#x27;, &#x27;ends_at&#x27;: &#x27;Ends&#x27;}
+        help_texts = {
+            &#x27;description&#x27;: &#x27;Needed before the event can be &#x27;
+                           &#x27;published.&#x27;,
+            &#x27;location&#x27;: &#x27;A venue address, or Online.&#x27;,
+        }
+        widgets = {
+            &#x27;description&#x27;: forms.Textarea(attrs={&#x27;rows&#x27;: 5}),
+        } | {name: local_input() for name in TIMES}</code></pre><p class="" data-block="156">The <code>|</code> joins two dictionaries: the description’s box, and a date-and-time box for every name in <code>TIMES</code>. Replace <code>show_saved_times()</code>, which fills the boxes on the edit page:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (replace show_saved_times)</p><pre class="code-listing code-listing--file" data-block="157" tabindex="0"><code>    def show_saved_times(self):
+        &quot;&quot;&quot;Show stored times as typed in the event&#x27;s zone.&quot;&quot;&quot;
+        zone = ZoneInfo(self.saved_zone)
+        for name in TIMES:
+            moment = getattr(self.instance, name)
+            if moment is None:
+                continue
+            local = moment.astimezone(zone)
+            local = local.replace(tzinfo=None)
+            self.initial[name] = local
+            self.shown[name] = local.strftime(BOX_FORMAT)
+            self.fields[name].help_text = (
+                &#x27;Saved: &#x27; + reading(moment, self.saved_zone)
+            )</code></pre><p class="" data-block="158">A blank time is skipped. In <code>clean()</code>, change the loop that reads the times to use the list:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (in clean)</p><pre class="code-listing code-listing--file" data-block="159" tabindex="0"><code>        zone = data.get(&#x27;timezone&#x27;)
+        for name in TIMES:
+            if zone and data.get(name):
+                try:
+                    data[name] = self.read_time(
+                        name, data[name], zone
+                    )
+                except ValidationError as error:
+                    self.add_error(name, error)</code></pre><p class="" data-block="160">And in <code>read_time()</code>, which keeps a time the member did not touch, use <code>.get()</code>, because a time that was blank has nothing saved to compare with:</p><p class="code-label code-label--file" aria-hidden="true">events/forms.py (replace read_time)</p><pre class="code-listing code-listing--file" data-block="161" tabindex="0"><code>    def read_time(self, name, value, zone):
+        &quot;&quot;&quot;Keep a time left alone; read others in zone.&quot;&quot;&quot;
+        typed = timezone.make_naive(value)
+        unchanged = (zone == self.saved_zone and
+                     typed.strftime(BOX_FORMAT)
+                     == self.shown.get(name))
+        if unchanged:
+            return getattr(self.instance, name)
+        return in_zone(value, zone)</code></pre><p class="" data-block="162">The order rules need no code in the form. A ModelForm runs the model’s constraints through <code>full_clean()</code>, so “Registration must close by the start.” appears at the top of the form, as <code>test_the_form_refuses_a_late_closing</code> expects.</p><p class="" data-block="163">In <code>events/models.py</code>, add a small helper after the line <code>REFUSED = AuditEvent.Outcome.REFUSED</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (after REFUSED)</p><pre class="code-listing code-listing--file" data-block="164" tabindex="0"><code>def moved(moment, by):
+    &quot;&quot;&quot;Return moment moved by a timedelta; None stays.&quot;&quot;&quot;
+    return None if moment is None else moment + by</code></pre><p class="" data-block="165">In <code>readiness_problems()</code>, add two checks after the organizer check, before <code>return problems</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in readiness_problems)</p><pre class="code-listing code-listing--file" data-block="166" tabindex="0"><code>        if self.registration_closes_at is None:
+            problems.append(&#x27;Set when registration closes.&#x27;)
+        if self.cancellation_deadline is None:
+            problems.append(&#x27;Set a cancellation deadline.&#x27;)</code></pre><p class="" data-block="167">and replace <code>copy_as_draft()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (replace copy_as_draft)</p><pre class="code-listing code-listing--file" data-block="168" tabindex="0"><code>    def copy_as_draft(self, member, starts_at):
+        &quot;&quot;&quot;Return a new draft with this event&#x27;s details.
+
+        It starts at starts_at, organized by member; its
+        registration times move with the start.
+        &quot;&quot;&quot;
+        shift = starts_at - self.starts_at
+        with transaction.atomic():
+            copy = Event.objects.create(
+                title=self.title,
+                description=self.description,
+                timezone=self.timezone,
+                location=self.location,
+                capacity=self.capacity,
+                phone_required=self.phone_required,
+                starts_at=starts_at,
+                ends_at=self.ends_at + shift,
+                registration_opens_at=moved(
+                    self.registration_opens_at, shift),
+                registration_closes_at=moved(
+                    self.registration_closes_at, shift),
+                cancellation_deadline=moved(
+                    self.cancellation_deadline, shift),
+            )
+            copy.add_organizer(member)
+        return copy</code></pre><p class="" data-block="169">A copy keeps every time in the same place relative to its start: a clinic that closed registration a day before still does. <code>ends_at + shift</code> replaces Chapter 26’s length sum and means the same.</p><p class="" data-block="170">The admin shows the new fields too. In <code>events/admin.py</code>, replace <code>EventAdmin.fields</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (in EventAdmin)</p><pre class="code-listing code-listing--file" data-block="171" tabindex="0"><code>    fields = [&#x27;title&#x27;, &#x27;description&#x27;, &#x27;status&#x27;,
+              &#x27;starts_at&#x27;, &#x27;ends_at&#x27;,
+              &#x27;timezone&#x27;, &#x27;local_start&#x27;, &#x27;location&#x27;,
+              &#x27;capacity&#x27;, &#x27;registration_opens_at&#x27;,
+              &#x27;registration_closes_at&#x27;,
+              &#x27;cancellation_deadline&#x27;, &#x27;phone_required&#x27;]</code></pre><p class="" data-block="172">and <code>get_form()</code>, so each time says it is in UTC, as the start and end already do:</p><p class="code-label code-label--file" aria-hidden="true">events/admin.py (replace EventAdmin.get_form)</p><pre class="code-listing code-listing--file" data-block="173" tabindex="0"><code>    def get_form(self, request, obj=None, **kwargs):
+        &quot;&quot;&quot;Say on the form that its times are in UTC.&quot;&quot;&quot;
+        kwargs[&#x27;help_texts&#x27;] = dict.fromkeys(
+            [&#x27;starts_at&#x27;, &#x27;ends_at&#x27;, &#x27;registration_opens_at&#x27;,
+             &#x27;registration_closes_at&#x27;,
+             &#x27;cancellation_deadline&#x27;], UTC_HELP,
+        )
+        return super().get_form(request, obj, **kwargs)</code></pre><p class="" data-block="174">Then the profile. In <code>accounts/forms.py</code>, import the form field after <code>from django import forms</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (imports)</p><pre class="code-listing code-listing--file" data-block="175" tabindex="0"><code>from phonenumber_field.formfields import PhoneNumberField</code></pre><p class="" data-block="176">add the help text after <code>NAME_HELP</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (after NAME_HELP)</p><pre class="code-listing code-listing--file" data-block="177" tabindex="0"><code>PHONE_HELP = (&#x27;Shown only to the organizers of events you &#x27;
+              &#x27;register for. Without +, read as an Indian &#x27;
+              &#x27;number.&#x27;)</code></pre><p class="" data-block="178">and replace <code>ProfileForm</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (replace ProfileForm)</p><pre class="code-listing code-listing--file" data-block="179" tabindex="0"><code>class ProfileForm(forms.Form):
+    &quot;&quot;&quot;The signed-in member&#x27;s name, zone, and phone.&quot;&quot;&quot;
+
+    display_name = forms.CharField(
+        max_length=100, help_text=NAME_HELP,
+    )
+    timezone = forms.ChoiceField(
+        choices=ZONE_CHOICES, required=False,
+        label=&#x27;Time zone (optional)&#x27;,
+    )
+    phone = PhoneNumberField(
+        required=False, label=&#x27;Phone number (optional)&#x27;,
+        help_text=PHONE_HELP,
+    )
+
+    def save(self, user):
+        &quot;&quot;&quot;Save the name to the user, the rest to Profile.&quot;&quot;&quot;
+        user.display_name = self.cleaned_data[&#x27;display_name&#x27;]
+        user.save(update_fields=[&#x27;display_name&#x27;])
+        profile = Profile.of(user)
+        profile.timezone = self.cleaned_data[&#x27;timezone&#x27;]
+        profile.phone = self.cleaned_data[&#x27;phone&#x27;]
+        profile.full_clean()
+        profile.save()</code></pre><p class="" data-block="180">In <code>accounts/views.py</code>, give the form the saved number, replacing the <code>form = ProfileForm(initial=...)</code> lines under <code>else:</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/views.py (in profile, under else:)</p><pre class="code-listing code-listing--file" data-block="181" tabindex="0"><code>        profile = Profile.of(user)
+        form = ProfileForm(initial={
+            &#x27;display_name&#x27;: user.display_name,
+            &#x27;timezone&#x27;: profile.timezone,
+            &#x27;phone&#x27;: profile.phone,
+        })</code></pre><p class="" data-block="182">The form field reads “098765 43210” as an Indian number, refuses “12345”, and renders a box of type <code>tel</code>, which phones answer with a number keypad. Update the design note for event states. In <code>docs/design/event-states.md</code>, replace the publish item with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md (replace the publish item)</p><pre class="code-listing code-listing--file" data-block="183" tabindex="0"><code>- publish: draft to published. Refused when it is not a
+  draft, has no description, does not start in the future,
+  has no current organizer, or has no registration closing
+  time or cancellation deadline (Chapter 31).</code></pre><p class="" data-block="184">and the copy lines under “Request path” with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/event-states.md (in Request path)</p><pre class="code-listing code-listing--file" data-block="185" tabindex="0"><code>  event&#x27;s zone; event.copy_as_draft(user, starts_at) copies
+  title, description, place, time zone, capacity, length,
+  the phone setting, and the registration times, moved
+  with the start; never registrations, status, or other
+  organizers; 302 to the new draft&#x27;s edit page.</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="186" tabindex="0"><code>uv run python manage.py test -k WindowForm -k ProfilePhone</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="187" tabindex="0"><code>Found 8 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 8 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="188">Now run the two apps whose pages changed. Three earlier tests count fields, and the forms have more of them:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="189" tabindex="0"><code>uv run python manage.py test events config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="190" tabindex="0"><code>Found 197 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 197 tests in ...s
+
+FAILED (failures=3)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="191">Each failure is a count, not a fault, so update each to the new number. In <code>events/tests.py</code>, in <code>FormMarkupTests</code>, the event form now has eleven fields, eight of them plain boxes:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (in FormMarkupTests)</p><pre class="code-listing code-listing--file" data-block="192" tabindex="0"><code>        for text, count in ((&#x27;class=&quot;fieldset&quot;&#x27;, 11),
+                            (&#x27;class=&quot;input w-full&quot;&#x27;, 8),</code></pre><p class="" data-block="193">In <code>EditMarkupTests.test_tick_box_is_styled_and_linked</code>, the edit page has two tick boxes now, the zone confirmation and the phone setting, so the checkbox class is counted on its own:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (in test_tick_box_is_styled_and_linked)</p><pre class="code-listing code-listing--file" data-block="194" tabindex="0"><code>        # Two tick boxes: the new zone and the phone setting.
+        self.assertContains(response, &#x27;class=&quot;checkbox&quot;&#x27;,
+                            count=2)
+        for text in (&#x27;for=&quot;id_confirm_zone&quot;&#x27;,
+                     &#x27;aria-invalid=&quot;true&quot;&#x27;, described):
+            self.assertContains(response, text, count=1)</code></pre><p class="" data-block="195">And in <code>config/tests.py</code>, in <code>test_event_times_keep_their_shortcuts</code>, the admin’s event page has five times with date and time shortcuts, not two:</p><p class="code-label code-label--file" aria-hidden="true">config/tests.py (in test_event_times_keep_their_shortcuts)</p><pre class="code-listing code-listing--file" data-block="196" tabindex="0"><code>                response, f&#x27;class=&quot;input w-full {name}&quot;&#x27;,
+                count=5,</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="197" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="198" tabindex="0"><code>Found 298 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 298 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="199">Try the form: open New event, and the three times appear after Capacity, with a box for “Ask for a phone number”. Leave the closing time empty, save, and press Publish: “Set when registration closes.” and “Set a cancellation deadline.” appear, and the event stays a draft.</p><div class="callout callout--error"><p class="callout__title" data-block="200">Common Error: “Cannot encode None for key ... as POST data”</p><p class="" data-block="201">A test that builds form data from saved values, as <code>as_sent()</code> does, sends <code>None</code> for a blank time, and the test client refuses it with a <code>TypeError</code> before any request is made. Send an empty string, which is what a browser sends for an empty box.</p></div><h4 data-block="202">Step 5: The rules as named reasons</h4><p class="" data-block="203">Tests first, one for each reason and each edge. Replace the imports at the top of <code>registrations/tests.py</code>, down to <code>User = get_user_model()</code>, with the imports this chapter’s tests need:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (replace the imports)</p><pre class="code-listing code-listing--file" data-block="204" tabindex="0"><code>&quot;&quot;&quot;Tests for the registrations app.&quot;&quot;&quot;
+from datetime import UTC, datetime, timedelta
+from unittest import mock
+
+from allauth.account.models import EmailAddress
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, connection, transaction
+from django.db.models import ProtectedError
+from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
+from django.utils import timezone
+
+from accounts.models import Profile
+from audit.models import AuditEvent
+from events.models import ORGANIZERS, Event
+from events.tests import SAI_PASSWORD as PASSWORD
+from events.tests import admin_url, in_group, outcome
+from .models import Registration</code></pre><p class="" data-block="205">and add at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="206" tabindex="0"><code>START = datetime(2027, 3, 4, 13, 30, tzinfo=UTC)
+TICK = timedelta(microseconds=1)
+
+
+def verified(email):
+    &quot;&quot;&quot;Create a member whose email address is confirmed.&quot;&quot;&quot;
+    name = email.split(&#x27;@&#x27;)[0].title()
+    user = User.objects.create_user(email, display_name=name)
+    EmailAddress.objects.create(user=user, email=email,
+                                verified=True, primary=True)
+    return user
+
+
+def clinic(**changes):
+    &quot;&quot;&quot;Create Sam&#x27;s published clinic, open for two places.
+
+    Registration closes a day before the start; a cancel
+    is late from two days before.
+    &quot;&quot;&quot;
+    fields = {
+        &#x27;title&#x27;: &#x27;Django clinic&#x27;,
+        &#x27;starts_at&#x27;: START,
+        &#x27;ends_at&#x27;: START + timedelta(hours=2),
+        &#x27;timezone&#x27;: &#x27;Asia/Kolkata&#x27;,
+        &#x27;location&#x27;: &#x27;Online&#x27;,
+        &#x27;capacity&#x27;: 2,
+        &#x27;status&#x27;: Event.Status.PUBLISHED,
+        &#x27;registration_opens_at&#x27;: START - timedelta(days=14),
+        &#x27;registration_closes_at&#x27;: START - timedelta(days=1),
+        &#x27;cancellation_deadline&#x27;: START - timedelta(days=2),
+    }
+    return Event.objects.create(**(fields | changes))
+
+
+class RegistrationRuleTests(TestCase):
+    &quot;&quot;&quot;Each reason a member cannot register, by code.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = clinic()
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+        cls.now = START - timedelta(days=5)
+
+    def problems(self, member=None, now=None):
+        &quot;&quot;&quot;Ask the event why member cannot register.&quot;&quot;&quot;
+        return self.event.registration_problems(
+            member or self.sai, now or self.now
+        )
+
+    def test_an_open_event_has_no_problems(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_opening_is_inclusive(self):
+        opens = self.event.registration_opens_at
+        self.assertEqual(self.problems(now=opens - TICK),
+                         [&#x27;not_open&#x27;])
+        self.assertEqual(self.problems(now=opens), [])
+
+    def test_closing_is_exclusive(self):
+        closes = self.event.registration_closes_at
+        self.assertEqual(self.problems(now=closes - TICK), [])
+        self.assertEqual(self.problems(now=closes),
+                         [&#x27;closed&#x27;])
+
+    def test_a_blank_opening_means_open_now(self):
+        self.event.registration_opens_at = None
+        self.assertEqual(self.problems(), [])
+
+    def test_only_published_events_take_places(self):
+        for status in (&#x27;draft&#x27;, &#x27;cancelled&#x27;):
+            with self.subTest(status=status):
+                self.event.status = status
+                self.assertEqual(self.problems(),
+                                 [&#x27;not_published&#x27;])
+
+    def test_a_past_event_is_closed(self):
+        later = START + timedelta(days=1)
+        self.assertEqual(self.problems(now=later),
+                         [&#x27;closed&#x27;])
+
+    def test_a_full_event_says_so(self):
+        for email in (&#x27;raj@example.org&#x27;, &#x27;soni@example.org&#x27;):
+            self.event.registrations.create(
+                member=verified(email)
+            )
+        self.assertEqual(self.problems(), [&#x27;full&#x27;])
+
+    def test_a_place_already_held_is_named(self):
+        self.event.registrations.create(member=self.sai)
+        self.assertEqual(self.problems(),
+                         [&#x27;already_registered&#x27;])
+
+    def test_an_unconfirmed_email_is_named(self):
+        soni = User.objects.create_user(
+            &#x27;soni@example.org&#x27;, display_name=&#x27;Soni&#x27;
+        )
+        self.assertEqual(self.problems(soni), [&#x27;unverified&#x27;])
+
+    def test_a_missing_phone_is_named(self):
+        self.event.phone_required = True
+        self.assertEqual(self.problems(), [&#x27;phone_missing&#x27;])
+        Profile.objects.create(user=self.sai,
+                               phone=&#x27;+919876543210&#x27;)
+        self.sai.refresh_from_db()
+        self.assertEqual(self.problems(), [])
+
+    def test_reasons_add_up(self):
+        soni = User.objects.create_user(
+            &#x27;soni@example.org&#x27;, display_name=&#x27;Soni&#x27;
+        )
+        closes = self.event.registration_closes_at
+        self.assertEqual(self.problems(soni, closes),
+                         [&#x27;closed&#x27;, &#x27;unverified&#x27;])</code></pre><p class="" data-block="207"><code>TICK</code> is one microsecond, the smallest step a Django time field stores, so <code>closes - TICK</code> is the last instant at which registration is open. <code>clinic()</code> fixes every time, so the tests give the same answer on any day.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="208" tabindex="0"><code>uv run python manage.py test registrations -k Rule</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="209" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute
+    &#x27;registration_problems&#x27;
+Ran 11 tests in ...s
+
+FAILED (errors=12)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="210">In <code>events/models.py</code>, import allauth’s check for a confirmed address before <code>from django.conf import settings</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (imports)</p><pre class="code-listing code-listing--file" data-block="211" tabindex="0"><code>from allauth.account.utils import has_verified_email</code></pre><p class="" data-block="212">and change the <code>django.db</code> import, which Step 6 needs:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (imports)</p><pre class="code-listing code-listing--file" data-block="213" tabindex="0"><code>from django.db import IntegrityError, models, transaction</code></pre><p class="" data-block="214">Add the reasons after the line <code>REFUSED = AuditEvent.Outcome.REFUSED</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (after REFUSED)</p><pre class="code-listing code-listing--file" data-block="215" tabindex="0"><code># Why a member cannot register, by code (Chapter 31).
+REASONS = {
+    &#x27;not_published&#x27;: &#x27;This event is not open for &#x27;
+                     &#x27;registration.&#x27;,
+    &#x27;not_open&#x27;: &#x27;Registration has not opened yet.&#x27;,
+    &#x27;closed&#x27;: &#x27;Registration has closed.&#x27;,
+    &#x27;full&#x27;: &#x27;This event is full.&#x27;,
+    &#x27;already_registered&#x27;: &#x27;You already have a place.&#x27;,
+    &#x27;unverified&#x27;: &#x27;Confirm your email address to &#x27;
+                  &#x27;register.&#x27;,
+    &#x27;phone_missing&#x27;: &#x27;This event asks for your phone &#x27;
+                     &#x27;number.&#x27;,
+}
+
+
+def refusal(codes):
+    &quot;&quot;&quot;Return one ValidationError naming every reason.&quot;&quot;&quot;
+    return ValidationError([
+        ValidationError(REASONS[code], code=code)
+        for code in codes
+    ])
+
+
+def phone_of(member):
+    &quot;&quot;&quot;Return member&#x27;s phone number, or &#x27;&#x27; if none.&quot;&quot;&quot;
+    # A member made outside sign-up may have no Profile.
+    profile = getattr(member, &#x27;profile&#x27;, None)
+    return profile.phone if profile else &#x27;&#x27;</code></pre><p class="" data-block="216"><code>REASONS</code> keeps every message in one place, keyed by its code. <code>refusal()</code> turns a list of codes into one <code>ValidationError</code> that holds an error per reason, each with its code, the shape Django’s forms and messages already understand. <code>phone_of()</code> returns an empty string when a member has no <code>Profile</code> row yet, which happens for members made in the shell or by <code>createsuperuser</code>.</p><p class="" data-block="217">Then add three methods to <code>Event</code>, after <code>places_taken()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in Event, after places_taken)</p><pre class="code-listing code-listing--file" data-block="218" tabindex="0"><code>    def place_of(self, member):
+        &quot;&quot;&quot;Return member&#x27;s active place here, or None.&quot;&quot;&quot;
+        return self.registrations.active().filter(
+            member=member
+        ).first()
+
+    def open_problems(self, now):
+        &quot;&quot;&quot;List, by code, what stops anyone registering.
+
+        Opening is inclusive and closing exclusive: at the
+        closing instant, registration has closed.
+        &quot;&quot;&quot;
+        if self.status != self.Status.PUBLISHED:
+            return [&#x27;not_published&#x27;]
+        problems = []
+        opens = self.registration_opens_at
+        if opens is not None and now &lt; opens:
+            problems.append(&#x27;not_open&#x27;)
+        # Publishing needs a closing time; a row saved
+        # without one closes at the start.
+        closes = self.registration_closes_at or self.starts_at
+        if now &gt;= closes:
+            problems.append(&#x27;closed&#x27;)
+        if self.places_taken() &gt;= self.capacity:
+            problems.append(&#x27;full&#x27;)
+        return problems
+
+    def registration_problems(self, member, now):
+        &quot;&quot;&quot;List, by code, why member cannot register now.
+
+        An empty list means member may register.
+        &quot;&quot;&quot;
+        if self.place_of(member):
+            return [&#x27;already_registered&#x27;]
+        problems = self.open_problems(now)
+        if not has_verified_email(member, member.email):
+            problems.append(&#x27;unverified&#x27;)
+        if self.phone_required and not phone_of(member):
+            problems.append(&#x27;phone_missing&#x27;)
+        return problems</code></pre><p class="" data-block="219"><code>open_problems()</code> holds the reasons that apply to everyone, so the event page can use it for visitors in Step 8. <code>registration_problems()</code> adds the member’s own: a place already held, an email address not confirmed, and a phone number missing. <code>has_verified_email(member, member.email)</code> asks allauth whether the account’s own address is confirmed; another confirmed address on the account does not count, because Sam’s list shows <code>member.email</code>.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="220" tabindex="0"><code>uv run python manage.py test registrations -k Rule</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="221" tabindex="0"><code>Found 11 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 11 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="222">Common Error: a boundary test that passes in the morning</p><p class="" data-block="223">A test that sets the closing time to <code>timezone.now() + timedelta(hours=1)</code> and checks that registration is open passes until someone runs the suite within an hour of a slow step, or on a machine whose clock is set oddly, and then fails without any code change. Tests at a boundary pass the instant they mean, as these do. The interview’s L4 shows the failure.</p></div><h4 data-block="224">Step 6: register(), in a transaction</h4><p class="" data-block="225">Tests first. Add at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="226" tabindex="0"><code>class RegisterTests(TestCase):
+    &quot;&quot;&quot;Event.register(): a place, or a named refusal.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = clinic()
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+        cls.now = START - timedelta(days=5)
+
+    def test_a_place_is_made(self):
+        place = self.event.register(self.sai, self.now)
+        self.assertEqual(place.status, &#x27;active&#x27;)
+        self.assertEqual(place.registered_at, self.now)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_a_refusal_names_why_and_saves_nothing(self):
+        closes = self.event.registration_closes_at
+        with self.assertRaises(ValidationError) as caught:
+            self.event.register(self.sai, closes)
+        self.assertEqual(caught.exception.messages,
+                         [&#x27;Registration has closed.&#x27;])
+        self.assertEqual(caught.exception.error_list[0].code,
+                         &#x27;closed&#x27;)
+        self.assertFalse(Registration.objects.exists())
+
+    def test_a_second_request_keeps_one_place(self):
+        self.event.register(self.sai, self.now)
+        with self.assertRaises(ValidationError) as caught:
+            self.event.register(self.sai, self.now)
+        self.assertEqual(caught.exception.error_list[0].code,
+                         &#x27;already_registered&#x27;)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_the_constraint_catches_a_missed_check(self):
+        # A place appears after the checks ran.
+        self.event.registrations.create(member=self.sai)
+        with mock.patch.object(Event, &#x27;registration_problems&#x27;,
+                               return_value=[]):
+            with self.assertRaises(ValidationError) as caught:
+                self.event.register(self.sai, self.now)
+        self.assertEqual(caught.exception.error_list[0].code,
+                         &#x27;already_registered&#x27;)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_another_database_error_is_not_hidden(self):
+        broken = IntegrityError(&#x27;NOT NULL constraint failed&#x27;)
+        with mock.patch.object(Registration, &#x27;save&#x27;,
+                               side_effect=broken):
+            with self.assertRaises(IntegrityError):
+                self.event.register(self.sai, self.now)
+
+    def test_the_constraint_has_a_code(self):
+        self.event.registrations.create(member=self.sai)
+        again = Registration(event=self.event, member=self.sai)
+        with self.assertRaises(ValidationError) as caught:
+            again.full_clean()
+        errors = caught.exception.error_dict[&#x27;__all__&#x27;]
+        self.assertEqual(errors[0].code, &#x27;already_registered&#x27;)</code></pre><p class="" data-block="227">Two tests stand in for events that cannot be staged by hand. <code>mock.patch.object()</code> replaces a method for the length of a <code>with</code> block. In <code>test_the_constraint_catches_a_missed_check</code>, <code>registration_problems()</code> is told to find nothing although Sai holds a place, as if a second request had inserted her place between the check and the insert; only the database rule is left to refuse it. In <code>test_another_database_error_is_not_hidden</code>, saving fails with a different <code>IntegrityError</code>, which must reach the caller.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="228" tabindex="0"><code>uv run python manage.py test registrations -k RegisterTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="229" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Event&#x27; object has no attribute &#x27;register&#x27;
+Ran 6 tests in ...s
+
+FAILED (errors=5)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="230">Add <code>register()</code> to <code>Event</code>, after <code>registration_problems()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in Event, after registration_problems)</p><pre class="code-listing code-listing--file" data-block="231" tabindex="0"><code>    def register(self, member, now):
+        &quot;&quot;&quot;Give member a place, or raise ValidationError.
+
+        The unique rule is the backstop for a place made
+        between the check and the insert. Chapter 33 locks
+        the event before counting.
+        &quot;&quot;&quot;
+        with transaction.atomic():
+            problems = self.registration_problems(member, now)
+            if problems:
+                raise refusal(problems)
+            try:
+                with transaction.atomic():
+                    return self.registrations.create(
+                        member=member, registered_at=now
+                    )
+            except IntegrityError:
+                # Only the one-active-place rule means a
+                # repeat; any other failure is re-raised.
+                if self.place_of(member) is None:
+                    raise
+            raise refusal([&#x27;already_registered&#x27;])</code></pre><p class="" data-block="232">The outer <code>atomic()</code> holds the check and the insert together; Chapter 33 adds its lock at the top of it. The inner <code>atomic()</code> wraps only the insert, so a refused insert rolls back to its savepoint and the outer block can still ask the database a question. The question is <code>place_of(member)</code>: a place found means the request was a repeat, and the member hears “You already have a place”; nothing found means another rule failed, and the error is raised again unchanged.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="233" tabindex="0"><code>uv run python manage.py test registrations -k RegisterTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="234" tabindex="0"><code>Found 6 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 6 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="235">Common Error: every IntegrityError reported as “already registered”</p><p class="" data-block="236">An <code>except IntegrityError:</code> that always answers “You already have a place” hides real faults: a value the database refuses, a missing table after a bad deployment. The member sees a friendly message, the place does not exist, and nobody is told. Translate only the error you expect, and check that it is the one you expect, as <code>register()</code> does.</p></div><div class="callout callout--error"><p class="callout__title" data-block="237">Common Error: TransactionManagementError after catching an IntegrityError</p><p class="" data-block="238">Put the <code>try</code> around <code>self.registrations.create()</code> directly inside the outer <code>atomic()</code>, without the inner block, and the next query, <code>place_of(member)</code>, fails with “An error occurred in the current transaction. You can’t execute queries until the end of the ’atomic’ block.” The insert’s failure broke the outer block. Wrap the statement that may fail in its own <code>atomic()</code>, and catch outside it.</p></div><h4 data-block="239">Step 7: cancel(), once, and late</h4><p class="" data-block="240">Tests first. Add at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="241" tabindex="0"><code>class CancelTests(TestCase):
+    &quot;&quot;&quot;Registration.cancel(): a place released once.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = clinic()
+        cls.raj = verified(&#x27;raj@example.org&#x27;)
+
+    def setUp(self):
+        self.place = self.event.register(
+            self.raj, START - timedelta(days=5)
+        )
+
+    def test_cancel_releases_the_place_once(self):
+        when = START - timedelta(days=3)
+        self.assertTrue(self.place.cancel(when))
+        self.assertEqual(self.place.status, &#x27;cancelled&#x27;)
+        self.assertEqual(self.place.cancelled_at, when)
+        self.assertEqual(self.event.places_taken(), 0)
+        later = START - timedelta(days=2, hours=1)
+        self.assertFalse(self.place.cancel(later))
+        self.place.refresh_from_db()
+        self.assertEqual(self.place.cancelled_at, when)
+
+    def test_a_stale_copy_changes_nothing(self):
+        other = Registration.objects.get(pk=self.place.pk)
+        self.place.cancel(START - timedelta(days=3))
+        self.assertFalse(other.cancel(START - TICK))
+        self.assertEqual(
+            Registration.objects.filter(
+                status=&#x27;cancelled&#x27;).count(), 1,
+        )
+
+    def test_late_from_the_deadline(self):
+        deadline = self.event.cancellation_deadline
+        self.place.cancel(deadline - TICK)
+        self.assertFalse(self.place.is_late())
+        again = self.event.register(self.raj, deadline - TICK)
+        again.cancel(deadline)
+        self.assertTrue(again.is_late())
+
+    def test_no_cancel_once_the_event_starts(self):
+        with self.assertRaises(ValidationError) as caught:
+            self.place.cancel(START)
+        self.assertEqual(caught.exception.code, &#x27;started&#x27;)
+        self.assertTrue(self.place.cancel(START - TICK))
+
+    def test_a_member_may_register_again(self):
+        self.place.cancel(START - timedelta(days=4))
+        again = self.event.register(
+            self.raj, START - timedelta(days=4)
+        )
+        self.assertNotEqual(again.pk, self.place.pk)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_a_cancelled_event_keeps_places(self):
+        self.event.cancel()
+        self.place.refresh_from_db()
+        self.assertEqual(self.place.status, &#x27;active&#x27;)
+        self.assertTrue(
+            self.place.cancel(START - timedelta(days=3))
+        )
+
+    def test_counts_for_the_organizer(self):
+        deadline = self.event.cancellation_deadline
+        self.place.cancel(deadline - TICK)
+        again = self.event.register(self.raj, deadline - TICK)
+        again.cancel(deadline + TICK)
+        self.assertEqual(
+            self.event.registrations.cancellation_counts(),
+            {&#x27;cancelled&#x27;: 2, &#x27;late&#x27;: 1},
+        )</code></pre><p class="" data-block="242"><code>test_a_stale_copy_changes_nothing</code> loads the same place twice, as two requests would, cancels one copy, and asks the other to cancel too. The second must change nothing, even though its own copy still says “active”.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="243" tabindex="0"><code>uv run python manage.py test registrations -k CancelTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="244" tabindex="0"><code>Found 7 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AttributeError: &#x27;Registration&#x27; object has no attribute
+    &#x27;cancel&#x27;
+Ran 7 tests in ...s
+
+FAILED (errors=7)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="245">In <code>registrations/models.py</code>, import <code>ValidationError</code> after <code>from django.conf import settings</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py (imports)</p><pre class="code-listing code-listing--file" data-block="246" tabindex="0"><code>from django.core.exceptions import ValidationError</code></pre><p class="" data-block="247">Add a count for organizers to <code>RegistrationQuerySet</code>, after <code>active()</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py (in RegistrationQuerySet, after active)</p><pre class="code-listing code-listing--file" data-block="248" tabindex="0"><code>    def cancellation_counts(self):
+        &quot;&quot;&quot;Count cancelled places, and how many were late.&quot;&quot;&quot;
+        cancelled = models.Q(status=&#x27;cancelled&#x27;)
+        late = cancelled &amp; models.Q(
+            cancelled_at__gte=models.F(
+                &#x27;event__cancellation_deadline&#x27;
+            )
+        )
+        return self.aggregate(
+            cancelled=models.Count(&#x27;pk&#x27;, filter=cancelled),
+            late=models.Count(&#x27;pk&#x27;, filter=late),
+        )</code></pre><p class="" data-block="249"><code>F(&#x27;event__cancellation_deadline&#x27;)</code> compares each row with its own event’s deadline inside the database, and <code>Count(..., filter=...)</code> counts only matching rows; <code>aggregate()</code> returns both numbers from one query. Then add two methods at the end of <code>Registration</code>, after <code>__str__()</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py (in Registration, at the end)</p><pre class="code-listing code-listing--file" data-block="250" tabindex="0"><code>    def cancel(self, now):
+        &quot;&quot;&quot;Release this place at now; return True if it did.
+
+        A place already cancelled stays as it is, so a
+        repeated request changes nothing.
+        &quot;&quot;&quot;
+        if now &gt;= self.event.starts_at:
+            raise ValidationError(
+                &#x27;The event has started, so this place can &#x27;
+                &#x27;no longer be cancelled.&#x27;, code=&#x27;started&#x27;,
+            )
+        # One UPDATE that only matches an active row: of two
+        # requests, at most one changes it.
+        changed = Registration.objects.filter(
+            pk=self.pk, status=self.Status.ACTIVE
+        ).update(status=self.Status.CANCELLED,
+                 cancelled_at=now)
+        self.refresh_from_db(fields=[&#x27;status&#x27;, &#x27;cancelled_at&#x27;])
+        return changed == 1
+
+    def is_late(self):
+        &quot;&quot;&quot;Return whether it was cancelled after the deadline.&quot;&quot;&quot;
+        deadline = self.event.cancellation_deadline
+        return (self.cancelled_at is not None
+                and deadline is not None
+                and self.cancelled_at &gt;= deadline)</code></pre><p class="" data-block="251"><code>cancel()</code> does not read the place’s status and then save it. It sends one UPDATE whose WHERE clause matches only an active row, and the database answers with the number of rows it changed. Of two requests, the first changes one row and the second none, whatever their copies said, so the count of places drops by exactly one. <code>refresh_from_db()</code> then loads what the database now holds, and the return value tells the view which message to show. <code>is_late()</code> works lateness out each time it is asked, so no field can disagree with the deadline.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="252" tabindex="0"><code>uv run python manage.py test registrations -k CancelTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="253" tabindex="0"><code>Found 7 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 7 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="254">The life of a place, from register to cancel and back, is drawn in Figure 31.2.</p><figure data-block="255"><a href="/assets/chapter31/figure-31-2-life.png" aria-label="Open Figure 31.2 at full size"><img src="/assets/chapter31/figure-31-2-life.png" alt="A green Active card on the left, counted as a place taken, with two elbow arrows to grey cards in the middle: Cancelled, cancel() before the deadline, kept but not counted; and Cancelled late, cancel() from the deadline until the start. From each grey card an arrow leads to a green Active again card on the right: register() while open makes a new row. A grey note below says lateness is read from cancelled_at and the deadline, no field stores it, and there is at most one active row per member and event." width="1500" height="700" loading="lazy"></a><figcaption data-block="256">Figure 31.2 — The life of a place.</figcaption></figure><div class="callout callout--error"><p class="callout__title" data-block="257">Common Error: “CHECK constraint failed: cancelled_at_matches_status”</p><p class="" data-block="258">Cancel a place by setting <code>status = &#x27;cancelled&#x27;</code> and saving, without <code>cancelled_at</code>, and the database refuses the save with an <code>IntegrityError</code> naming Chapter 21’s rule <code>cancelled_at_matches_status</code>: a cancelled place must say when. Set both together, as <code>cancel()</code> does in one UPDATE.</p></div><p class="" data-block="259">The clinic’s times are drawn on one line in Figure 31.3.</p><figure data-block="260"><a href="/assets/chapter31/figure-31-3-window.png" aria-label="Open Figure 31.3 at full size"><img src="/assets/chapter31/figure-31-3-window.png" alt="A horizontal timeline with four marks: Opens, 14 days before, optional; Deadline, 2 days before; Closes, 1 day before; Start. Above it a green band from Opens to Closes reads Register: from opening, included, to closing, excluded. Below that a blue band from Opens to Deadline reads Cancel on time, and an orange band from Deadline to Start reads Cancel: counts as late. A grey note says closing and the deadline are needed to publish and are never after the start, and times are typed in the event’s own zone." width="1500" height="620" loading="lazy"></a><figcaption data-block="261">Figure 31.3 — The clinic’s times on one line.</figcaption></figure><h4 data-block="262">Step 8: The Register button and the phone page</h4><p class="" data-block="263">Tests first. Add at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="264" tabindex="0"><code>def soon(**changes):
+    &quot;&quot;&quot;Create a clinic next week, open for registration now.&quot;&quot;&quot;
+    starts = timezone.now() + timedelta(days=7)
+    return clinic(**{
+        &#x27;starts_at&#x27;: starts,
+        &#x27;ends_at&#x27;: starts + timedelta(hours=2),
+        &#x27;registration_opens_at&#x27;: None,
+        &#x27;registration_closes_at&#x27;: starts - timedelta(days=1),
+        &#x27;cancellation_deadline&#x27;: starts - timedelta(days=2),
+    } | changes)
+
+
+def url(name, *args):
+    &quot;&quot;&quot;Return the address of a registrations page.&quot;&quot;&quot;
+    return reverse(f&#x27;registrations:{name}&#x27;, args=args)
+
+
+class RegisterPageTests(TestCase):
+    &quot;&quot;&quot;The Register button and what it says back.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = soon()
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+
+    def test_a_visitor_signs_in_and_comes_back(self):
+        page = self.event.get_absolute_url()
+        response = self.client.get(page)
+        sign_in = reverse(&#x27;account_login&#x27;)
+        self.assertContains(
+            response, f&#x27;href=&quot;{sign_in}?next={page}&quot;&#x27;
+        )
+        self.assertNotContains(response, &#x27;shares your name&#x27;)
+        self.sai.set_password(PASSWORD)
+        self.sai.save()
+        response = self.client.post(
+            f&#x27;{sign_in}?next={page}&#x27;,
+            {&#x27;login&#x27;: &#x27;sai@example.org&#x27;, &#x27;password&#x27;: PASSWORD},
+        )
+        self.assertRedirects(response, page,
+                             fetch_redirect_response=False)
+
+    def test_a_member_registers_with_one_post(self):
+        self.client.force_login(self.sai)
+        page = self.client.get(self.event.get_absolute_url())
+        self.assertContains(page, &#x27;phone number with this&#x27;)
+        response = self.client.post(
+            url(&#x27;register&#x27;, self.event.pk), follow=True
+        )
+        self.assertRedirects(response,
+                             self.event.get_absolute_url())
+        self.assertContains(response, &#x27;You have a place&#x27;)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_register_is_post_only(self):
+        self.client.force_login(self.sai)
+        response = self.client.get(
+            url(&#x27;register&#x27;, self.event.pk)
+        )
+        self.assertEqual(response.status_code, 405)
+        self.assertFalse(Registration.objects.exists())
+
+    def test_two_posts_make_one_place(self):
+        self.client.force_login(self.sai)
+        address = url(&#x27;register&#x27;, self.event.pk)
+        self.client.post(address)
+        response = self.client.post(address, follow=True)
+        self.assertContains(response,
+                            &#x27;You already have a place.&#x27;)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_a_full_event_shows_why(self):
+        for email in (&#x27;raj@example.org&#x27;, &#x27;soni@example.org&#x27;):
+            self.event.registrations.create(
+                member=verified(email)
+            )
+        self.client.force_login(self.sai)
+        page = self.client.get(self.event.get_absolute_url())
+        self.assertContains(page, &#x27;This event is full.&#x27;)
+        self.assertNotContains(page,
+                               url(&#x27;register&#x27;, self.event.pk))
+        response = self.client.post(
+            url(&#x27;register&#x27;, self.event.pk), follow=True
+        )
+        self.assertContains(response, &#x27;This event is full.&#x27;)
+        self.assertEqual(self.event.places_taken(), 2)
+
+    def test_an_unconfirmed_member_is_sent_to_confirm(self):
+        soni = User.objects.create_user(
+            &#x27;soni@example.org&#x27;, display_name=&#x27;Soni&#x27;
+        )
+        self.client.force_login(soni)
+        page = self.client.get(self.event.get_absolute_url())
+        self.assertContains(
+            page, &#x27;Confirm your email address to register.&#x27;
+        )
+        self.assertContains(page, reverse(&#x27;account_email&#x27;))
+        self.client.post(url(&#x27;register&#x27;, self.event.pk))
+        self.assertFalse(Registration.objects.exists())
+
+    def test_a_hidden_draft_is_missing(self):
+        draft = soon(status=Event.Status.DRAFT)
+        self.client.force_login(self.sai)
+        response = self.client.post(url(&#x27;register&#x27;, draft.pk))
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(Registration.objects.exists())
+
+
+class PhonePageTests(TestCase):
+    &quot;&quot;&quot;An event that asks for a phone number.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = soon(phone_required=True)
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+
+    def setUp(self):
+        self.client.force_login(self.sai)
+
+    def test_the_page_asks_for_the_number(self):
+        page = self.client.get(self.event.get_absolute_url())
+        self.assertContains(
+            page, f&#x27;href=&quot;{url(&quot;phone&quot;, self.event.pk)}&quot;&#x27;
+        )
+        response = self.client.post(
+            url(&#x27;register&#x27;, self.event.pk)
+        )
+        self.assertRedirects(response,
+                             url(&#x27;phone&#x27;, self.event.pk))
+        self.assertFalse(Registration.objects.exists())
+
+    def test_a_bad_number_saves_nothing(self):
+        response = self.client.post(
+            url(&#x27;phone&#x27;, self.event.pk), {&#x27;phone&#x27;: &#x27;12345&#x27;}
+        )
+        self.assertContains(response, &#x27;Enter a valid phone&#x27;)
+        self.assertFalse(Registration.objects.exists())
+        self.assertFalse(Profile.objects.exists())
+
+    def test_the_number_is_kept_and_the_place_made(self):
+        response = self.client.post(
+            url(&#x27;phone&#x27;, self.event.pk),
+            {&#x27;phone&#x27;: &#x27;98765 43210&#x27;},
+        )
+        self.assertRedirects(response,
+                             self.event.get_absolute_url(),
+                             fetch_redirect_response=False)
+        self.assertEqual(Profile.of(self.sai).phone,
+                         &#x27;+919876543210&#x27;)
+        self.assertEqual(self.event.places_taken(), 1)</code></pre><p class="" data-block="265">The first test signs Sai in through allauth’s real form, with the <code>next</code> address the button gives, and checks that she comes back to the event page. <code>test_two_posts_make_one_place</code> sends Register twice in a row, as a double click would.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="266" tabindex="0"><code>uv run python manage.py test registrations -k Page</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="267" tabindex="0"><code>Found 10 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+KeyError: &#x27;registrations&#x27;
+Ran 10 tests in ...s
+
+FAILED (failures=4, errors=6)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="268">The phone page needs a form. In <code>accounts/forms.py</code>, add after <code>ProfileForm</code>:</p><p class="code-label code-label--file" aria-hidden="true">accounts/forms.py (after ProfileForm)</p><pre class="code-listing code-listing--file" data-block="269" tabindex="0"><code>class PhoneForm(forms.Form):
+    &quot;&quot;&quot;The phone number an event asks for, once.&quot;&quot;&quot;
+
+    phone = PhoneNumberField(
+        label=&#x27;Phone number&#x27;, help_text=PHONE_HELP,
+    )
+
+    def save(self, user):
+        &quot;&quot;&quot;Keep the number on the member&#x27;s Profile.&quot;&quot;&quot;
+        profile = Profile.of(user)
+        profile.phone = self.cleaned_data[&#x27;phone&#x27;]
+        profile.full_clean()
+        profile.save(update_fields=[&#x27;phone&#x27;])</code></pre><p class="" data-block="270">Here the field is required: the member came to this page to give the number. Replace the generated <code>registrations/views.py</code> with:</p><p class="code-label code-label--file" aria-hidden="true">registrations/views.py</p><pre class="code-listing code-listing--file" data-block="271" tabindex="0"><code>&quot;&quot;&quot;Pages for members&#x27; places and organizers&#x27; lists.&quot;&quot;&quot;
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
+from django.shortcuts import (
+    get_object_or_404, redirect, render,
+)
+from django.utils import timezone
+from django.views.decorators.http import (
+    require_http_methods, require_POST,
+)
+
+from accounts.forms import PhoneForm
+from audit.models import AuditEvent
+from events.models import REASONS, Event
+from events.views import deny
+
+from .models import Registration
+
+Action = AuditEvent.Action
+
+
+def event_for(request, event_id):
+    &quot;&quot;&quot;Return the event if the viewer may see it, or 404.&quot;&quot;&quot;
+    event = get_object_or_404(Event, pk=event_id)
+    if not event.is_visible_to(request.user):
+        deny(request, Action.VIEW_EVENT, event, hidden=True)
+    return event
+
+
+def take_place(request, event):
+    &quot;&quot;&quot;Register the member, then say what happened.&quot;&quot;&quot;
+    try:
+        event.register(request.user, timezone.now())
+    except ValidationError as error:
+        codes = [e.code for e in error.error_list]
+        if codes == [&#x27;phone_missing&#x27;]:
+            return redirect(&#x27;registrations:phone&#x27;, event.pk)
+        if codes == [&#x27;already_registered&#x27;]:
+            messages.info(request, REASONS[&#x27;already_registered&#x27;])
+        else:
+            for message in error.messages:
+                messages.error(request, message)
+    else:
+        messages.success(request, &#x27;You have a place.&#x27;)
+    return redirect(event)
+
+
+@require_POST
+@login_required
+def register(request, event_id):
+    &quot;&quot;&quot;Register the signed-in member for the event.&quot;&quot;&quot;
+    return take_place(request, event_for(request, event_id))
+
+
+@require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;])
+@login_required
+def register_phone(request, event_id):
+    &quot;&quot;&quot;Ask for the number the event needs, then register.&quot;&quot;&quot;
+    event = event_for(request, event_id)
+    form = PhoneForm(request.POST or None)
+    if form.is_valid():
+        form.save(request.user)
+        return take_place(request, event)
+    return render(request, &#x27;registrations/phone.html&#x27;,
+                  {&#x27;event&#x27;: event, &#x27;form&#x27;: form})</code></pre><p class="" data-block="272"><code>event_for()</code> refuses an event the viewer may not see, with Chapter 30’s <code>deny()</code>, so a draft’s number reveals nothing here either. <code>take_place()</code> is the one place a registration is attempted. It passes the current time, and reads the codes from the refusal: a missing phone number alone sends the member to the phone page; a place already held is good news, shown as information; anything else is shown as errors. <code>register()</code> accepts POST only and needs a signed-in member. <code>register_phone()</code> shows the form on GET; on a valid POST it keeps the number, then registers exactly as the button does.</p><p class="" data-block="273">Create <code>registrations/urls.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/urls.py</p><pre class="code-listing code-listing--file" data-block="274" tabindex="0"><code>&quot;&quot;&quot;Addresses of the registrations app&#x27;s pages.&quot;&quot;&quot;
+from django.urls import path
+
+from . import views
+
+app_name = &#x27;registrations&#x27;
+
+urlpatterns = [
+    path(&#x27;events/&lt;int:event_id&gt;/register/&#x27;,
+         views.register, name=&#x27;register&#x27;),
+    path(&#x27;events/&lt;int:event_id&gt;/register/phone/&#x27;,
+         views.register_phone, name=&#x27;phone&#x27;),
+]</code></pre><p class="" data-block="275">and include it in <code>config/urls.py</code>, after the events line:</p><p class="code-label code-label--file" aria-hidden="true">config/urls.py (in urlpatterns)</p><pre class="code-listing code-listing--file" data-block="276" tabindex="0"><code>    path(&#x27;&#x27;, include(&#x27;registrations.urls&#x27;)),</code></pre><p class="" data-block="277">The event page shows the button. In <code>events/views.py</code>, import <code>REASONS</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (imports)</p><pre class="code-listing code-listing--file" data-block="278" tabindex="0"><code>from .models import REASONS, Event, OrganizerAssignment</code></pre><p class="" data-block="279">and replace <code>event_detail()</code> with it and a helper:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (replace event_detail)</p><pre class="code-listing code-listing--file" data-block="280" tabindex="0"><code>def event_detail(request, event_id):
+    &quot;&quot;&quot;Show an event its viewer may see, or 404.&quot;&quot;&quot;
+    event = get_object_or_404(
+        Event.objects.with_places(), pk=event_id
+    )
+    if not event.is_visible_to(request.user):
+        deny(request, Action.VIEW_EVENT, event, hidden=True)
+    now = timezone.now()
+    return render(request, &#x27;events/detail.html&#x27;, {
+        &#x27;event&#x27;: event,
+        &#x27;now&#x27;: now,
+        &#x27;can_edit&#x27;: event.can_be_edited_by(request.user),
+    } | registration_panel(event, request.user, now))
+
+
+def registration_panel(event, user, now):
+    &quot;&quot;&quot;Return what the event page says about registering.&quot;&quot;&quot;
+    if not user.is_authenticated:
+        codes = event.open_problems(now)
+        return {&#x27;reasons&#x27;: [REASONS[c] for c in codes]}
+    place = event.place_of(user)
+    codes = [] if place else event.registration_problems(
+        user, now
+    )
+    return {
+        &#x27;place&#x27;: place,
+        &#x27;reasons&#x27;: [REASONS[c] for c in codes
+                    if c != &#x27;phone_missing&#x27;],
+        &#x27;needs_phone&#x27;: &#x27;phone_missing&#x27; in codes,
+        &#x27;unverified&#x27;: &#x27;unverified&#x27; in codes,
+    }</code></pre><p class="" data-block="281"><code>registration_panel()</code> decides what the page says. A visitor sees the reasons that apply to everyone; a member sees their place, or their own reasons. The phone reason is kept apart, because for it the page shows the button anyway, leading to the phone page.</p><p class="" data-block="282">Create three templates in a new folder, <code>registrations/templates/registrations/</code>. First the sharing notice, <code>sharing.html</code>, used beside every Register button:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/sharing.html</p><pre class="code-listing code-listing--file" data-block="283" tabindex="0"><code>&lt;p class=&quot;text-sm&quot;&gt;Registering shares your name, email
+  address, and phone number with this event&#x27;s
+  organizers.&lt;/p&gt;</code></pre><p class="" data-block="284">the phone page, <code>phone.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/phone.html</p><pre class="code-listing code-listing--file" data-block="285" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Your phone number | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;{{ event.title }} asks for a phone number&lt;/h1&gt;
+  &lt;p&gt;Otahque keeps it on your profile, so you are asked
+     only once. You can change it there.&lt;/p&gt;
+  {% include &quot;registrations/sharing.html&quot; %}
+  &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;
+    {% csrf_token %}
+    {{ form }}
+    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+      Save and register&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;p&gt;
+    &lt;a href=&quot;{{ event.get_absolute_url }}&quot;&gt;Back to the
+      event&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="286">and the panel itself, <code>panel.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/panel.html</p><pre class="code-listing code-listing--file" data-block="287" tabindex="0"><code>&lt;section class=&quot;space-y-3 border-t border-base-300 pt-4&quot;
+         aria-label=&quot;Registration&quot;&gt;
+  {% if place %}
+    &lt;p&gt;&lt;span class=&quot;badge badge-success&quot;&gt;You have a
+      place&lt;/span&gt; Registered
+      {{ place.registered_at|date:&quot;j M Y, H:i&quot; }}.&lt;/p&gt;
+  {% elif reasons %}
+    &lt;ul class=&quot;list-disc pl-5&quot;&gt;
+      {% for reason in reasons %}
+        &lt;li&gt;{{ reason }}&lt;/li&gt;
+      {% endfor %}
+    &lt;/ul&gt;
+    {% if unverified %}
+      &lt;p&gt;&lt;a href=&quot;{% url &#x27;account_email&#x27; %}&quot;&gt;Confirm your
+        email address&lt;/a&gt;, then come back.&lt;/p&gt;
+    {% endif %}
+  {% elif not user.is_authenticated %}
+    {% url &#x27;account_login&#x27; as sign_in %}
+    {% with back=event.get_absolute_url|urlencode %}
+      &lt;a class=&quot;btn btn-primary&quot;
+         href=&quot;{{ sign_in }}?next={{ back }}&quot;&gt;
+        Sign in to register&lt;/a&gt;
+    {% endwith %}
+  {% elif needs_phone %}
+    &lt;a class=&quot;btn btn-primary&quot;
+       href=&quot;{% url &#x27;registrations:phone&#x27; event.pk %}&quot;&gt;
+      Register&lt;/a&gt;
+    {% include &quot;registrations/sharing.html&quot; %}
+  {% else %}
+    &lt;form method=&quot;post&quot;
+          action=&quot;{% url &#x27;registrations:register&#x27; event.pk %}&quot;&gt;
+      {% csrf_token %}
+      &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+        Register&lt;/button&gt;
+    &lt;/form&gt;
+    {% include &quot;registrations/sharing.html&quot; %}
+  {% endif %}
+&lt;/section&gt;</code></pre><p class="" data-block="288">The visitor’s link signs in and comes back with <code>next</code> set to the event page, not to the Register address. In <code>events/templates/events/detail.html</code>, include the panel after the organizers’ names:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html (after &quot;Organized by&quot;)</p><pre class="code-listing code-listing--file" data-block="289" tabindex="0"><code>    {% include &quot;registrations/panel.html&quot; %}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="290" tabindex="0"><code>uv run python manage.py test registrations -k Page</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="291" tabindex="0"><code>Found 10 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 10 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="292">One earlier test counts the event page’s queries, and the panel added one: it counts the active places again, inside the rules, rather than trusting the figure shown above it.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="293" tabindex="0"><code>uv run python manage.py test events.tests.PlacesLeftTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="294" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 3 != 2 : 3 queries executed, 2 expected
+Ran 2 tests in ...s
+
+FAILED (failures=1)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="295">In <code>events/tests.py</code>, in <code>PlacesLeftTests.test_pages_show_places_left</code>, change the event page’s count from 2 to 3:</p><p class="code-label code-label--file" aria-hidden="true">events/tests.py (in test_pages_show_places_left)</p><pre class="code-listing code-listing--file" data-block="296" tabindex="0"><code>        self.assertNotContains(response, &#x27;of 5 places left&#x27;)
+        # The registration panel counts places again.
+        with self.assertNumQueries(3):</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="297" tabindex="0"><code>uv run python manage.py test events.tests.PlacesLeftTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="298" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><div class="callout callout--error"><p class="callout__title" data-block="299">Common Error: 405 after signing in</p><p class="" data-block="300">Make the visitor’s link point at the Register address itself, or let <code>login_required</code> send a visitor there, and sign-in brings them back with a GET to an address that accepts only POST: “405 Method Not Allowed”. A POST cannot be repeated after a redirect. Send visitors back to the event page, where the button is, as <code>panel.html</code> does.</p></div><h4 data-block="301">Step 9: My registrations and the cancel page</h4><p class="" data-block="302">Tests first. Add at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="303" tabindex="0"><code>class MyRegistrationsTests(TestCase):
+    &quot;&quot;&quot;A member&#x27;s own places, and only theirs.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = soon()
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+        cls.raj = verified(&#x27;raj@example.org&#x27;)
+        now = timezone.now()
+        cls.sais = cls.event.register(cls.sai, now)
+        cls.rajs = cls.event.register(cls.raj, now)
+
+    def test_the_page_lists_upcoming_places(self):
+        self.client.force_login(self.sai)
+        response = self.client.get(url(&#x27;mine&#x27;))
+        self.assertContains(response, &#x27;Django clinic&#x27;)
+        self.assertContains(response,
+                            url(&#x27;cancel&#x27;, self.sais.pk))
+        self.assertNotContains(response,
+                               url(&#x27;cancel&#x27;, self.rajs.pk))
+
+    def test_a_late_cancel_is_marked(self):
+        self.client.force_login(self.raj)
+        Event.objects.filter(pk=self.event.pk).update(
+            cancellation_deadline=timezone.now()
+        )
+        response = self.client.post(
+            url(&#x27;cancel&#x27;, self.rajs.pk), follow=True
+        )
+        self.assertContains(response, &#x27;late cancellation&#x27;)
+        late = &#x27;&lt;span class=&quot;badge&quot;&gt;Cancelled late&lt;/span&gt;&#x27;
+        self.assertContains(response, late, html=True)
+
+    def test_confirm_then_cancel(self):
+        self.client.force_login(self.sai)
+        address = url(&#x27;cancel&#x27;, self.sais.pk)
+        page = self.client.get(address)
+        self.assertContains(page, &#x27;Cancel my place&#x27;)
+        self.assertEqual(self.event.places_taken(), 2)
+        response = self.client.post(address)
+        self.assertRedirects(response, url(&#x27;mine&#x27;),
+                             fetch_redirect_response=False)
+        self.assertEqual(self.event.places_taken(), 1)
+        again = self.client.post(address, follow=True)
+        self.assertContains(again,
+                            &#x27;This place was already cancelled.&#x27;)
+        self.assertEqual(self.event.places_taken(), 1)
+
+    def test_someone_elses_place_is_missing(self):
+        self.client.force_login(self.sai)
+        address = url(&#x27;cancel&#x27;, self.rajs.pk)
+        for response in (self.client.get(address),
+                         self.client.post(address)):
+            self.assertEqual(response.status_code, 404)
+        self.rajs.refresh_from_db()
+        self.assertEqual(self.rajs.status, &#x27;active&#x27;)
+        refused = AuditEvent.objects.filter(
+            action=&#x27;cancel_registration&#x27;, outcome=&#x27;refused&#x27;,
+            actor=self.sai, target_id=self.rajs.pk,
+        )
+        self.assertEqual(refused.count(), 2)
+
+    def test_a_visitor_is_sent_to_sign_in(self):
+        response = self.client.get(url(&#x27;mine&#x27;))
+        self.assertRedirects(
+            response,
+            f&quot;{reverse(&#x27;account_login&#x27;)}?next={url(&#x27;mine&#x27;)}&quot;,
+            fetch_redirect_response=False,
+        )</code></pre><p class="" data-block="304"><code>test_someone_elses_place_is_missing</code> is Sai typing the number of Raj’s place: GET and POST both answer 404, Raj’s place stays active, and both attempts are recorded.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="305" tabindex="0"><code>uv run python manage.py test registrations -k MyRegistrations</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="306" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+FAILED (errors=5)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="307">The audit trail needs two new actions. In <code>audit/models.py</code>, add to <code>AuditEvent.Action</code>, after <code>LEAVE_ORGANIZERS</code>:</p><p class="code-label code-label--file" aria-hidden="true">audit/models.py (in AuditEvent.Action, at the end)</p><pre class="code-listing code-listing--file" data-block="308" tabindex="0"><code>        VIEW_ATTENDEES = (
+            &#x27;view_attendees&#x27;, &#x27;Open an attendee list&#x27;
+        )
+        CANCEL_REGISTRATION = (
+            &#x27;cancel_registration&#x27;, &#x27;Cancel a registration&#x27;
+        )</code></pre><p class="" data-block="309">The command is split; in PowerShell the backtick continues it, with no space after it:</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="310" tabindex="0"><code>uv run python manage.py makemigrations audit `
+  --name registration_actions</code></pre><p class="" data-block="311">In Git Bash, macOS, Linux, or WSL, the backslash does the same:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="312" tabindex="0"><code>uv run python manage.py makemigrations audit \
+  --name registration_actions</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="313" tabindex="0"><code>Migrations for &#x27;audit&#x27;:
+  audit/migrations/0002_registration_actions.py
+    ~ Alter field action on auditevent</code></pre><p class="" data-block="314">Then run <code>uv run python manage.py migrate</code>. The migration changes only the field’s list of choices; no table changes. Add the views at the end of <code>registrations/views.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="315" tabindex="0"><code>@login_required
+def my_registrations(request):
+    &quot;&quot;&quot;Show the signed-in member&#x27;s places, upcoming first.&quot;&quot;&quot;
+    now = timezone.now()
+    mine = request.user.registrations.select_related(&#x27;event&#x27;)
+    current = mine.active().filter(event__ends_at__gt=now)
+    earlier = mine.exclude(pk__in=current)
+    return render(request, &#x27;registrations/mine.html&#x27;, {
+        &#x27;current&#x27;: current.order_by(&#x27;event__starts_at&#x27;),
+        &#x27;earlier&#x27;: earlier.order_by(&#x27;-event__starts_at&#x27;,
+                                    &#x27;-registered_at&#x27;),
+        &#x27;now&#x27;: now,
+    })
+
+
+@require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;])
+@login_required
+def cancel_registration(request, registration_id):
+    &quot;&quot;&quot;Confirm, then cancel the member&#x27;s own place.&quot;&quot;&quot;
+    registration = get_object_or_404(
+        Registration.objects.select_related(&#x27;event&#x27;),
+        pk=registration_id,
+    )
+    if registration.member_id != request.user.pk:
+        # Someone else&#x27;s place: answered as if missing.
+        deny(request, Action.CANCEL_REGISTRATION,
+             registration, hidden=True)
+    now = timezone.now()
+    if request.method == &#x27;POST&#x27;:
+        try:
+            changed = registration.cancel(now)
+        except ValidationError as error:
+            messages.error(request, error.messages[0])
+        else:
+            say_cancelled(request, registration, changed)
+        return redirect(&#x27;registrations:mine&#x27;)
+    event = registration.event
+    deadline = event.cancellation_deadline
+    return render(request, &#x27;registrations/cancel.html&#x27;, {
+        &#x27;registration&#x27;: registration,
+        &#x27;event&#x27;: event,
+        &#x27;started&#x27;: now &gt;= event.starts_at,
+        &#x27;late&#x27;: deadline is not None and now &gt;= deadline,
+    })
+
+
+def say_cancelled(request, registration, changed):
+    &quot;&quot;&quot;Tell the member what their cancel request did.&quot;&quot;&quot;
+    if not changed:
+        messages.info(request,
+                      &#x27;This place was already cancelled.&#x27;)
+    elif registration.is_late():
+        messages.success(request, &#x27;Place cancelled. It &#x27;
+                         &#x27;counts as a late cancellation.&#x27;)
+    else:
+        messages.success(request, &#x27;Place cancelled.&#x27;)</code></pre><p class="" data-block="316"><code>my_registrations()</code> reads through <code>request.user.registrations</code>, so only the member’s own places can appear; no number from the address is involved. <code>cancel_registration()</code> does take a number from the address, so it checks the owner itself and refuses others with 404, recorded. On POST it cancels and redirects to My registrations; on GET it shows whether cancelling now would be late. Add both addresses to <code>registrations/urls.py</code>, before the closing <code>]</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/urls.py (in urlpatterns, at the end)</p><pre class="code-listing code-listing--file" data-block="317" tabindex="0"><code>    path(&#x27;registrations/&#x27;, views.my_registrations,
+         name=&#x27;mine&#x27;),
+    path(&#x27;registrations/&lt;int:registration_id&gt;/cancel/&#x27;,
+         views.cancel_registration, name=&#x27;cancel&#x27;),</code></pre><p class="" data-block="318">Create <code>registrations/templates/registrations/mine.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/mine.html</p><pre class="code-listing code-listing--file" data-block="319" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}My registrations | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;My registrations&lt;/h1&gt;
+  &lt;h2&gt;Upcoming&lt;/h2&gt;
+  &lt;ul class=&quot;space-y-3&quot;&gt;
+    {% for place in current %}
+      {% include &quot;registrations/row.html&quot; %}
+    {% empty %}
+      &lt;li&gt;No upcoming places.
+        &lt;a href=&quot;{% url &#x27;events:list&#x27; %}&quot;&gt;Find an
+          event&lt;/a&gt;.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+  &lt;h2 class=&quot;mt-8&quot;&gt;Earlier and cancelled&lt;/h2&gt;
+  &lt;ul class=&quot;space-y-3&quot;&gt;
+    {% for place in earlier %}
+      {% include &quot;registrations/row.html&quot; %}
+    {% empty %}
+      &lt;li&gt;Nothing yet.&lt;/li&gt;
+    {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre><p class="" data-block="320">one row, <code>row.html</code>, shared by both lists:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/row.html</p><pre class="code-listing code-listing--file" data-block="321" tabindex="0"><code>&lt;li class=&quot;space-y-1&quot;&gt;
+  &lt;a href=&quot;{{ place.event.get_absolute_url }}&quot;&gt;
+    {{ place.event.title }}&lt;/a&gt;
+  &lt;span class=&quot;block text-sm&quot;&gt;
+    {% include &quot;events/when.html&quot; with event=place.event %}
+  &lt;/span&gt;
+  {% if place.event.status == &#x27;cancelled&#x27; %}
+    &lt;span class=&quot;badge badge-error&quot;&gt;Event cancelled&lt;/span&gt;
+  {% endif %}
+  {% if place.status == &#x27;cancelled&#x27; and place.is_late %}
+    &lt;span class=&quot;badge&quot;&gt;Cancelled late&lt;/span&gt;
+  {% elif place.status == &#x27;cancelled&#x27; %}
+    &lt;span class=&quot;badge&quot;&gt;Cancelled&lt;/span&gt;
+  {% elif now &lt; place.event.starts_at %}
+    &lt;a href=&quot;{% url &#x27;registrations:cancel&#x27; place.pk %}&quot;&gt;
+      Cancel my place&lt;/a&gt;
+  {% endif %}
+&lt;/li&gt;</code></pre><p class="" data-block="322">and the confirmation page, <code>cancel.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/cancel.html</p><pre class="code-listing code-listing--file" data-block="323" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Cancel your place | Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Cancel your place at {{ event.title }}?&lt;/h1&gt;
+  {% if registration.status == &#x27;cancelled&#x27; %}
+    &lt;p&gt;This place is already cancelled.&lt;/p&gt;
+  {% elif started %}
+    &lt;p&gt;The event has started, so this place can no longer
+       be cancelled.&lt;/p&gt;
+  {% else %}
+    &lt;p&gt;Your place is released for someone else. If
+       registration has closed, you cannot take it
+       back.&lt;/p&gt;
+    {% if late %}
+      &lt;p class=&quot;rounded-box border border-base-content
+                px-3 py-1 text-sm&quot;&gt;
+        The cancellation deadline has passed, so this
+        counts as a late cancellation.&lt;/p&gt;
+    {% endif %}
+    &lt;form method=&quot;post&quot; class=&quot;card space-y-4 border
+          border-base-300 bg-base-100 p-6&quot;&gt;
+      {% csrf_token %}
+      &lt;button type=&quot;submit&quot; class=&quot;btn btn-error&quot;&gt;
+        Cancel my place&lt;/button&gt;
+    &lt;/form&gt;
+  {% endif %}
+  &lt;p&gt;
+    &lt;a href=&quot;{% url &#x27;registrations:mine&#x27; %}&quot;&gt;Back to my
+      registrations&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="324">In <code>templates/includes/site_nav.html</code>, add the menu link before the profile link, inside <code>{% if user.is_authenticated %}</code>:</p><p class="code-label code-label--file" aria-hidden="true">templates/includes/site_nav.html (before the profile link)</p><pre class="code-listing code-listing--file" data-block="325" tabindex="0"><code>      &lt;a href=&quot;{% url &#x27;registrations:mine&#x27; %}&quot;&gt;
+        My registrations&lt;/a&gt;</code></pre><p class="" data-block="326">and in <code>panel.html</code>, add the cancel link after the “Registered” line:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/panel.html (after &quot;Registered&quot;)</p><pre class="code-listing code-listing--file" data-block="327" tabindex="0"><code>    &lt;p&gt;&lt;a href=&quot;{% url &#x27;registrations:cancel&#x27; place.pk %}&quot;&gt;
+      Cancel my place&lt;/a&gt;&lt;/p&gt;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="328" tabindex="0"><code>uv run python manage.py test registrations -k MyRegistrations</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="329" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><h4 data-block="330">Step 10: The attendee list</h4><p class="" data-block="331">Tests first. Add at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="332" tabindex="0"><code>class AttendeeListTests(TestCase):
+    &quot;&quot;&quot;Sam&#x27;s attendee list: who has a place, and contacts.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        cls.event = soon()
+        cls.event.add_organizer(cls.sam)
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+        Profile.objects.create(user=cls.sai,
+                               phone=&#x27;+919876543210&#x27;)
+        cls.event.register(cls.sai, timezone.now())
+
+    def test_the_list_shows_contacts_and_counts(self):
+        raj = verified(&#x27;raj@example.org&#x27;)
+        self.event.register(raj, timezone.now()).cancel(
+            timezone.now()
+        )
+        self.client.force_login(self.sam)
+        response = self.client.get(
+            url(&#x27;attendees&#x27;, self.event.pk)
+        )
+        for text in (&#x27;Sai&#x27;, &#x27;sai@example.org&#x27;,
+                     &#x27;+91 98765 43210&#x27;, &#x27;Cancellations: 1&#x27;,
+                     &#x27;late: 0&#x27;):
+            self.assertContains(response, text)
+        self.assertNotContains(response, &#x27;raj@example.org&#x27;)
+
+    def test_a_fixed_number_of_queries(self):
+        self.client.force_login(self.sam)
+        address = url(&#x27;attendees&#x27;, self.event.pk)
+        with CaptureQueriesContext(connection) as one:
+            self.client.get(address)
+        for email in (&#x27;raj@example.org&#x27;, &#x27;soni@example.org&#x27;):
+            self.event.registrations.create(
+                member=verified(email)
+            )
+        with CaptureQueriesContext(connection) as three:
+            self.client.get(address)
+        self.assertEqual(len(three), len(one))
+
+    def test_contacts_stay_off_the_event_page(self):
+        soni = verified(&#x27;soni@example.org&#x27;)
+        self.client.force_login(soni)
+        page = self.client.get(self.event.get_absolute_url())
+        self.assertNotContains(page, &#x27;sai@example.org&#x27;)
+        self.assertNotContains(page, &#x27;Attendee list&#x27;)
+        self.client.force_login(self.sam)
+        page = self.client.get(self.event.get_absolute_url())
+        self.assertContains(page, &#x27;Attendee list&#x27;)</code></pre><p class="" data-block="333"><code>test_a_fixed_number_of_queries</code> counts the page’s queries with one attendee and again with three, and expects the same number. It does not fix the number itself, so a change to the page’s other queries does not break it.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="334" tabindex="0"><code>uv run python manage.py test registrations -k AttendeeList</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="335" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False is not true : Couldn&#x27;t find &#x27;Attendee
+    list&#x27; in the following response
+Ran 3 tests in ...s
+
+FAILED (failures=1, errors=2)
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="336">Chapter 22 left this method for the first page that shows names. In <code>registrations/models.py</code>, add to <code>RegistrationQuerySet</code>, after <code>active()</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/models.py (in RegistrationQuerySet, after active)</p><pre class="code-listing code-listing--file" data-block="337" tabindex="0"><code>    def with_people(self):
+        &quot;&quot;&quot;Fetch each place&#x27;s member and profile at once.&quot;&quot;&quot;
+        return self.select_related(&#x27;member&#x27;, &#x27;member__profile&#x27;)</code></pre><p class="" data-block="338"><code>select_related()</code> joins the member and their profile into the same query, so the list reads every name, email, and phone from one result instead of asking once per person. <code>member__profile</code> follows the one-to-one link from a user to their <code>Profile</code>; a member with no profile simply has none.</p><p class="" data-block="339">In <code>events/models.py</code>, add who may open the list, after <code>can_be_edited_by()</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/models.py (in Event, after can_be_edited_by)</p><pre class="code-listing code-listing--file" data-block="340" tabindex="0"><code>    def can_see_attendees(self, user):
+        &quot;&quot;&quot;Return whether user may open the attendee list.
+
+        Its current organizers may, and the administrator
+        (registrations.view_registration).
+        &quot;&quot;&quot;
+        if self.has_organizer(user):
+            return True
+        return user.has_perm(
+            &#x27;registrations.view_registration&#x27;
+        )</code></pre><p class="" data-block="341">Add the view at the end of <code>registrations/views.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/views.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="342" tabindex="0"><code>@login_required
+def attendees(request, event_id):
+    &quot;&quot;&quot;Show the attendee list to the event&#x27;s organizers.&quot;&quot;&quot;
+    event = get_object_or_404(Event, pk=event_id)
+    if not event.is_visible_to(request.user):
+        deny(request, Action.VIEW_ATTENDEES, event,
+             hidden=True)
+    if not event.can_see_attendees(request.user):
+        deny(request, Action.VIEW_ATTENDEES, event)
+    places = event.registrations.active().with_people()
+    return render(request, &#x27;registrations/attendees.html&#x27;, {
+        &#x27;event&#x27;: event,
+        &#x27;places&#x27;: places,
+        &#x27;counts&#x27;: event.registrations.cancellation_counts(),
+    })</code></pre><p class="" data-block="343">and its address at the end of <code>urlpatterns</code> in <code>registrations/urls.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/urls.py (in urlpatterns, at the end)</p><pre class="code-listing code-listing--file" data-block="344" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/registrations/&#x27;,
+         views.attendees, name=&#x27;attendees&#x27;),</code></pre><p class="" data-block="345">Create <code>registrations/templates/registrations/attendees.html</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/attendees.html</p><pre class="code-listing code-listing--file" data-block="346" tabindex="0"><code>{% extends &quot;base.html&quot; %}
+
+{% block title %}Attendees of {{ event.title }} |
+  Otahque{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Attendees of {{ event.title }}&lt;/h1&gt;
+  &lt;p&gt;{{ places|length }} of {{ event.capacity }} places
+     taken. Cancellations: {{ counts.cancelled }}, of
+     which late: {{ counts.late }}.&lt;/p&gt;
+  &lt;p class=&quot;text-sm&quot;&gt;Contact details are for running this
+     event only. Do not copy them elsewhere.&lt;/p&gt;
+  {% if places %}
+    &lt;div class=&quot;overflow-x-auto&quot;&gt;
+      &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th scope=&quot;col&quot;&gt;Name&lt;/th&gt;
+            &lt;th scope=&quot;col&quot;&gt;Email&lt;/th&gt;
+            &lt;th scope=&quot;col&quot;&gt;Phone&lt;/th&gt;
+            &lt;th scope=&quot;col&quot;&gt;Registered&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          {% for place in places %}
+            {% with person=place.member %}
+            &lt;tr&gt;
+              &lt;td&gt;{{ person.display_name }}&lt;/td&gt;
+              &lt;td&gt;{{ person.email }}&lt;/td&gt;
+              {% with phone=person.profile.phone %}
+              &lt;td&gt;
+                {{ phone.as_international|default:&quot;Not given&quot; }}
+              &lt;/td&gt;
+              {% endwith %}
+              &lt;td&gt;{{ place.registered_at|date:&quot;j M Y, H:i&quot; }}
+              &lt;/td&gt;
+            &lt;/tr&gt;
+            {% endwith %}
+          {% endfor %}
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  {% else %}
+    &lt;p&gt;Nobody has a place yet.&lt;/p&gt;
+  {% endif %}
+  &lt;p&gt;
+    &lt;a href=&quot;{{ event.get_absolute_url }}&quot;&gt;Back to the
+      event&lt;/a&gt;
+  &lt;/p&gt;
+{% endblock %}</code></pre><p class="" data-block="347"><code>places|length</code> runs the query once and the loop reuses its rows. The table sits in a box that scrolls sideways on a phone, so the page itself never does. The page reminds organizers what the details are for. Give organizers the link: in <code>panel.html</code>, add before the closing <code>&lt;/section&gt;</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/panel.html (before &lt;/section&gt;)</p><pre class="code-listing code-listing--file" data-block="348" tabindex="0"><code>  {% if can_see_attendees %}
+    &lt;p&gt;&lt;a href=&quot;{% url &#x27;registrations:attendees&#x27; event.pk %}&quot;&gt;
+      Attendee list&lt;/a&gt;&lt;/p&gt;
+  {% endif %}</code></pre><p class="" data-block="349">and in <code>events/views.py</code>, add one line to the dictionary <code>registration_panel()</code> returns for members, after <code>&#x27;unverified&#x27;</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py (in registration_panel)</p><pre class="code-listing code-listing--file" data-block="350" tabindex="0"><code>        &#x27;can_see_attendees&#x27;: event.can_see_attendees(user),</code></pre><p class="" data-block="351">The new templates use classes the stylesheet does not have yet, such as <code>table</code> and <code>badge-success</code>. Chapter 14’s build reads only the folders listed in <code>static/otahque/source.css</code>, so add the new one after the events line:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css (after the events @source line)</p><pre class="code-listing code-listing--file" data-block="352" tabindex="0"><code>@source &quot;../../registrations/templates&quot;;</code></pre><p class="" data-block="353">and rebuild the stylesheet:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="354" tabindex="0"><code>npm run build</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="355" tabindex="0"><code>uv run python manage.py test registrations -k AttendeeList</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="356" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 3 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="357">Who sees what about places is summed up in Figure 31.4.</p><figure data-block="358"><a href="/assets/chapter31/figure-31-4-who-sees.png" aria-label="Open Figure 31.4 at full size"><img src="/assets/chapter31/figure-31-4-who-sees.png" alt="Three cards side by side. A blue card, Sai, a member: her own places on My registrations, and another member’s place answers 404 and is recorded. A green card, Sam, organizer: the attendee list of his event with names, emails, phones, times, and cancellation counts. A red card, Raj, Delhi organizer: Sam’s list answers 403 for a published event and 404 for a draft, recorded. A grey note below says the administrator may also open the list, no other page shows anyone’s email or phone, and members are told before registering." width="1500" height="520" loading="lazy"></a><figcaption data-block="359">Figure 31.4 — Who sees what about places.</figcaption></figure><div class="callout callout--error"><p class="callout__title" data-block="360">Common Error: one query per attendee</p><p class="" data-block="361">Write the view with <code>event.registrations.active()</code> alone, and the page still works, but each <code>place.member</code> and each <code>person.profile</code> is fetched when the template reaches it: two extra queries per attendee, two hundred for a hundred people. <code>test_a_fixed_number_of_queries</code> fails with different counts for one and three attendees. Use <code>with_people()</code>.</p></div><h4 data-block="362">Step 11: The matrix rows</h4><p class="" data-block="363">Chapter 30 listed two planned rows for this chapter. Members’ own places are tested in Step 9; the attendee list gets a matrix of its own. Add at the end of <code>registrations/tests.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests.py (add at the end)</p><pre class="code-listing code-listing--file" data-block="364" tabindex="0"><code># Who may open the attendee list (Chapter 31).
+ATTENDEE_MATRIX = [
+    # person, Sam&#x27;s published event, Sam&#x27;s draft
+    (&#x27;visitor&#x27;, &#x27;sign in&#x27;, &#x27;sign in&#x27;),
+    (&#x27;member&#x27;, &#x27;403&#x27;, &#x27;404&#x27;),
+    (&#x27;staff only&#x27;, &#x27;403&#x27;, &#x27;404&#x27;),
+    (&#x27;other organizer&#x27;, &#x27;403&#x27;, &#x27;404&#x27;),
+    (&#x27;administrator&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;superuser&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;organizer&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+]
+
+
+class AttendeeMatrixTests(TestCase):
+    &quot;&quot;&quot;Each person against the attendee list.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        sam = in_group(&#x27;sam@example.org&#x27;, ORGANIZERS)
+        raj = in_group(&#x27;raj@example.org&#x27;, ORGANIZERS)
+        cls.events = [soon(), soon(status=&#x27;draft&#x27;)]
+        for event in cls.events:
+            event.add_organizer(sam)
+        soon(title=&#x27;Delhi clinic&#x27;).add_organizer(raj)
+        cls.people = {
+            &#x27;visitor&#x27;: None,
+            &#x27;member&#x27;: verified(&#x27;sai@example.org&#x27;),
+            &#x27;staff only&#x27;: User.objects.create_user(
+                &#x27;staff@example.org&#x27;, display_name=&#x27;Staff&#x27;,
+                is_staff=True,
+            ),
+            &#x27;other organizer&#x27;: raj,
+            &#x27;administrator&#x27;: in_group(
+                &#x27;admin@example.org&#x27;, &#x27;Administrators&#x27;,
+                is_staff=True,
+            ),
+            &#x27;superuser&#x27;: User.objects.create_superuser(
+                &#x27;root@example.org&#x27;, display_name=&#x27;Root&#x27;
+            ),
+            &#x27;organizer&#x27;: sam,
+        }
+
+    def test_every_row(self):
+        for person, *expected in ATTENDEE_MATRIX:
+            self.client.logout()
+            if self.people[person]:
+                self.client.force_login(self.people[person])
+            with self.subTest(person=person):
+                answers = [outcome(self.client.get(
+                    url(&#x27;attendees&#x27;, event.pk)))
+                    for event in self.events]
+                self.assertEqual(answers, expected)
+
+    def test_refusals_are_recorded(self):
+        raj = self.people[&#x27;other organizer&#x27;]
+        self.client.force_login(raj)
+        for event in self.events:
+            self.client.get(url(&#x27;attendees&#x27;, event.pk))
+        refused = AuditEvent.objects.filter(
+            action=&#x27;view_attendees&#x27;, outcome=&#x27;refused&#x27;,
+            actor=raj,
+        )
+        self.assertEqual(refused.count(), 2)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="365" tabindex="0"><code>uv run python manage.py test registrations -k AttendeeMatrix</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="366" tabindex="0"><code>Found 2 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 2 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="367">The code already exists, so the matrix passes at once: it proves each row, including the people who must be refused. In <code>docs/design/permissions.md</code>, replace the “Planned rows” heading and its Chapter 31 item with:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/permissions.md (replace &quot;Planned rows&quot; down to the Chapter 46 item)</p><pre class="code-listing code-listing--file" data-block="368" tabindex="0"><code>## Registrations (Chapter 31)
+
+- A member registers, sees, and cancels only their own
+  places. Another member&#x27;s place: 404, and the attempt
+  is recorded.
+- The attendee list shows contact details, so only the
+  event&#x27;s current organizers and the administrator
+  (registrations.view_registration) may open it:
+
+| Person          | Published event | Draft   |
+|-----------------|-----------------|---------|
+| Visitor         | sign in         | sign in |
+| Member          | 403             | 404     |
+| Staff only      | 403             | 404     |
+| Other organizer | 403             | 404     |
+| Administrator   | ok              | ok      |
+| Superuser       | ok              | ok      |
+| Organizer       | ok              | ok      |
+
+Proved by AttendeeMatrixTests. See registration.md.
+
+## Planned rows
+
+- Chapter 46:</code></pre><h4 data-block="369">Step 12: Check and commit</h4><p class="" data-block="370">The data model gained fields, so update the ERD from Chapter 15. In <code>docs/design/erd.md</code>, add the phone to <code>PROFILE</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (in PROFILE)</p><pre class="code-listing code-listing--file" data-block="371" tabindex="0"><code>        text timezone &quot;IANA name, blank = not set&quot;
+        text phone &quot;E.164, blank = not given&quot;
+    }</code></pre><p class="" data-block="372">the times and the setting to <code>EVENT</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (in EVENT)</p><pre class="code-listing code-listing--file" data-block="373" tabindex="0"><code>        text status &quot;draft, published, cancelled&quot;
+        datetime registration_opens_at &quot;blank = on publication&quot;
+        datetime registration_closes_at &quot;needed to publish&quot;
+        datetime cancellation_deadline &quot;needed to publish&quot;
+        bool phone_required
+    }</code></pre><p class="" data-block="374">the new rules after the time-order rule:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (in &quot;Rules the structure holds&quot;)</p><pre class="code-listing code-listing--file" data-block="375" tabindex="0"><code>- A cancellation is never earlier than its registration,
+  and a revocation never earlier than its assignment
+  (CHECK constraints).
+- Registration opens before it closes; closing and the
+  cancellation deadline are no later than the start
+  (CHECK constraints, Chapter 31).</code></pre><p class="" data-block="376">and answer two open questions:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/erd.md (replace &quot;Open questions&quot;)</p><pre class="code-listing code-listing--file" data-block="377" tabindex="0"><code>## Open questions
+
+- Who appoints organizers, and must an event have one?
+- What happens to active registrations when an event
+  is cancelled? (Chapter 26: they stay as they are;
+  Chapters 43-44 decide what members are told.)
+
+Answered in Chapter 31: contact details are the email
+and an optional phone number on the Profile, which an
+event may require; registration times are on Event.</code></pre><p class="" data-block="378">Then check that no model change lacks a migration, and run everything:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="379" tabindex="0"><code>uv run python manage.py makemigrations --check --dry-run</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="380" tabindex="0"><code>No changes detected</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="381" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="382" tabindex="0"><code>Found 342 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 342 tests in ...s
+
+OK
+Destroying test database for alias &#x27;default&#x27;...</code></pre><p class="" data-block="383">Walk through it in the browser, with a private window for each person. As Sam, publish a clinic with a closing time and a deadline, and tick “Ask for a phone number”. As a visitor, open it: “Sign in to register”. Sign up as Sai, confirm the address from the email in the terminal, register, give a phone number, and see “You have a place”. Open My registrations and cancel; register again. As Raj, after the deadline, cancel: “Cancelled late”. As Sam, open the attendee list. Then commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="384" tabindex="0"><code>git add .
+git status --short</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="385" tabindex="0"><code>M  accounts/forms.py
+A  accounts/migrations/0005_profile_phone.py
+M  accounts/models.py
+M  accounts/tests.py
+M  accounts/views.py
+A  audit/migrations/0002_registration_actions.py
+M  audit/models.py
+M  config/settings.py
+M  config/tests.py
+M  config/urls.py
+M  docs/design/erd.md
+M  docs/design/event-states.md
+M  docs/design/permissions.md
+A  docs/design/registration.md
+M  events/admin.py
+M  events/forms.py
+A  events/migrations/0006_registration.py
+A  events/migrations/0007_fill_window.py
+M  events/models.py
+M  events/templates/events/detail.html
+M  events/tests.py
+M  events/views.py
+M  pyproject.toml
+A  registrations/migrations/0003_constraint_code.py
+M  registrations/models.py
+A  registrations/templates/registrations/attendees.html
+A  registrations/templates/registrations/cancel.html
+A  registrations/templates/registrations/mine.html
+A  registrations/templates/registrations/panel.html
+A  registrations/templates/registrations/phone.html
+A  registrations/templates/registrations/row.html
+A  registrations/templates/registrations/sharing.html
+M  registrations/tests.py
+A  registrations/urls.py
+M  registrations/views.py
+M  static/otahque/site.css
+M  static/otahque/source.css
+M  templates/includes/site_nav.html
+M  uv.lock</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="386" tabindex="0"><code>git commit -m &quot;Add registration, cancellation, and attendees&quot;</code></pre><h3 class="" id="topic-387" data-block="387">When something goes wrong</h3><figure class="table-figure" data-block="388"><figcaption>Table 31.2 — Recovery for Chapter 31</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 31.2 — Recovery for Chapter 31"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">&quot;Event has no field named &#x27;registration_opens_at&#x27;&quot;</th>
+<td data-label="Likely cause">The fields are not in Event yet, or the file was not saved</td>
+<td data-label="Recovery">Add Step 3&#x27;s fields; run makemigrations again</td>
+</tr>
+<tr><th scope="row">IntegrityError naming event_closes_by_start</th>
+<td data-label="Likely cause">A time after the start, saved past the form</td>
+<td data-label="Recovery">Correct the time; the form shows the rule&#x27;s message</td>
+</tr>
+<tr><th scope="row">&quot;No module named &#x27;phonenumber_field&#x27;&quot;</th>
+<td data-label="Likely cause">uv add did not finish, or another environment is active</td>
+<td data-label="Recovery">Run uv add again; run commands through uv run</td>
+</tr>
+<tr><th scope="row">Published events still have no closing time</th>
+<td data-label="Likely cause">Migration 0007 was left empty</td>
+<td data-label="Recovery">Copy m_fill&#x27;s body into it; migrate events 0006, then migrate</td>
+</tr>
+<tr><th scope="row">TransactionManagementError in register()</th>
+<td data-label="Likely cause">The try is not around its own inner atomic()</td>
+<td data-label="Recovery">Wrap only the insert in atomic(); catch outside it</td>
+</tr>
+<tr><th scope="row">NoReverseMatch for &#x27;registrations:cancel&#x27;</th>
+<td data-label="Likely cause">The panel links to a page whose address is not added yet</td>
+<td data-label="Recovery">Add Step 9&#x27;s addresses, or move the link to Step 9</td>
+</tr>
+<tr><th scope="row">405 after signing in from an event</th>
+<td data-label="Likely cause">The sign-in link&#x27;s next is the Register address</td>
+<td data-label="Recovery">Use the event page&#x27;s address as next</td>
+</tr>
+<tr><th scope="row">A refused member sees no message</th>
+<td data-label="Likely cause">base.html shows no messages, or the view returned without one</td>
+<td data-label="Recovery">Compare base.html with Chapter 24; check take_place()</td>
+</tr>
+<tr><th scope="row">The attendee list makes many queries</th>
+<td data-label="Likely cause">The view does not use with_people()</td>
+<td data-label="Recovery">Add with_people() to the queryset</td>
+</tr>
+<tr><th scope="row">New pages look unstyled</th>
+<td data-label="Likely cause">The stylesheet was not rebuilt with the new folder</td>
+<td data-label="Recovery">Add the @source line; run npm run build</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="389">To compare without losing your own work, build a fresh copy of the Chapter 30 checkpoint in another folder, apply this chapter’s listings there, and compare the files with yours. Nothing in this chapter asks you to reset or delete your database or your commits.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2031%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter31/section-31-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter31/section-31-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter31/section-31-2/">← What You Need to Know</a><a href="/chapters/chapter31/section-31-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

@@ -1,0 +1,255 @@
+/* Notebook cover landing page; colours match book.css and index-v2. */
+.home-document main.cover-home {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+.cover-home .book-intro {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: min(700px, calc(100svh - 150px));
+  padding: 34px clamp(24px, 5vw, 72px);
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+.cover-home .book-intro::before {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  pointer-events: none;
+  background-color: transparent;
+  background-image:
+    repeating-linear-gradient(
+      to bottom, transparent 0, transparent 33px,
+      #e4edf5 33px, #e4edf5 34px
+    ),
+    linear-gradient(
+      to right, transparent calc(5.2% - 1px),
+      #e7bfc1 calc(5.2% - 1px),
+      #e7bfc1 5.2%, transparent 5.2%
+    );
+  background-size: 50% 100%, 100% 100%;
+  background-position: left top, left top;
+  background-repeat: repeat-y, no-repeat;
+  content: "";
+}
+.cover-home .cover-feature {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(340px, 460px)
+    minmax(360px, 520px);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(54px, 7vw, 118px);
+  width: min(100%, 1160px);
+}
+.cover-home .book-object {
+  position: relative;
+  width: clamp(340px, 30vw, 460px);
+  justify-self: center;
+  aspect-ratio: .70;
+  transform: perspective(1500px) rotateY(-5deg);
+  filter: drop-shadow(18px 22px 20px #142f4818);
+  isolation: isolate;
+}
+.cover-home .book-object::before {
+  position: absolute;
+  z-index: -1;
+  inset: 8px -13px 8px 14px;
+  border: 1px solid #dce2e8;
+  background: repeating-linear-gradient(
+    to bottom, #fff 0, #fff 3px,
+    #e8ecef 3px, #e8ecef 4px
+  );
+  content: "";
+}
+.cover-home .book-face {
+  position: absolute;
+  inset: 0 13px 0 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 1fr .9fr;
+  border: 1px solid #dce2e8;
+  border-radius: 3px 8px 8px 3px;
+  background: #fff;
+  box-shadow: inset 10px 0 16px #142f4818,
+    0 2px 3px #142f4818;
+}
+.cover-home .book-spine {
+  position: absolute;
+  z-index: 2;
+  inset: 0 auto 0 0;
+  width: 25px;
+  background: linear-gradient(90deg, #142f48, #285f98);
+  box-shadow: inset -2px 0 3px #142f4818;
+}
+.cover-home .book-cover-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 21px 10px 42px;
+  text-align: center;
+  background: #fff;
+}
+.cover-home .cover-series {
+  margin: 0 0 9px;
+  color: #8b5559;
+  font: 400 10px/1.4 "DM Mono", monospace;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.cover-home .book-cover-copy h1 {
+  margin: 0;
+  color: #285f98;
+  font: 500 clamp(39px, 4.3vw, 52px)/.82 Caveat, cursive;
+  letter-spacing: -.02em;
+}
+.cover-home .book-cover-copy h1 span { display: block; }
+.cover-home .cover-tagline {
+  margin: 12px 0 0;
+  color: #285f98;
+  font: 500 21px/1 Caveat, cursive;
+}
+.cover-home .cover-author {
+  margin: 9px 0 0;
+  color: #5b6775;
+  font: 400 9px/1.4 "DM Mono", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cover-home .cover-art {
+  min-height: 0;
+  overflow: hidden;
+  background: #e4edf5;
+}
+.cover-home .cover-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 57%;
+}
+.cover-home .spine-title {
+  position: absolute;
+  inset: 25px auto 16px 5px;
+  color: #fff;
+  font: 400 8px/1.4 "DM Mono", monospace;
+  letter-spacing: .07em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-transform: uppercase;
+}
+.cover-home .cover-aside {
+  max-width: 510px;
+  color: #202b36;
+}
+.cover-home .aside-label {
+  margin: 0 0 13px;
+  color: #285f98;
+  font: 400 12px/1.5 "DM Mono", monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.cover-home .cover-aside h2 {
+  margin: 0;
+  color: #285f98;
+  font: 500 clamp(42px, 4.5vw, 58px)/.94 Caveat, cursive;
+}
+.cover-home .aside-intro {
+  margin: 17px 0 22px;
+  font: 400 17px/1.65 Inter, Arial, sans-serif;
+}
+.cover-home .book-route {
+  margin: 0 0 26px;
+  padding: 0;
+  list-style: none;
+}
+.cover-home .book-route li {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid #dce2e8;
+  color: #202b36;
+  font-size: 15px;
+}
+.cover-home .book-route li:last-child {
+  border-bottom: 1px solid #dce2e8;
+}
+.cover-home .route-number {
+  color: #285f98;
+  font: 400 12px/1.7 "DM Mono", monospace;
+}
+.cover-home .cover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 22px;
+  margin-top: 24px;
+}
+.cover-home .cover-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 4px;
+  background: #285f98;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.cover-home .cover-primary:hover { background: #142f48; }
+.cover-home .cover-index {
+  color: #285f98;
+  font-weight: 700;
+}
+.cover-home > .front-strip,
+.cover-home > .contents {
+  width: min(1240px, 100%);
+  margin-inline: auto;
+}
+@media (max-width: 900px) {
+  .cover-home .cover-feature {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 38px;
+  }
+  .cover-home .book-intro {
+    min-height: 0;
+    padding-block: 28px 38px;
+  }
+  .cover-home .book-intro::before {
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 600px;
+    background-size: 100% 100%, 100% 100%;
+  }
+  .cover-home .book-object { width: min(70vw, 390px); }
+  .cover-home .cover-aside {
+    width: min(100%, 560px);
+    margin-inline: auto;
+  }
+}
+@media (max-width: 760px) {
+  .home-document main.cover-home { padding-inline: 14px; }
+  .cover-home .book-intro { padding: 24px 16px 30px; }
+  .cover-home .book-intro::before {
+    height: 500px;
+    background-image:
+      repeating-linear-gradient(
+        to bottom, transparent 0, transparent 33px,
+        #e4edf5 33px, #e4edf5 34px
+      ),
+      linear-gradient(
+        to right, transparent 23px,
+        #e7bfc1 23px, #e7bfc1 24px, transparent 24px
+      );
+  }
+  .cover-home .book-object { width: min(78vw, 340px); }
+  .cover-home .cover-feature { gap: 30px; }
+  .cover-home .cover-aside h2 { font-size: 46px; }
+  .cover-home .aside-intro { font-size: 16px; }
+}

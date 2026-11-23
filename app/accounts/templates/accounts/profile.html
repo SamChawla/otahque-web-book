@@ -14,9 +14,11 @@
   <form method="post" class="card space-y-4 border
         border-base-300 bg-base-100 p-6">
     {% csrf_token %}
-    {{ form }}
-    <button type="submit" class="btn btn-primary">
-      Save profile</button>
+    <div class="form-grid">{{ form }}</div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        Save profile</button>
+    </div>
   </form>
   <h2 class="mt-8">Account security</h2>
   <ul class="space-y-2">
