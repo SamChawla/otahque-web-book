@@ -1,5 +1,6 @@
 """Tests for the registrations app."""
 import threading
+from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from unittest import mock
 
@@ -21,10 +22,11 @@ from audit.models import AuditEvent
 from events.models import (
     ORGANIZERS, Event, OrganizerAssignment,
 )
-from events.tests import as_sent
-from events.tests import SAI_PASSWORD as PASSWORD
-from events.tests import admin_url, in_group, outcome
-from .models import Registration
+from config.helpers import SAI_PASSWORD as PASSWORD
+from config.helpers import (
+    admin_url, as_sent, in_group, outcome,
+)
+from registrations.models import Registration
 
 User = get_user_model()
 
@@ -673,6 +675,31 @@ class MyRegistrationsTests(TestCase):
         )
         self.assertEqual(refused.count(), 2)
 
+    def test_the_page_refuses_after_the_start(self):
+        past = timezone.now() - timedelta(minutes=5)
+        Event.objects.filter(pk=self.event.pk).update(
+            starts_at=past, registration_closes_at=past,
+            cancellation_deadline=past,
+        )
+        self.client.force_login(self.sai)
+        response = self.client.post(
+            url('cancel', self.sais.pk), follow=True
+        )
+        self.assertContains(
+            response, 'The event has started, so this place '
+            'can no longer be cancelled.'
+        )
+        self.sais.refresh_from_db()
+        self.assertEqual(self.sais.status, 'active')
+
+    def test_a_repeated_cancel_is_information(self):
+        self.client.force_login(self.sai)
+        address = url('cancel', self.sais.pk)
+        self.client.post(address, follow=True)
+        again = self.client.post(address, follow=True)
+        self.assertContains(again, 'alert-info')
+        self.assertNotContains(again, 'alert-success')
+
     def test_a_visitor_is_sent_to_sign_in(self):
         response = self.client.get(url('mine'))
         self.assertRedirects(
@@ -826,13 +853,17 @@ def at_once(*actions):
     return outcomes
 
 
+@contextmanager
 def meet_after_counting(timeout=2):
     """Make each request wait, after counting, for the other.
 
     Without a lock both count before either inserts, so
     the race happens every time. With the lock the other
     request is still waiting for the event row, so the
-    meeting times out and the requests take turns.
+    meeting times out and the requests take turns. The
+    lock's time limit is raised meanwhile: on a busy
+    machine the wait for the row can pass 3 s, and these
+    tests are about turns, not "busy".
     """
     barrier = threading.Barrier(2, timeout=timeout)
     count = Event.places_taken
@@ -845,7 +876,9 @@ def meet_after_counting(timeout=2):
             pass
         return taken
 
-    return mock.patch.object(Event, 'places_taken', counted)
+    with mock.patch.object(Event, 'places_taken', counted):
+        with mock.patch('events.models.LOCK_TIMEOUT', '30s'):
+            yield
 
 
 def organizer(event):
@@ -960,6 +993,35 @@ class RaceTests(TransactionTestCase):
         # refused; or the edit, then "full". Never both.
         self.assertLessEqual(self.event.places_taken(),
                              self.event.capacity)
+
+    def test_a_cancel_during_a_request_only_refuses(self):
+        raj = verified('raj@example.org')
+        rajs = self.event.register(raj, self.now)
+        sai = verified('sai@example.org')
+        meet = threading.Barrier(2, timeout=5)
+        count = Event.places_taken
+
+        def counted(event):
+            taken = count(event)
+            meet.wait()  # Sai's request has counted...
+            meet.wait()  # ...and Raj's cancel is saved.
+            return taken
+
+        def cancel():
+            meet.wait()
+            place = Registration.objects.get(pk=rajs.pk)
+            done = place.cancel(self.now)
+            meet.wait()
+            return done
+
+        with mock.patch.object(Event, 'places_taken',
+                               counted):
+            outcomes = at_once(cancel, self.register(sai))
+        # Sai counted Raj's place, so she is told "full",
+        # although it is free a moment later. A refusal,
+        # never a place too many (PR-3).
+        self.assertEqual(outcomes, [True, ['full']])
+        self.assertEqual(self.event.places_taken(), 0)
 
 
 class StaleCopyTests(TestCase):

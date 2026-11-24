@@ -12,14 +12,22 @@
           defer></script>
 </head>
 <body>
+  {# First on the page: Tab once, Enter, and the keyboard #}
+  {# skips the navigation (Chapter 34). #}
+  <a href="#main" class="skip-link">Skip to the main
+    content</a>
   {% include "includes/site_nav.html" %}
-  <main class="mx-auto w-full max-w-6xl space-y-4 px-4 pt-6
+  <main id="main" tabindex="-1"
+        class="mx-auto w-full max-w-6xl space-y-4 px-4 pt-6
                pb-12 sm:px-6 lg:px-8">
     {% if messages %}
       <div role="status" class="space-y-2">
         {% for message in messages %}
           <div class="alert
             {% if message.level_tag == 'error' %}alert-error
+            {% elif message.level_tag == 'warning' %}
+              alert-warning
+            {% elif message.level_tag == 'info' %}alert-info
             {% else %}alert-success{% endif %}">
             <span>{{ message }}</span>
             <button type="button" data-close

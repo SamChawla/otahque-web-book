@@ -19,38 +19,19 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import resolve, reverse
 from django.utils import timezone
 
-from . import views
-from .forms import CopyForm, EventForm
-from .models import ORGANIZERS, Event, OrganizerAssignment
+from events import views
+from events.forms import CopyForm, EventForm
+from events.models import (
+    ORGANIZERS, Event, OrganizerAssignment,
+)
 from audit.models import AuditEvent
+from config.helpers import (
+    SAI_PASSWORD, admin_url, as_sent, event_form, in_group,
+    outcome, remove_selected, save_event,
+)
 from registrations.models import Registration
 
 User = get_user_model()
-
-
-def save_event(**changes):
-    """Save a published event; keywords replace defaults."""
-    fields = {
-        'title': 'Python meetup',
-        'starts_at': datetime(2026, 11, 19, 18, 30,
-                              tzinfo=UTC),
-        'timezone': 'Europe/London',
-        'location': 'Leeds Central Library',
-        'capacity': 40,
-        'status': Event.Status.PUBLISHED,
-    }
-    fields.update(changes)
-    fields.setdefault(
-        'ends_at', fields['starts_at'] + timedelta(hours=2)
-    )
-    return Event.objects.create(**fields)
-
-
-def admin_url(model, page, *args):
-    """Return an admin page's address, such as an event's."""
-    meta = model._meta
-    name = f'admin:{meta.app_label}_{meta.model_name}_{page}'
-    return reverse(name, args=args)
 
 
 def layout_pages(event):
@@ -195,8 +176,8 @@ class EventDetailTests(TestCase):
 
     def test_missing_event(self):
         self.assertIs(
-            resolve('/events/999/').func,
-            views.event_detail,
+            resolve('/events/999/').func.view_class,
+            views.EventDetailView,
         )
         response = self.client.get('/events/999/')
         self.assertEqual(response.status_code, 404)
@@ -273,6 +254,18 @@ class LayoutTests(TestCase):
                     '<a href="/events/">Events</a>',
                     html=True,
                 )
+
+    def test_a_skip_link_comes_first(self):
+        link = ('<a href="#main" class="skip-link">'
+                'Skip to the main content</a>')
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertContains(response, link, html=True)
+                page = response.content.decode()
+                self.assertLess(page.index('skip-link'),
+                                page.index('site-nav'))
+                self.assertIn('<main id="main"', page)
 
 
 class EventRowPartialTests(SimpleTestCase):
@@ -597,26 +590,6 @@ class PlacesLeftTests(TestCase):
         self.assertContains(response, '1 of 2 places left')
 
 
-def event_form(event, **changes):
-    """Build what the admin's event page sends; UTC times."""
-    data = {
-        'title': event.title,
-        'status': event.status,
-        'starts_at_0': f'{event.starts_at:%Y-%m-%d}',
-        'starts_at_1': f'{event.starts_at:%H:%M}',
-        'ends_at_0': f'{event.ends_at:%Y-%m-%d}',
-        'ends_at_1': f'{event.ends_at:%H:%M}',
-        'timezone': event.timezone,
-        'location': event.location,
-        'capacity': event.capacity,
-        'registrations-TOTAL_FORMS': 0,
-        'registrations-INITIAL_FORMS': 0,
-        'seen_version': event.version,
-    }
-    data.update(changes)
-    return data
-
-
 class EventAdminTests(TestCase):
     """The event pages: list, UTC times, rules, history."""
 
@@ -724,16 +697,6 @@ class EventAdminTests(TestCase):
             Event.objects.all(), ['Django workshop'],
             transform=str,
         )
-
-
-def remove_selected(client, *assignments):
-    """Run the admin's Remove selected organizers action."""
-    return client.post(
-        admin_url(OrganizerAssignment, 'changelist'),
-        {'action': 'remove_selected',
-         '_selected_action': [a.pk for a in assignments]},
-        follow=True,
-    )
 
 
 class OrganizerAssignmentAdminTests(TestCase):
@@ -1157,21 +1120,6 @@ class EditAccessTests(TestCase):
                 response = self.client.get(page)
                 self.assertContains(response, link,
                                     count=count)
-
-
-def as_sent(event, **changes):
-    """Return what the edit page sends, before any change."""
-    form = EventForm(instance=event)
-    data = {}
-    for name in form.fields:
-        value = form[name].value()
-        if isinstance(value, datetime):
-            value = f'{value:%Y-%m-%dT%H:%M}'
-        # A blank time is sent as an empty box.
-        data[name] = '' if value is None else value
-    # The version the page was opened at (Chapter 33).
-    data['version'] = event.version
-    return data | changes
 
 
 def edit_form(event, **changes):
@@ -2082,9 +2030,6 @@ class OrganizedByTests(TestCase):
         self.assertNotContains(self.page(), 'Organized by')
 
 
-SAI_PASSWORD = 'a-long-safe-pass-123'
-
-
 class SessionCookieTests(TestCase):
     """What the session cookie keeps, and when it ends."""
 
@@ -2369,16 +2314,6 @@ class BothTimesTests(TestCase):
         self.assertFalse(winter.differs_for(utc))
 
 
-def in_group(email, group, **flags):
-    """Add a member with SAI_PASSWORD to the named group."""
-    name = email.split('@')[0].title()
-    user = User.objects.create_user(
-        email, SAI_PASSWORD, display_name=name, **flags
-    )
-    user.groups.add(Group.objects.get(name=group))
-    return user
-
-
 class PermissionCacheTests(TestCase):
     """A user's permissions are cached until refetched."""
 
@@ -2418,15 +2353,6 @@ MATRIX = [
     # Last: this row publishes the draft.
     ('organizer', 'ok', 'ok', 'ok', 'ok'),
 ]
-
-
-def outcome(response):
-    """Name a response as the matrix names it."""
-    code = response.status_code
-    if code == 302 and response.url.startswith(
-            reverse('account_login')):
-        return 'sign in'
-    return {200: 'ok', 302: 'ok'}.get(code, str(code))
 
 
 class PermissionMatrixTests(TestCase):

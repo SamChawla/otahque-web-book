@@ -1,0 +1,55 @@
+# Run check.py on every push and pull request, on Linux,
+# against a fresh PostgreSQL 18 (Chapter 34).
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        # Start the steps only once the server answers.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: otahque
+      DB_USER: postgres
+      DB_PASSWORD: ci-only-password
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      PGPASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.13.5"
+      - name: Install the locked packages
+        run: uv sync --locked
+      - name: Create the databases (Chapter 32)
+        run: |
+          for name in otahque otahque_template; do
+            psql -h localhost -U postgres -c \
+              "CREATE DATABASE $name TEMPLATE template0
+               LOCALE_PROVIDER builtin
+               BUILTIN_LOCALE 'C.UTF-8'"
+          done
+      - name: Make a secret key for this run only
+        run: |
+          key=$(python3 -c \
+            'import secrets; print(secrets.token_hex(32))')
+          echo "DJANGO_SECRET_KEY=$key" >> "$GITHUB_ENV"
+      - name: Run the checks
+        run: uv run python check.py

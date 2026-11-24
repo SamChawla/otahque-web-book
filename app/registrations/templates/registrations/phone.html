@@ -4,10 +4,11 @@
 
 {% block content %}
   <h1>{{ event.title }} asks for a phone number</h1>
+  {% include "events/facts.html" %}
   <p>Otahque keeps it on your profile, so you are asked
      only once. You can change it there.</p>
   {% include "registrations/sharing.html" %}
-  <form method="post" class="card space-y-4 border
+  <form method="post" class="card max-w-xl space-y-4 border
         border-base-300 bg-base-100 p-6">
     {% csrf_token %}
     {{ form }}

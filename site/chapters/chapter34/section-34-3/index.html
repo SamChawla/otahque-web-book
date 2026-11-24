@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 34: Testing fundamentals and first-release acceptance. Turn &quot;the tests pass&quot; into evidence for the first release: which test...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter34/section-34-3/">
+<title>How We Build It · Chapter 34 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter" open><summary>34. Testing fundamentals and first-release acceptance <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter34/">Chapter overview</a><ol><li><a  href="/chapters/chapter34/section-34-1/">Why This Matters</a></li><li><a  href="/chapters/chapter34/section-34-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter34/section-34-3/">How We Build It</a></li><li><a  href="/chapters/chapter34/section-34-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter34/section-34-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter34/section-34-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Growing the application <small>35–46</small></summary><ol><li><details class="book-nav-chapter"><summary>35. Class-based views and dispatch <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter35/">Chapter overview</a><ol><li><a  href="/chapters/chapter35/section-35-1/">Why This Matters</a></li><li><a  href="/chapters/chapter35/section-35-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter35/section-35-3/">How We Build It</a></li><li><a  href="/chapters/chapter35/section-35-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter35/section-35-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter35/section-35-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter34/">← Chapter 34 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter34/section-34-1/">Why This Matters</a></li><li><a href="/chapters/chapter34/section-34-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-34-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-56">The Custom Way</a></li><li><a href="#topic-61">The Django Way</a></li><li><a href="#topic-250">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter34/section-34-4/">Verify Your Work</a></li><li><a href="/chapters/chapter34/section-34-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter34/section-34-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 8 figures · 4 tables<br>Milestone reached here: First release</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter34:34.3" data-progress-title="Section 34.3" data-reader-prev="section-34-2.html" data-reader-next="section-34-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 34.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter34/">Chapter 34 · Testing fundamentals and first-release acceptance</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter34/section-34-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter34/section-34-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter34/section-34-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter34/section-34-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter34/section-34-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-34-3" data-block="54">How We Build It</h2><p class="" data-block="55">Start from Chapter 33, in the folder containing <code>manage.py</code>, with Otahque on PostgreSQL 18, 354 passing tests, every migration applied, and the work committed. Two development packages are added: coverage.py 7.17.4 and tblib 3.2.2. No model or migration changes. Each app’s <code>tests.py</code> becomes a <code>tests/</code> package; the new files are <code>config/helpers.py</code>, <code>events/tests/test_locking.py</code>, <code>config/tests/test_acceptance.py</code>, <code>check.py</code>, <code>.github/workflows/ci.yml</code>, <code>docs/testing.md</code>, <code>docs/acceptance/M2.md</code>, and <code>docs/release-checklist.md</code>, and <code>pyproject.toml</code>, <code>.gitignore</code>, <code>templates/base.html</code>, and the stylesheet source change. The visible result: a “Skip to the main content” link for keyboard users, and messages coloured by what they say. The chapter’s checks ran in Windows PowerShell 5.1 and Git Bash against PostgreSQL 18.3, and in GitHub Actions on Ubuntu 24.04 against PostgreSQL 18.</p><h3 class="" id="topic-56" data-block="56">The Custom Way</h3><p class="" data-block="57">CI begins where your laptop’s history does not: with a fresh copy of the repository and nothing else. Make one by hand, beside your project, and try to use it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="58" tabindex="0"><code>git clone . ../otahque-clean
+cd ../otahque-clean
+uv sync --locked
+uv run python manage.py check</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="59" tabindex="0"><code>Cloning into &#x27;../otahque-clean&#x27;...
+Using CPython 3.14.9
+Creating virtual environment at: .venv
+Installed 24 packages in 10.55s
+...
+django.core.exceptions.ImproperlyConfigured: Set
+    DJANGO_SECRET_KEY; see .env.example.</code></pre><p class="" data-block="60">Git copied every committed file and uv installed exactly the locked packages, but Django refuses to start: the secret key lives in <code>.env</code>, which Git never records (Chapter 8). The clean copy also has no database settings, so it would fall back to SQLite. This is precisely what a CI machine sees, and why the workflow in Step 10 must supply both. Go back to your project folder and delete the copy (<code>Remove-Item -Recurse -Force ../otahque-clean</code> in PowerShell, <code>rm -rf ../otahque-clean</code> elsewhere).</p><h3 class="" id="topic-61" data-block="61">The Django Way</h3><h4 data-block="62">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="63" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="64" tabindex="0"><code>Found 354 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 354 tests in ...s
+
+OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="65" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="66" tabindex="0"><code>... Lock the last place; refuse stale edits</code></pre><p class="" data-block="67">The 354 tests live in five files: <code>accounts/tests.py</code> (86 tests), <code>audit/tests.py</code> (4), <code>config/tests.py</code> (14), <code>events/tests.py</code> (188, about 2,900 lines), and <code>registrations/tests.py</code> (62). Three of those files import helpers from <code>events/tests.py</code>, so the events tests are also a library for the others. Both facts shape the next two steps.</p><h4 data-block="68">Step 2: Move the tests into packages</h4><p class="" data-block="69">A package lets each app keep several test files: the old tests in one, and each new subject in its own. Move each app’s file into a <code>tests/</code> folder with an empty <code>__init__.py</code>, which makes the folder a package. <code>git mv</code> moves the file and tells Git it was moved, so its history follows it.</p><p class="code-label code-label--powershell" aria-hidden="true">PowerShell</p><pre class="code-listing code-listing--powershell" data-block="70" tabindex="0"><code># PowerShell
+$apps = &#x27;accounts&#x27;, &#x27;audit&#x27;, &#x27;config&#x27;, &#x27;events&#x27;, &#x27;registrations&#x27;
+foreach ($app in $apps) {
+    New-Item -ItemType Directory &quot;$app/tests&quot; | Out-Null
+    New-Item &quot;$app/tests/__init__.py&quot; | Out-Null
+    git mv &quot;$app/tests.py&quot; &quot;$app/tests/test_$app.py&quot;
+}</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="71" tabindex="0"><code># Git Bash, macOS, Linux, WSL
+for app in accounts audit config events registrations; do
+    mkdir &quot;$app/tests&quot;
+    touch &quot;$app/tests/__init__.py&quot;
+    git mv &quot;$app/tests.py&quot; &quot;$app/tests/test_$app.py&quot;
+done</code></pre><p class="" data-block="72">Each file keeps every test it had; only its address changes, from <code>events.tests</code> to <code>events.tests.test_events</code>. Moving and splitting are two changes: do the move now, and split a file further when you next work in it. Run the suite, this time without <code>--parallel</code>: while imports are broken, a parallel run can stop without a summary, for a reason Step 7 explains and fixes.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="73" tabindex="0"><code>uv run python manage.py test</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="74" tabindex="0"><code>Found 5 test(s).
+...
+ImportError: cannot import name &#x27;admin_url&#x27; from
+    &#x27;events.tests&#x27; (...\events\tests\__init__.py)
+ImportError: cannot import name &#x27;views&#x27; from &#x27;events.tests&#x27;
+    (...\events\tests\__init__.py)
+ImportError: cannot import name &#x27;as_sent&#x27; from &#x27;events.tests&#x27;
+    (...\events\tests\__init__.py)
+...
+Ran 5 tests in ...s
+
+FAILED (errors=5)</code></pre><p class="" data-block="75">Two kinds of import broke. Inside a moved file, <code>from . import views</code> now means “from the <code>tests</code> package”, which has no <code>views</code>. Make each relative import name its app. In <code>events/tests/test_events.py</code>, replace</p><p class="code-label code-label--python" aria-hidden="true">Python</p><pre class="code-listing code-listing--python" data-block="76" tabindex="0"><code>from . import views
+from .forms import CopyForm, EventForm
+from .models import ORGANIZERS, Event, OrganizerAssignment</code></pre><p class="" data-block="77">with</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_events.py</p><pre class="code-listing code-listing--file" data-block="78" tabindex="0"><code>from events import views
+from events.forms import CopyForm, EventForm
+from events.models import (
+    ORGANIZERS, Event, OrganizerAssignment,
+)</code></pre><p class="" data-block="79">and do the same in the other three files that used relative imports:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests/test_accounts.py</p><pre class="code-listing code-listing--file" data-block="80" tabindex="0"><code>from accounts.adapter import DISPOSABLE
+from accounts.models import Profile, User
+from accounts.timezones import (</code></pre><p class="code-label code-label--file" aria-hidden="true">audit/tests/test_audit.py</p><pre class="code-listing code-listing--file" data-block="81" tabindex="0"><code>from audit.models import AuditEvent, record</code></pre><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="82" tabindex="0"><code>from registrations.models import Registration</code></pre><p class="" data-block="83">Run the same command again:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="84" tabindex="0"><code>Found 195 test(s).
+...
+ImportError: cannot import name &#x27;admin_url&#x27; from
+    &#x27;events.tests&#x27; (...\events\tests\__init__.py)
+ImportError: cannot import name &#x27;as_sent&#x27; from &#x27;events.tests&#x27;
+    (...\events\tests\__init__.py)
+...
+Ran 195 tests in ...s
+
+FAILED (errors=3)</code></pre><p class="" data-block="85">The events tests now load. What is left are the other apps’ imports from <code>events.tests</code>, which is now an empty package. They need a proper home.</p><h4 data-block="86">Step 3: One module for shared helpers</h4><p class="" data-block="87">Helpers that several apps’ tests use belong in one module that belongs to no single app. Create <code>config/helpers.py</code>. Its name does not start with <code>test</code>, so the runner never collects it as tests; a name such as <code>testing.py</code> would match the runner’s <code>test*.py</code> pattern.</p><p class="code-label code-label--file" aria-hidden="true">config/helpers.py</p><pre class="code-listing code-listing--file" data-block="88" tabindex="0"><code>&quot;&quot;&quot;Helpers that more than one app&#x27;s tests use.
+
+Not a test module: its name does not start with &quot;test&quot;,
+so the test runner never collects it. Each helper makes
+data or a request the way the earlier chapters&#x27; tests
+did; one copy here replaces the imports from
+events.tests that broke when the tests moved.
+&quot;&quot;&quot;
+from datetime import UTC, datetime, timedelta
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.urls import reverse
+
+from events.forms import EventForm
+from events.models import Event, OrganizerAssignment
+
+User = get_user_model()
+
+SAI_PASSWORD = &#x27;a-long-safe-pass-123&#x27;
+
+
+def save_event(**changes):
+    &quot;&quot;&quot;Save a published event; keywords replace defaults.&quot;&quot;&quot;
+    fields = {
+        &#x27;title&#x27;: &#x27;Python meetup&#x27;,
+        &#x27;starts_at&#x27;: datetime(2026, 11, 19, 18, 30,
+                              tzinfo=UTC),
+        &#x27;timezone&#x27;: &#x27;Europe/London&#x27;,
+        &#x27;location&#x27;: &#x27;Leeds Central Library&#x27;,
+        &#x27;capacity&#x27;: 40,
+        &#x27;status&#x27;: Event.Status.PUBLISHED,
+    }
+    fields.update(changes)
+    fields.setdefault(
+        &#x27;ends_at&#x27;, fields[&#x27;starts_at&#x27;] + timedelta(hours=2)
+    )
+    return Event.objects.create(**fields)
+
+
+def in_group(email, group, **flags):
+    &quot;&quot;&quot;Add a member with SAI_PASSWORD to the named group.&quot;&quot;&quot;
+    name = email.split(&#x27;@&#x27;)[0].title()
+    user = User.objects.create_user(
+        email, SAI_PASSWORD, display_name=name, **flags
+    )
+    user.groups.add(Group.objects.get(name=group))
+    return user
+
+
+def admin_url(model, page, *args):
+    &quot;&quot;&quot;Return an admin page&#x27;s address, such as an event&#x27;s.&quot;&quot;&quot;
+    meta = model._meta
+    name = f&#x27;admin:{meta.app_label}_{meta.model_name}_{page}&#x27;
+    return reverse(name, args=args)
+
+
+def event_form(event, **changes):
+    &quot;&quot;&quot;Build what the admin&#x27;s event page sends; UTC times.&quot;&quot;&quot;
+    data = {
+        &#x27;title&#x27;: event.title,
+        &#x27;status&#x27;: event.status,
+        &#x27;starts_at_0&#x27;: f&#x27;{event.starts_at:%Y-%m-%d}&#x27;,
+        &#x27;starts_at_1&#x27;: f&#x27;{event.starts_at:%H:%M}&#x27;,
+        &#x27;ends_at_0&#x27;: f&#x27;{event.ends_at:%Y-%m-%d}&#x27;,
+        &#x27;ends_at_1&#x27;: f&#x27;{event.ends_at:%H:%M}&#x27;,
+        &#x27;timezone&#x27;: event.timezone,
+        &#x27;location&#x27;: event.location,
+        &#x27;capacity&#x27;: event.capacity,
+        &#x27;registrations-TOTAL_FORMS&#x27;: 0,
+        &#x27;registrations-INITIAL_FORMS&#x27;: 0,
+        &#x27;seen_version&#x27;: event.version,
+    }
+    data.update(changes)
+    return data
+
+
+def remove_selected(client, *assignments):
+    &quot;&quot;&quot;Run the admin&#x27;s Remove selected organizers action.&quot;&quot;&quot;
+    return client.post(
+        admin_url(OrganizerAssignment, &#x27;changelist&#x27;),
+        {&#x27;action&#x27;: &#x27;remove_selected&#x27;,
+         &#x27;_selected_action&#x27;: [a.pk for a in assignments]},
+        follow=True,
+    )
+
+
+def as_sent(event, **changes):
+    &quot;&quot;&quot;Return what the edit page sends, before any change.&quot;&quot;&quot;
+    form = EventForm(instance=event)
+    data = {}
+    for name in form.fields:
+        value = form[name].value()
+        if isinstance(value, datetime):
+            value = f&#x27;{value:%Y-%m-%dT%H:%M}&#x27;
+        # A blank time is sent as an empty box.
+        data[name] = &#x27;&#x27; if value is None else value
+    # The version the page was opened at (Chapter 33).
+    data[&#x27;version&#x27;] = event.version
+    return data | changes
+
+
+def outcome(response):
+    &quot;&quot;&quot;Name a response as the permission matrix names it.&quot;&quot;&quot;
+    code = response.status_code
+    if code == 302 and response.url.startswith(
+            reverse(&#x27;account_login&#x27;)):
+        return &#x27;sign in&#x27;
+    return {200: &#x27;ok&#x27;, 302: &#x27;ok&#x27;}.get(code, str(code))</code></pre><p class="" data-block="89">These are the eight helpers the other apps imported, unchanged. Delete their definitions from <code>events/tests/test_events.py</code>: <code>save_event()</code>, <code>admin_url()</code>, <code>event_form()</code>, <code>remove_selected()</code>, <code>as_sent()</code>, <code>in_group()</code>, <code>outcome()</code>, and the <code>SAI_PASSWORD</code> line. Then import them from their new home. In <code>events/tests/test_events.py</code>, after <code>from audit.models import AuditEvent</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_events.py</p><pre class="code-listing code-listing--file" data-block="90" tabindex="0"><code>from audit.models import AuditEvent
+from config.helpers import (
+    SAI_PASSWORD, admin_url, as_sent, event_form, in_group,
+    outcome, remove_selected, save_event,
+)
+from registrations.models import Registration</code></pre><p class="" data-block="91">In the other three files, replace each <code>from events.tests import</code> line:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests/test_accounts.py</p><pre class="code-listing code-listing--file" data-block="92" tabindex="0"><code>from config.helpers import (
+    admin_url, event_form, save_event,
+)</code></pre><p class="code-label code-label--file" aria-hidden="true">config/tests/test_config.py</p><pre class="code-listing code-listing--file" data-block="93" tabindex="0"><code>from config.helpers import (</code></pre><p class="" data-block="94">(keep the names in its parentheses as they are)</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="95" tabindex="0"><code>from config.helpers import SAI_PASSWORD as PASSWORD
+from config.helpers import (
+    admin_url, as_sent, in_group, outcome,
+)</code></pre><p class="" data-block="96">Helpers used by one app’s tests only, such as <code>verified()</code> and <code>soon()</code> in the registrations tests, stay where they are.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="97" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="98" tabindex="0"><code>Found 354 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 354 tests in ...s
+
+OK</code></pre><p class="" data-block="99">354 before, 354 after: the same count is the evidence that the move lost nothing. Commit the move on its own, so that Git records renames and the history of each test stays readable:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="100" tabindex="0"><code>git add .
+git commit -m &quot;Move the tests into packages; share helpers&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="101" tabindex="0"><code>[main 7704048] Move the tests into packages; share helpers
+ 11 files changed, 131 insertions(+), 105 deletions(-)
+ create mode 100644 accounts/tests/__init__.py
+ rename accounts/{tests.py =&gt; tests/test_accounts.py} (99%)
+ create mode 100644 audit/tests/__init__.py
+ rename audit/{tests.py =&gt; tests/test_audit.py} (98%)
+ create mode 100644 config/helpers.py
+ create mode 100644 config/tests/__init__.py
+ rename config/{tests.py =&gt; tests/test_config.py} (99%)
+ create mode 100644 events/tests/__init__.py
+ rename events/{tests.py =&gt; tests/test_events.py} (97%)
+ create mode 100644 registrations/tests/__init__.py
+ rename registrations/{tests.py =&gt;
+    tests/test_registrations.py} (99%)</code></pre><h4 data-block="102">Step 4: Measure coverage</h4><p class="" data-block="103">coverage.py is needed by developers and CI, not by the running site, so add it as a <strong>development dependency</strong>. uv records those in a separate group in <code>pyproject.toml</code> and in <code>uv.lock</code>, and installs them with <code>uv sync</code> unless asked not to.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="104" tabindex="0"><code>uv add --dev coverage==7.17.4</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="105" tabindex="0"><code>Resolved 26 packages in 184ms
+Installed 1 package in 973ms
+ + coverage==7.17.4</code></pre><p class="" data-block="106"><code>coverage run</code> runs a Python program while measuring it. Run the suite through it, then ask for the report:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="107" tabindex="0"><code>uv run coverage run manage.py test --parallel
+uv run coverage report</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="108" tabindex="0"><code>Name                     Cover
+----------------------------------------------------
+events\models.py           36%
+events\views.py            28%
+...
+----------------------------------------------------
+TOTAL                      34%</code></pre><p class="" data-block="109">The book prints two rows and the total. <code>events/models.py</code> at 36% would be alarming, and it is false. With <code>--parallel</code>, the tests run in worker processes, and coverage.py measured only the main process, which mostly waited. Tell it to follow the workers. Add to the end of <code>pyproject.toml</code>:</p><p class="code-label code-label--file" aria-hidden="true">pyproject.toml</p><pre class="code-listing code-listing--file" data-block="110" tabindex="0"><code>[tool.coverage.run]
+# Measure the project&#x27;s own code, not its tests.
+source = [&quot;accounts&quot;, &quot;audit&quot;, &quot;config&quot;, &quot;events&quot;,
+          &quot;registrations&quot;]
+omit = [&quot;*/migrations/*&quot;, &quot;*/tests/*&quot;, &quot;config/helpers.py&quot;]
+branch = true
+# test --parallel runs the tests in several processes:
+# each writes its own data file, and combine joins them.
+parallel = true
+concurrency = [&quot;multiprocessing&quot;, &quot;thread&quot;]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true</code></pre><p class="" data-block="111"><code>source</code> limits the report to Otahque’s apps, <code>omit</code> leaves out migrations and the tests themselves, and <code>branch = true</code> also records which way each <code>if</code> went. With <code>parallel = true</code> each process writes its own data file, and <code>concurrency</code> names how the program runs in parallel: in several processes, and, in the race tests, in threads. Those data files and the HTML report must not be committed. Add to <code>.gitignore</code>:</p><p class="code-label code-label--file" aria-hidden="true">.gitignore</p><pre class="code-listing code-listing--file" data-block="112" tabindex="0"><code>
+# coverage&#x27;s data files and HTML report (Chapter 34)
+.coverage
+.coverage.*
+htmlcov/</code></pre><p class="" data-block="113">Now measure again. <code>erase</code> removes the old data, and <code>combine</code> joins the workers’ files before the report:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="114" tabindex="0"><code>uv run coverage erase
+uv run coverage run manage.py test --parallel
+uv run coverage combine
+uv run coverage report</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="115" tabindex="0"><code>Name                     Cover  Missing
+----------------------------------------------------
+accounts\admin.py          99%  99
+accounts\models.py         97%  73
+audit\views.py              0%  1
+config\asgi.py              0%  11-19
+config\settings.py         86%  29-30, 48, 136, 157-158, 273
+config\wsgi.py              0%  11-19
+events\admin.py            97%  122-&gt;124, 140, 204-&gt;exit
+events\forms.py            98%  186, 189-&gt;197
+events\models.py           99%  485-&gt;489, 498
+events\views.py            99%  187-189
+registrations\views.py     98%  100-101
+----------------------------------------------------
+TOTAL                      97%
+
+26 files skipped due to complete coverage.</code></pre><p class="" data-block="116">The full report also has <code>Stmts</code>, <code>Miss</code>, <code>Branch</code>, and <code>BrPart</code> columns; the book prints <code>Name</code>, <code>Cover</code>, and <code>Missing</code>. The <code>Missing</code> column lists lines that never ran, and <code>485-&gt;489</code> means “the <code>if</code> on line 485 never went to line 489”. For a page you can click through, run <code>uv run coverage html</code> and open <code>htmlcov/index.html</code> in your browser; lines that never ran are marked red.</p><h4 data-block="117">Step 5: Read the report, then test what it shows</h4><p class="" data-block="118">Read each row as a question: what behaviour lives on those lines, and does it matter? Three answers matter.</p><ul class="outcomes"><li data-block="119"><code>events/models.py</code>, line 498: in <code>locked()</code>, a database error that is not a lock timeout is raised again. Chapters 31 and 33 both insisted on this rule (“do not hide other errors”), and no test proves it.</li><li data-block="120"><code>events/views.py</code>, lines 187 to 189: the edit page when the event is busy. A member would see this; no test does.</li><li data-block="121"><code>registrations/views.py</code>, lines 100 and 101: the cancel page after the event has started. The model refuses it and a model test proves that; the page’s answer is untested.</li></ul><p class="" data-block="122">The branch <code>485-&gt;489</code> is the SQLite path of <code>locked()</code>, which never runs on PostgreSQL; the SQLite run in Chapter 33 covers it. Lines in <code>config/settings.py</code> run only when a setting is missing, and <code>asgi.py</code> and <code>wsgi.py</code> run only under a web server (Chapter 63). Those are reasons, not tests to write.</p><p class="" data-block="123">A new subject gets its own file, which is what the packages are for. Create <code>events/tests/test_locking.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_locking.py</p><pre class="code-listing code-listing--file" data-block="124" tabindex="0"><code>&quot;&quot;&quot;The event lock&#x27;s other answers (found with coverage).&quot;&quot;&quot;
+from unittest import mock
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
+from django.db import OperationalError
+from django.test import TestCase
+from django.urls import reverse
+from psycopg import errors
+
+from config.helpers import as_sent, save_event
+from events.models import Event, OrganizerAssignment, refusal
+
+User = get_user_model()
+
+
+def database_error(sqlstate):
+    &quot;&quot;&quot;Return Django&#x27;s error for a psycopg one with sqlstate.&quot;&quot;&quot;
+    error = OperationalError(&#x27;the row could not be locked&#x27;)
+    error.__cause__ = errors.lookup(sqlstate)()
+    return error
+
+
+class LockErrorTests(TestCase):
+    &quot;&quot;&quot;locked() calls only a lock timeout &quot;busy&quot;.&quot;&quot;&quot;
+
+    def setUp(self):
+        self.event = save_event()
+
+    def lock_fails_with(self, sqlstate):
+        &quot;&quot;&quot;Make the row lock fail with that database code.&quot;&quot;&quot;
+        rows = mock.Mock()
+        rows.get.side_effect = database_error(sqlstate)
+        return mock.patch.object(
+            Event.objects, &#x27;select_for_update&#x27;,
+            return_value=rows,
+        )
+
+    def test_a_lock_timeout_is_busy(self):
+        with self.lock_fails_with(&#x27;55P03&#x27;):
+            with self.assertRaises(ValidationError) as caught:
+                self.event.locked()
+        self.assertEqual(caught.exception.error_list[0].code,
+                         &#x27;busy&#x27;)
+
+    def test_any_other_database_error_is_raised(self):
+        # 53100 is PostgreSQL&#x27;s &quot;disk full&quot;.
+        with self.lock_fails_with(&#x27;53100&#x27;):
+            with self.assertRaises(OperationalError):
+                self.event.locked()
+
+
+class BusyEditTests(TestCase):
+    &quot;&quot;&quot;The edit page while another request holds the row.&quot;&quot;&quot;
+
+    def test_a_busy_edit_says_so_and_saves_nothing(self):
+        event = save_event()
+        sam = User.objects.create_user(&#x27;sam@example.org&#x27;,
+                                       display_name=&#x27;Sam&#x27;)
+        sam.user_permissions.add(
+            Permission.objects.get(codename=&#x27;change_event&#x27;)
+        )
+        OrganizerAssignment.objects.create(event=event,
+                                           member=sam)
+        self.client.force_login(sam)
+        busy = refusal([&#x27;busy&#x27;])
+        with mock.patch.object(Event, &#x27;locked&#x27;,
+                               side_effect=busy):
+            response = self.client.post(
+                reverse(&#x27;events:edit&#x27;, args=[event.pk]),
+                as_sent(event, location=&#x27;Room 2&#x27;),
+            )
+        self.assertContains(
+            response, &#x27;Otahque is busy. Please try again.&#x27;
+        )
+        event.refresh_from_db()
+        self.assertEqual(event.location,
+                         &#x27;Leeds Central Library&#x27;)</code></pre><p class="" data-block="125"><code>database_error()</code> builds the error Django raises for psycopg’s, with the PostgreSQL error code on its cause, as Chapter 33’s <code>locked()</code> reads it. <code>mock.patch.object</code> replaces <code>select_for_update()</code> for the duration of the <code>with</code> block only. <code>53100</code> is PostgreSQL’s code for “disk full”, an error that must never be shown as “busy”.</p><p class="" data-block="126">In <code>registrations/tests/test_registrations.py</code>, add to <code>MyRegistrationsTests</code>, before <code>test_a_visitor_is_sent_to_sign_in</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="127" tabindex="0"><code>    def test_the_page_refuses_after_the_start(self):
+        past = timezone.now() - timedelta(minutes=5)
+        Event.objects.filter(pk=self.event.pk).update(
+            starts_at=past, registration_closes_at=past,
+            cancellation_deadline=past,
+        )
+        self.client.force_login(self.sai)
+        response = self.client.post(
+            url(&#x27;cancel&#x27;, self.sais.pk), follow=True
+        )
+        self.assertContains(
+            response, &#x27;The event has started, so this place &#x27;
+            &#x27;can no longer be cancelled.&#x27;
+        )
+        self.sais.refresh_from_db()
+        self.assertEqual(self.sais.status, &#x27;active&#x27;)</code></pre><p class="" data-block="128">Chapter 2’s PR-3 also listed a case nobody tested: a cancellation that overlaps a registration request. Chapter 33’s design note argued it can only cause a refusal, never a place too many. Prove it. Add to the end of <code>RaceTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="129" tabindex="0"><code>    def test_a_cancel_during_a_request_only_refuses(self):
+        raj = verified(&#x27;raj@example.org&#x27;)
+        rajs = self.event.register(raj, self.now)
+        sai = verified(&#x27;sai@example.org&#x27;)
+        meet = threading.Barrier(2, timeout=5)
+        count = Event.places_taken
+
+        def counted(event):
+            taken = count(event)
+            meet.wait()  # Sai&#x27;s request has counted...
+            meet.wait()  # ...and Raj&#x27;s cancel is saved.
+            return taken
+
+        def cancel():
+            meet.wait()
+            place = Registration.objects.get(pk=rajs.pk)
+            done = place.cancel(self.now)
+            meet.wait()
+            return done
+
+        with mock.patch.object(Event, &#x27;places_taken&#x27;,
+                               counted):
+            outcomes = at_once(cancel, self.register(sai))
+        # Sai counted Raj&#x27;s place, so she is told &quot;full&quot;,
+        # although it is free a moment later. A refusal,
+        # never a place too many (PR-3).
+        self.assertEqual(outcomes, [True, [&#x27;full&#x27;]])
+        self.assertEqual(self.event.places_taken(), 0)</code></pre><p class="" data-block="130">The meeting point holds Sai’s request just after it has counted Raj’s place, lets Raj’s cancel save, and only then lets Sai’s request decide. Run the two apps:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="131" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="132" tabindex="0"><code>Found 255 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 255 tests in ...s
+
+OK</code></pre><p class="" data-block="133">They pass at once: the code was right, and what was missing was the proof. A test you have never seen fail may not be able to fail, so make one fail on purpose. In <code>events/models.py</code>, inside <code>locked()</code>, change the <code>raise</code> under <code>if code != LOCK_NOT_AVAILABLE:</code> to <code>pass</code>, and run the new file:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="134" tabindex="0"><code>uv run python manage.py test events.tests.test_locking</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="135" tabindex="0"><code>Found 3 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+django.core.exceptions.ValidationError: [&#x27;Otahque is busy.
+    Please try again.&#x27;]
+Ran 3 tests in ...s
+
+FAILED (errors=1)</code></pre><p class="" data-block="136">The disk-full error came back as “busy”, and the test caught it. Change <code>pass</code> back to <code>raise</code> and run it again: three tests, <code>OK</code>. Measure once more:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="137" tabindex="0"><code>uv run coverage erase
+uv run coverage run manage.py test --parallel
+uv run coverage combine
+uv run coverage report</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="138" tabindex="0"><code>Name                     Cover  Missing
+----------------------------------------------------
+accounts\admin.py          99%  99
+accounts\models.py         97%  73
+audit\views.py              0%  1
+config\asgi.py              0%  11-19
+config\settings.py         86%  29-30, 48, 136, 157-158, 273
+config\wsgi.py              0%  11-19
+events\admin.py            97%  122-&gt;124, 140, 204-&gt;exit
+events\forms.py            98%  186, 189-&gt;197
+events\models.py           99%  485-&gt;489
+----------------------------------------------------
+TOTAL                      98%
+
+28 files skipped due to complete coverage.</code></pre><p class="" data-block="139"><code>events/views.py</code> and <code>registrations/views.py</code> have left the report: every line in them ran. Notice what the percentage did: it barely moved, from 97% to 98%, while three rules went from unchecked to checked. That is why this book sets no coverage target.</p><div class="callout callout--error"><p class="callout__title" data-block="140">Common Error: coverage reports a low figure, or “No data to report”</p><p class="" data-block="141">A figure far below the serial run means the workers were not measured: check <code>parallel</code> and <code>concurrency</code> in <code>pyproject.toml</code>, and run <code>coverage combine</code> before <code>coverage report</code>. “No data to report” after <code>combine</code> means there were no data files, usually because <code>coverage run</code> was skipped or <code>erase</code> ran after it. Files listed from <code>.venv</code> mean <code>source</code> is missing.</p></div><h4 data-block="142">Step 6: A test that depends on the order</h4><p class="" data-block="143">Run the accounts tests backwards:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="144" tabindex="0"><code>uv run python manage.py test accounts --reverse</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="145" tabindex="0"><code>Found 86 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 0 != 1
+Ran 86 tests in ...s
+
+FAILED (failures=1)</code></pre><p class="" data-block="146">The test passes in the normal order. Reversed, the sign-up test that expects a confirmation email gets none. The cause is in django-allauth’s settings: it sends at most one confirmation email per address every three minutes, and it counts them in Django’s cache. Run backwards, an earlier test has already sent one to the same address, the count is still in the cache, and allauth quietly sends nothing. The other account test classes clear the cache in <code>setUp</code>; <code>SignUpTests</code> never did. In <code>accounts/tests/test_accounts.py</code>, give <code>SignUpTests</code> the same start:</p><p class="code-label code-label--file" aria-hidden="true">accounts/tests/test_accounts.py</p><pre class="code-listing code-listing--file" data-block="147" tabindex="0"><code>    url = &#x27;/accounts/signup/&#x27;
+
+    def setUp(self):
+        # allauth sends one confirmation email per address
+        # every three minutes, counted in the cache: start
+        # each test with an empty cache, as others do.
+        cache.clear()
+
+    def test_the_page_asks_for_name_and_zone(self):</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="148" tabindex="0"><code>uv run python manage.py test accounts --reverse</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="149" tabindex="0"><code>Found 86 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 86 tests in ...s
+
+OK</code></pre><p class="" data-block="150">Running the whole suite reversed takes a few minutes, so it goes on the release checklist in Step 12 rather than into every run. <code>test --shuffle</code> goes further: it runs a random order and prints its seed, and <code>--shuffle SEED</code> repeats that order.</p><p class="" data-block="151">A test can also depend on time. While this chapter was being checked, on a machine running both shells’ test suites at once, Chapter 33’s <code>test_the_last_place_goes_to_one_member</code> failed once: the second request was told <code>[&#x27;busy&#x27;]</code> instead of <code>[&#x27;full&#x27;]</code>. With the lock, the first request holds the event row while it waits up to two seconds at the meeting point; the second request waits for the row, and gives up after the three-second limit of Chapter 33. On a loaded machine the margin between two and three seconds ran out. The race tests are about taking turns, not about “busy”, which has its own test, so the meeting point should lift the limit while it is in use. In <code>registrations/tests/test_registrations.py</code>, add an import:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="152" tabindex="0"><code>import threading
+from contextlib import contextmanager
+from datetime import UTC, datetime, timedelta</code></pre><p class="" data-block="153">and replace <code>meet_after_counting()</code> with:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>@contextmanager
+def meet_after_counting(timeout=2):
+    &quot;&quot;&quot;Make each request wait, after counting, for the other.
+
+    Without a lock both count before either inserts, so
+    the race happens every time. With the lock the other
+    request is still waiting for the event row, so the
+    meeting times out and the requests take turns. The
+    lock&#x27;s time limit is raised meanwhile: on a busy
+    machine the wait for the row can pass 3 s, and these
+    tests are about turns, not &quot;busy&quot;.
+    &quot;&quot;&quot;
+    barrier = threading.Barrier(2, timeout=timeout)
+    count = Event.places_taken
+
+    def counted(event):
+        taken = count(event)
+        try:
+            barrier.wait()
+        except threading.BrokenBarrierError:
+            pass
+        return taken
+
+    with mock.patch.object(Event, &#x27;places_taken&#x27;, counted):
+        with mock.patch(&#x27;events.models.LOCK_TIMEOUT&#x27;, &#x27;30s&#x27;):
+            yield</code></pre><p class="" data-block="155"><code>@contextmanager</code> turns a function with one <code>yield</code> into something <code>with</code> can use: both patches are in place for the body of the <code>with</code> block, and both are undone after it, even if the test fails.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="156" tabindex="0"><code>uv run python manage.py test registrations -k RaceTests</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="157" tabindex="0"><code>Found 5 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 5 tests in ...s
+
+OK</code></pre><p class="" data-block="158">A test that fails now and then is not “flaky” by nature; it depends on something it does not control, here the speed of the machine. Find that thing, as with the cache, rather than running the test again until it passes.</p><h4 data-block="159">Step 7: When a test fails under --parallel</h4><p class="" data-block="160">Make a test fail on purpose: in <code>audit/tests/test_audit.py</code>, change <code>self.assertEqual(add.status_code, 403)</code> to <code>self.assertEqual(add.status_code, 200)</code>. Run it with another app, in parallel:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="161" tabindex="0"><code>uv run python manage.py test audit events --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="162" tabindex="0"><code>Found 195 test(s).
+...
+TypeError: cannot pickle &#x27;traceback&#x27; object</code></pre><p class="" data-block="163">The failure happened in a worker process, and the runner could not send its traceback back, so it crashed without naming the test. Add tblib, which can:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="164" tabindex="0"><code>uv add --dev tblib==3.2.2</code></pre><p class="" data-block="165">Run the same command again:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="166" tabindex="0"><code>Found 195 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: 403 != 200
+Ran 195 tests in ...s
+
+FAILED (failures=1)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="167" tabindex="0"><code>FAIL: test_the_admin_page_is_view_only
+    (audit.tests.test_audit.AuditEventTests
+     .test_the_admin_page_is_view_only)</code></pre><p class="" data-block="168">Now the failing test is named and its assertion shown, exactly as in a run without <code>--parallel</code>. Undo the change; the file is as you committed it in Step 3, so Git can restore it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="169" tabindex="0"><code>git restore audit/tests/test_audit.py</code></pre><h4 data-block="170">Step 8: A skip link and messages coloured by meaning</h4><p class="" data-block="171">Chapter 2 asked for the main journeys to work with a keyboard alone. With the keyboard, every page begins with the navigation: four or five presses of Tab before reaching the event. A <strong>skip link</strong> is the page’s first link, “Skip to the main content”, hidden until Tab reaches it. Messages have a second problem: “This place was already cancelled.” is information, not success, yet it shows in the success colour, because the layout knows only two kinds.</p><p class="" data-block="172">Write the tests first. In <code>events/tests/test_events.py</code>, add to the end of <code>LayoutTests</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_events.py</p><pre class="code-listing code-listing--file" data-block="173" tabindex="0"><code>    def test_a_skip_link_comes_first(self):
+        link = (&#x27;&lt;a href=&quot;#main&quot; class=&quot;skip-link&quot;&gt;&#x27;
+                &#x27;Skip to the main content&lt;/a&gt;&#x27;)
+        for url, template, title in self.pages:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertContains(response, link, html=True)
+                page = response.content.decode()
+                self.assertLess(page.index(&#x27;skip-link&#x27;),
+                                page.index(&#x27;site-nav&#x27;))
+                self.assertIn(&#x27;&lt;main id=&quot;main&quot;&#x27;, page)</code></pre><p class="" data-block="174">In <code>registrations/tests/test_registrations.py</code>, add to <code>MyRegistrationsTests</code>, before <code>test_a_visitor_is_sent_to_sign_in</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_registrations.py</p><pre class="code-listing code-listing--file" data-block="175" tabindex="0"><code>    def test_a_repeated_cancel_is_information(self):
+        self.client.force_login(self.sai)
+        address = url(&#x27;cancel&#x27;, self.sais.pk)
+        self.client.post(address, follow=True)
+        again = self.client.post(address, follow=True)
+        self.assertContains(again, &#x27;alert-info&#x27;)
+        self.assertNotContains(again, &#x27;alert-success&#x27;)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="176" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="177" tabindex="0"><code>Found 257 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: False is not true : Couldn&#x27;t find
+    &#x27;alert-info&#x27; in the following response
+Ran 257 tests in ...s
+
+FAILED (failures=4)</code></pre><p class="" data-block="178">In <code>templates/base.html</code>, replace the lines from <code>&lt;body&gt;</code> to the message’s <code>alert</code> class with:</p><p class="code-label code-label--file" aria-hidden="true">templates/base.html</p><pre class="code-listing code-listing--file" data-block="179" tabindex="0"><code>&lt;body&gt;
+  {# First on the page: Tab once, Enter, and the keyboard #}
+  {# skips the navigation (Chapter 34). #}
+  &lt;a href=&quot;#main&quot; class=&quot;skip-link&quot;&gt;Skip to the main
+    content&lt;/a&gt;
+  {% include &quot;includes/site_nav.html&quot; %}
+  &lt;main id=&quot;main&quot; tabindex=&quot;-1&quot;
+        class=&quot;mx-auto w-full max-w-6xl space-y-4 px-4 pt-6
+               pb-12 sm:px-6 lg:px-8&quot;&gt;
+    {% if messages %}
+      &lt;div role=&quot;status&quot; class=&quot;space-y-2&quot;&gt;
+        {% for message in messages %}
+          &lt;div class=&quot;alert
+            {% if message.level_tag == &#x27;error&#x27; %}alert-error
+            {% elif message.level_tag == &#x27;warning&#x27; %}
+              alert-warning
+            {% elif message.level_tag == &#x27;info&#x27; %}alert-info
+            {% else %}alert-success{% endif %}&quot;&gt;</code></pre><p class="" data-block="180"><code>id=&quot;main&quot;</code> is where the link leads, and <code>tabindex=&quot;-1&quot;</code> lets the browser move the keyboard focus there, so the next Tab continues inside the page. Messages now take daisyUI’s info and warning classes too. Otahque’s theme defines a warning colour (Chapter 33) but no information colour, so <code>alert-info</code> would be grey. In <code>static/otahque/source.css</code>, add two lines to the theme, after <code>--color-warning-content</code>:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css</p><pre class="code-listing code-listing--file" data-block="181" tabindex="0"><code>  --color-warning: #fdf0d2;
+  --color-warning-content: #5b3a00;
+  /* Information: &quot;already cancelled&quot; (Chapter 34). */
+  --color-info: #dceafe;
+  --color-info-content: #0b3a7a;</code></pre><p class="" data-block="182">Dark blue on light blue has a contrast ratio of about 9 to 1, well above the 4.5 to 1 that WCAG asks of normal text. Then, inside <code>@layer components</code>, before the <code>.form-grid</code> comment:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css</p><pre class="code-listing code-listing--file" data-block="183" tabindex="0"><code>  /* Off the screen until a keyboard user reaches it with
+     Tab; then it shows at the top left. */
+  .skip-link {
+    position: absolute;
+    top: -5rem;
+    left: 1rem;
+    z-index: 50;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-field);
+    background-color: var(--color-primary);
+    color: var(--color-primary-content);
+    font-weight: 600;
+  }
+
+  .skip-link:focus {
+    top: 0.75rem;
+    outline-color: var(--color-base-content);
+  }
+
+  /* The skip link moves focus to main; no ring is needed
+     on the page area itself. */
+  main:focus {
+    outline: none;
+  }</code></pre><p class="" data-block="184">Build the stylesheet and run the tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="185" tabindex="0"><code>npm run build
+uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="186" tabindex="0"><code>Found 257 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 257 tests in ...s
+
+OK</code></pre><p class="" data-block="187">Open any page, click the address bar, and press Tab once: the link appears at the top left. Press Enter, then Tab again: the focus is on the first link of the page itself. Figure 34.3 shows the link and an information message on a phone and a desktop.</p><figure data-block="188"><a href="/assets/chapter34/figure-34-3-ui.png" aria-label="Open Figure 34.3 at full size"><img src="/assets/chapter34/figure-34-3-ui.png" alt="Two screenshots side by side. Left, a phone-width My registrations page with a blue information message, This place was already cancelled. Right, a desktop-width event list with a blue Skip to the main content link shown at the top left over the navigation bar, where the first Tab puts it." width="1489" height="584" loading="lazy"></a><figcaption data-block="189">Figure 34.3 — The skip link on a desktop and an information message on a phone.</figcaption></figure><h4 data-block="190">Step 9: The acceptance trace</h4><p class="" data-block="191">Now the record Soni asked for. Create <code>docs/acceptance/M2.md</code>. Each rule lists its allowed and refused cases and the tests that check each; every name is written <code>Class.test_name</code> in backticks, with its app in brackets.</p><p class="code-label code-label--file" aria-hidden="true">docs/acceptance/M2.md</p><pre class="code-listing code-listing--file" data-block="192" tabindex="0"><code># M2 acceptance trace: the first release
+
+Each rule from Chapter 2 (Table 2.3), the cases that prove
+it, and the tests that check each case. Names are
+`Class.test_name`; the app is given in brackets.
+`TraceTests` (config) fails if a named test is missing.
+
+Evidence: `check.py` passes locally and in CI on the commit
+tagged v0.1.0, with the suite also run in reverse order.
+The release checklist is docs/release-checklist.md.
+
+## PR-1 One confirmed registration
+
+Allowed:
+- An eligible member gets one place (registrations):
+  `RegisterTests.test_a_place_is_made`,
+  `RegisterPageTests.test_a_member_registers_with_one_post`
+- The member and the organizer see it (registrations):
+  `MyRegistrationsTests.test_the_page_lists_upcoming_places`,
+  `AttendeeListTests.test_the_list_shows_contacts_and_counts`
+
+Refused, and nothing saved:
+- A repeated request keeps one place (registrations):
+  `RegisterTests.test_a_second_request_keeps_one_place`,
+  `RegisterPageTests.test_two_posts_make_one_place`,
+  `RaceTests.test_the_same_member_twice_gets_one_place`
+- Full, closed, or not published (registrations):
+  `RegistrationRuleTests.test_a_full_event_says_so`,
+  `RegistrationRuleTests.test_closing_is_exclusive`,
+  `RegistrationRuleTests.test_a_past_event_is_closed`,
+  `RegistrationRuleTests.test_only_published_events_take_places`,
+  `RegisterTests.test_a_refusal_names_why_and_saves_nothing`
+- Signed out, or the email not confirmed (registrations):
+  `RegisterPageTests.test_a_visitor_signs_in_and_comes_back`,
+  `RegistrationRuleTests.test_an_unconfirmed_email_is_named`
+
+## PR-2 Cancellation releases one place
+
+Allowed:
+- The first cancel releases one place (registrations):
+  `CancelTests.test_cancel_releases_the_place_once`,
+  `MyRegistrationsTests.test_confirm_then_cancel`
+- A late cancel is allowed and marked (registrations):
+  `CancelTests.test_late_from_the_deadline`,
+  `MyRegistrationsTests.test_a_late_cancel_is_marked`
+- The member may register again (registrations):
+  `CancelTests.test_a_member_may_register_again`
+
+Refused, or changes nothing:
+- A repeat, or a lost response sent again (registrations):
+  `CancelTests.test_a_stale_copy_changes_nothing`,
+  `MyRegistrationsTests.test_a_repeated_cancel_is_information`
+- After the start (registrations):
+  `CancelTests.test_no_cancel_once_the_event_starts`,
+  `MyRegistrationsTests.test_the_page_refuses_after_the_start`
+
+## PR-3 Never more places than capacity
+
+PostgreSQL only; the race tests skip on SQLite.
+- Two members for the last place (registrations):
+  `RaceTests.test_the_last_place_goes_to_one_member`
+- A cancel overlaps a request (registrations):
+  `RaceTests.test_a_cancel_during_a_request_only_refuses`
+- Capacity lowered below the places taken (events,
+  registrations):
+  `CapacityTests.test_below_the_places_taken_is_refused`,
+  `CapacityTests.test_the_admin_refuses_it_too`,
+  `RaceTests.test_capacity_edit_counts_a_place_being_made`
+- A request that waits too long is told &quot;busy&quot; (events,
+  registrations):
+  `RaceTests.test_busy_while_another_request_holds_it`,
+  `BusyEditTests.test_a_busy_edit_says_so_and_saves_nothing`
+
+## PR-4 Own records, assigned events
+
+Allowed:
+- An organizer edits an assigned event (events):
+  `EditAccessTests.test_organizer_gets_the_form`
+- The attendee list for its organizers (registrations):
+  `AttendeeMatrixTests.test_every_row`
+
+Refused, nothing changed or shown, attempt recorded:
+- Another member&#x27;s place (registrations):
+  `MyRegistrationsTests.test_someone_elses_place_is_missing`
+- Another organizer&#x27;s event, or access revoked (events):
+  `EditAccessTests.test_member_may_see_but_not_edit`,
+  `EditAccessTests.test_revoked_organizer_is_refused`,
+  `PermissionMatrixTests.test_every_row`
+- Contacts stay off public pages (registrations):
+  `AttendeeListTests.test_contacts_stay_off_the_event_page`
+- A form sent without its CSRF token (events):
+  `CsrfTests.test_a_post_without_the_token_is_refused`,
+  `EditCsrfTests.test_an_edit_without_the_token_is_refused`,
+  `ActionCsrfTests.test_publish_needs_the_token`
+- Refusals are recorded (events):
+  `AuditTrailTests.test_refusals_by_members_are_recorded`
+
+## PR-5 Publication boundary
+
+Allowed:
+- A complete draft is published by its organizer (events):
+  `PublishTests.test_an_organizer_publishes_a_complete_draft`,
+  `PublishTests.test_visitors_see_it_once_it_is_published`
+
+Refused:
+- Drafts are hidden from visitors and members (events):
+  `EventDetailTests.test_drafts_are_hidden`
+- An incomplete draft stays a draft (events):
+  `ReadinessTests.test_every_missing_detail_is_named`,
+  `ReadinessTests.test_a_refused_publish_changes_nothing`
+- Someone who may not edit it (events):
+  `PublishTests.test_a_member_who_may_not_edit_is_refused`
+- An edit from an out-of-date page (events):
+  `EditVersionTests.test_a_save_from_an_old_page_is_refused`
+
+## PR-6 Access management
+
+Allowed:
+- The administrator adds an organizer (events):
+  `OrganizerPageTests.test_an_administrator_adds_an_organizer`,
+  `OrganizerRuleTests.test_an_organizer_is_added_and_recorded`
+
+Refused:
+- An ordinary member, recorded (events):
+  `OrganizerPageTests.test_others_get_403_and_are_recorded`
+- Changes need a recent sign-in (events):
+  `OrganizerPageTests.test_changes_need_a_recent_sign_in`
+- The last organizer stays (events):
+  `OrganizerRuleTests.test_the_last_organizer_stays`
+
+## Quality: time, access, recovery
+
+- Times in the event&#x27;s zone, and the viewer&#x27;s (events):
+  `EventDetailTests.test_time_in_event_time_zone`,
+  `BothTimesTests.test_another_zone_shows_both`
+- A lost response, sent again, is safe: PR-1 and PR-2.
+- Status lookup: My registrations, PR-1.
+- Keyboard: the skip link is tested (events):
+  `LayoutTests.test_a_skip_link_comes_first`.
+  The keyboard-only journey is checked by hand with the
+  UI checklist in docs/release-checklist.md. Partly met:
+  browser tests that press the keys come in Chapter 58.
+
+## Quality: responsiveness
+
+Deferred: no workload or target is agreed yet. Chapter 66
+measures it. Not a release blocker for a pilot.
+
+## Known limits
+
+- A cancel saved while another request counts can refuse
+  that request although a place is free a moment later
+  (PR-3, the overlap test). It never gives a place too
+  many. The member can press Register again.
+- Not in M2, so not tested here: email notices, the
+  waitlist, check-in, and reminders (M3).
+- The UI checklist is a first check, not an accessibility
+  certification.</code></pre><p class="" data-block="193">Read it as Soni would. Every PR has a test for each case Chapter 2 listed, the refused cases included. The quality rows say what is met, what is partly met, and what is deferred, with the chapter that continues each. The known limits are written, not hidden.</p><p class="" data-block="194">A trace written by hand goes stale the first time someone renames a test. Make the trace check itself. Create <code>config/tests/test_acceptance.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">config/tests/test_acceptance.py</p><pre class="code-listing code-listing--file" data-block="195" tabindex="0"><code>&quot;&quot;&quot;The acceptance trace names only tests that exist.&quot;&quot;&quot;
+import re
+from importlib import import_module
+
+from django.conf import settings
+from django.test import SimpleTestCase
+
+TRACE = settings.BASE_DIR / &#x27;docs/acceptance/M2.md&#x27;
+APPS = [&#x27;accounts&#x27;, &#x27;audit&#x27;, &#x27;config&#x27;, &#x27;events&#x27;,
+        &#x27;registrations&#x27;]
+NAME = re.compile(r&#x27;`(\w+Tests)\.(test_\w+)`&#x27;)
+
+
+def test_classes():
+    &quot;&quot;&quot;Yield every test class in the apps&#x27; tests packages.&quot;&quot;&quot;
+    for app in APPS:
+        folder = settings.BASE_DIR / app / &#x27;tests&#x27;
+        for path in sorted(folder.glob(&#x27;test*.py&#x27;)):
+            module = import_module(f&#x27;{app}.tests.{path.stem}&#x27;)
+            yield from vars(module).values()
+
+
+class TraceTests(SimpleTestCase):
+    &quot;&quot;&quot;docs/acceptance/M2.md, checked against the tests.&quot;&quot;&quot;
+
+    def test_every_named_test_exists(self):
+        names = NAME.findall(TRACE.read_text(encoding=&#x27;utf-8&#x27;))
+        self.assertGreater(len(names), 40)
+        found = {(c.__name__, m) for c in test_classes()
+                 if isinstance(c, type) for m in dir(c)}
+        missing = [f&#x27;{c}.{m}&#x27; for c, m in names
+                   if (c, m) not in found]
+        self.assertEqual(missing, [])</code></pre><p class="" data-block="196">It reads every name in backticks from the trace, imports every test module of the five apps, and lists any name that no class defines. <code>assertGreater(len(names), 40)</code> guards against a trace that loses its names entirely. Also add the short guide to how Otahque is tested, <code>docs/testing.md</code>, for whoever joins next:</p><p class="code-label code-label--file" aria-hidden="true">docs/testing.md</p><pre class="code-listing code-listing--file" data-block="197" tabindex="0"><code># How Otahque is tested
+
+## Where tests live
+
+Each app has a `tests/` package. Its `test_&lt;app&gt;.py` holds
+the tests of the earlier chapters; a new subject gets its
+own `test_&lt;subject&gt;.py` beside it. Helpers that more
+than one app&#x27;s tests use live in `config/helpers.py`, which
+the runner does not collect: its name does not start with
+&quot;test&quot;. Helpers for one app stay in that app&#x27;s tests.
+
+## Which tool for which question
+
+| Question | Tool |
+|---|---|
+| Is this function right, no database? | `SimpleTestCase` |
+| Is this rule right, with the database? | `TestCase` |
+| Does this page answer as it should? | the test client |
+| Does this middleware work alone? | `RequestFactory` |
+| What if two requests overlap? | `TransactionTestCase` |
+| Does a test class share costly rows? | `setUpTestData` |
+
+`TestCase` undoes each test inside a transaction, so other
+connections never see its rows; race tests need
+`TransactionTestCase`, which commits and empties the tables
+afterwards, and PostgreSQL.
+
+## Commands
+
+    uv run python check.py
+    uv run python manage.py test --parallel --reverse
+    uv run coverage run manage.py test --parallel
+    uv run coverage combine
+    uv run coverage report
+
+Coverage is read, not targeted: a line that ran is not a
+rule that was checked. docs/acceptance/M2.md names the
+tests behind each rule.</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="198" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="199" tabindex="0"><code>Found 15 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 15 tests in ...s
+
+OK</code></pre><h4 data-block="200">Step 10: One command, then CI</h4><p class="" data-block="201">The checks a change must pass are three commands. Put them in one file beside <code>manage.py</code>, so that you and CI run exactly the same thing. Create <code>check.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">check.py</p><pre class="code-listing code-listing--file" data-block="202" tabindex="0"><code>&quot;&quot;&quot;Run the checks every change must pass, as CI does.
+
+Usage: uv run python check.py
+Runs Django&#x27;s system checks, the migration check, and the
+whole test suite, in that order. It stops at the first
+check that fails and exits with that check&#x27;s code, so CI
+marks the run as failed.
+&quot;&quot;&quot;
+import subprocess
+import sys
+
+CHECKS = [
+    [&#x27;manage.py&#x27;, &#x27;check&#x27;],
+    [&#x27;manage.py&#x27;, &#x27;makemigrations&#x27;, &#x27;--check&#x27;, &#x27;--dry-run&#x27;],
+    [&#x27;manage.py&#x27;, &#x27;test&#x27;, &#x27;--parallel&#x27;],
+]
+
+
+def main():
+    &quot;&quot;&quot;Run each check; return the first failure&#x27;s code.&quot;&quot;&quot;
+    for args in CHECKS:
+        print(&#x27;== python&#x27;, &#x27; &#x27;.join(args), flush=True)
+        result = subprocess.run([sys.executable, *args])
+        if result.returncode:
+            print(&#x27;== failed:&#x27;, &#x27; &#x27;.join(args))
+            return result.returncode
+    print(&#x27;== all checks passed&#x27;)
+    return 0
+
+
+if __name__ == &#x27;__main__&#x27;:
+    sys.exit(main())</code></pre><p class="" data-block="203"><code>makemigrations --check --dry-run</code> fails if a model changed without a migration, and writes nothing. <code>subprocess.run()</code> runs each command with the same Python, and the first failure ends the script with its exit code, which is how CI knows the run failed.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="204" tabindex="0"><code>uv run python check.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="205" tabindex="0"><code>== python manage.py check
+System check identified no issues (0 silenced).
+== python manage.py makemigrations --check --dry-run
+No changes detected
+== python manage.py test --parallel
+Found 362 test(s).
+System check identified no issues (0 silenced).
+Ran 362 tests in ...s
+OK
+== all checks passed</code></pre><p class="" data-block="206">Now the workflow. Create <code>.github/workflows/ci.yml</code>; the two folders start with a dot:</p><p class="code-label code-label--file" aria-hidden="true">.github/workflows/ci.yml</p><pre class="code-listing code-listing--file" data-block="207" tabindex="0"><code># Run check.py on every push and pull request, on Linux,
+# against a fresh PostgreSQL 18 (Chapter 34).
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        # Start the steps only once the server answers.
+        options: &gt;-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: otahque
+      DB_USER: postgres
+      DB_PASSWORD: ci-only-password
+      DB_HOST: localhost
+      DB_PORT: &quot;5432&quot;
+      PGPASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: &quot;0.13.5&quot;
+      - name: Install the locked packages
+        run: uv sync --locked
+      - name: Create the databases (Chapter 32)
+        run: |
+          for name in otahque otahque_template; do
+            psql -h localhost -U postgres -c \
+              &quot;CREATE DATABASE $name TEMPLATE template0
+               LOCALE_PROVIDER builtin
+               BUILTIN_LOCALE &#x27;C.UTF-8&#x27;&quot;
+          done
+      - name: Make a secret key for this run only
+        run: |
+          key=$(python3 -c \
+            &#x27;import secrets; print(secrets.token_hex(32))&#x27;)
+          echo &quot;DJANGO_SECRET_KEY=$key&quot; &gt;&gt; &quot;$GITHUB_ENV&quot;
+      - name: Run the checks
+        run: uv run python check.py</code></pre><p class="" data-block="208">Read it from the top. <code>on: push</code> runs it for every push to any branch, and for pull requests (Chapter 64). The job runs on Ubuntu 24.04, named exactly so that an upgrade is your decision. <code>services</code> starts PostgreSQL 18 in a container beside the job, and the health options make the steps wait until it answers. The <code>env</code> lines are the <code>DB_*</code> settings Chapter 32 introduced, here as environment variables instead of a <code>.env</code> file. <code>actions/checkout</code> and <code>astral-sh/setup-uv</code> are ready-made steps, each pinned to an exact release, and setup-uv installs the uv version the book uses. <code>uv sync --locked</code> installs exactly what <code>uv.lock</code> names, and fails if the lock no longer matches <code>pyproject.toml</code>. The databases are made as Chapter 32 made them, with the builtin C.UTF-8 locale. The secret key is made fresh for each run and never stored: the tests need a key, not your key. Figure 34.4 shows the run in order.</p><figure data-block="209"><a href="/assets/chapter34/figure-34-4-ci.png" aria-label="Open Figure 34.4 at full size"><img src="/assets/chapter34/figure-34-4-ci.png" alt="A grey zone headed GitHub Actions, on every push: a fresh Linux machine. Six numbered cards in two columns: 1 PostgreSQL 18, a service container, ready when it answers; 2 Check out, the pushed commit; 3 uv sync --locked, Python 3.14.9 and exactly the locked packages; 4 Create the databases, otahque and otahque_template, C.UTF-8; 5 A secret key, made for this run only, then thrown away; 6 check.py, system checks, migrations, the whole suite. Below, a green card, Green: every check passed, and a red card, Red: the first failing check, by name." width="1500" height="980" loading="lazy"></a><figcaption data-block="210">Figure 34.4 — The CI run, from push to a green or red mark.</figcaption></figure><p class="" data-block="211">Commit everything from Steps 4 to 10:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="212" tabindex="0"><code>git add .
+git commit -m &quot;Trace M2, measure coverage, and check in CI&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="213" tabindex="0"><code>[main 346a603] Trace M2, measure coverage, and check in CI
+ 15 files changed, 662 insertions(+), 3 deletions(-)</code></pre><p class="" data-block="214">Now give the repository a home on GitHub. Sign in at github.com, choose <strong>New repository</strong>, name it <code>otahque</code>, choose <strong>Private</strong>, and add nothing else: no README, no <code>.gitignore</code>, no licence, because your repository already has its history. GitHub shows the repository’s address. Connect your repository to it and send your history; replace <code>YOUR-NAME</code> with your GitHub name:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="215" tabindex="0"><code>git remote add origin https://github.com/YOUR-NAME/otahque.git
+git push -u origin main</code></pre><p class="" data-block="216">A <strong>remote</strong> is another copy of the repository that Git can send to and fetch from, and <code>origin</code> is the usual name of the first one. <code>-u</code> makes your <code>main</code> follow <code>origin/main</code>, so later a plain <code>git push</code> is enough. The first push asks you to sign in; on Windows, Git Credential Manager opens a browser window. Git prints:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="217" tabindex="0"><code>To https://github.com/YOUR-NAME/otahque.git
+ * [new branch]      main -&gt; main
+branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.</code></pre><p class="" data-block="218">On GitHub, open the repository’s <strong>Actions</strong> tab. A run named after your commit starts within seconds. Open it, then the <code>checks</code> job, and expand <strong>Run the checks</strong>:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="219" tabindex="0"><code>== python manage.py check
+System check identified no issues (0 silenced).
+== python manage.py makemigrations --check --dry-run
+No changes detected
+== python manage.py test --parallel
+Creating test database for alias &#x27;default&#x27;...
+Cloning test database for alias &#x27;default&#x27;...
+Cloning test database for alias &#x27;default&#x27;...
+Found 362 test(s).
+System check identified no issues (0 silenced).
+Ran 362 tests in ...s
+OK
+== all checks passed</code></pre><p class="" data-block="220">The same 362 tests, on Linux, on PostgreSQL 18, from a clean start, the race tests included: none was skipped. The list of steps on the left shows each one ticked.</p><div class="callout callout--error"><p class="callout__title" data-block="221">Common Error: the CI run fails before the tests</p><p class="" data-block="222">“Set DJANGO_SECRET_KEY” means the key step is missing or after the checks. A connection error on port 5432 means the <code>services</code> block or a <code>DB_*</code> line is wrong, or the health options were left out, so the checks started before PostgreSQL. <code>uv sync --locked</code> failing with “The lockfile needs to be updated” means <code>pyproject.toml</code> changed without <code>uv lock</code>: run <code>uv lock</code> locally, commit <code>uv.lock</code>, and push. Never change the workflow to <code>uv sync</code> without <code>--locked</code> to make it pass: that hides the stale lock instead of fixing it.</p></div><h4 data-block="223">Step 11: A red run, on a branch</h4><p class="" data-block="224">A <strong>branch</strong> is a separate line of history. Work on a branch does not change <code>main</code> until you choose to bring it in, so it is the safe place to try something. Make one:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="225" tabindex="0"><code>git switch -c try-ci</code></pre><p class="" data-block="226">Now make a mistake that a code review could easily miss. In <code>registrations/tests/test_registrations.py</code>, rename <code>test_a_place_is_made</code> to <code>test_a_member_gets_a_place</code>. The test still passes, but the trace names the old name. Locally:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="227" tabindex="0"><code>uv run python manage.py test config</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="228" tabindex="0"><code>Found 15 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+AssertionError: Lists differ:
+    [&#x27;RegisterTests.test_a_place_is_made&#x27;] != []
+Ran 15 tests in ...s
+
+FAILED (failures=1)</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="229" tabindex="0"><code>AssertionError: Lists differ:
+    [&#x27;RegisterTests.test_a_place_is_made&#x27;] != []
+&#x27;RegisterTests.test_a_place_is_made&#x27;</code></pre><p class="" data-block="230">Suppose you had not run it. Commit and push the branch:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="231" tabindex="0"><code>git commit -am &quot;Rename a registration test&quot;
+git push -u origin try-ci</code></pre><p class="" data-block="232">On GitHub, the run for <code>try-ci</code> turns red. Its log names the check that failed and the reason:</p><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="233" tabindex="0"><code>== python manage.py check
+== python manage.py makemigrations --check --dry-run
+== python manage.py test --parallel
+FAIL: test_every_named_test_exists
+    (config.tests.test_acceptance.TraceTests
+     .test_every_named_test_exists)
+AssertionError: Lists differ:
+    [&#x27;RegisterTests.test_a_place_is_made&#x27;] != []
+First list contains 1 additional elements.
+First extra element 0:
+- [&#x27;RegisterTests.test_a_place_is_made&#x27;]
++ []
+Ran 362 tests in ...s
+FAILED (failures=1)
+== failed: manage.py test --parallel</code></pre><p class="" data-block="234">The fix is to change the trace in the same commit as the rename. Here the rename was only an exercise, so throw the branch away, on your computer and on GitHub:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="235" tabindex="0"><code>git switch main
+git branch -D try-ci
+git push origin --delete try-ci</code></pre><p class="" data-block="236"><code>git branch -D</code> deletes a branch that was never brought into <code>main</code>; its commit is no longer part of any branch. <code>main</code> never had the mistake.</p><h4 data-block="237">Step 12: The release checklist, and the tag</h4><p class="" data-block="238">A release is a commit you can name and return to. Before naming one, run a checklist, and stop if any box stays empty. Create <code>docs/release-checklist.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/release-checklist.md</p><pre class="code-listing code-listing--file" data-block="239" tabindex="0"><code># Release checklist
+
+Run it before tagging a release. Every box must be ticked on
+the commit you tag; a box you cannot tick stops the release.
+
+## Checks
+
+- [ ] `git status --short` prints nothing.
+- [ ] `uv run python check.py` ends with &quot;all checks passed&quot;
+      (system checks, migrations, the whole suite).
+- [ ] `uv run python manage.py test --parallel --reverse`
+      passes too: no test depends on the order.
+- [ ] The race tests ran, not skipped: the suite used
+      PostgreSQL.
+- [ ] CI is green for this commit.
+- [ ] docs/acceptance/M2.md matches what was tested, its
+      known limits included.
+
+## UI, at 390 and 1280 pixels wide
+
+On the event list, an event page, My registrations, and the
+new event and edit pages:
+- [ ] Nothing scrolls sideways; text and buttons fit.
+- [ ] Tab reaches &quot;Skip to the main content&quot; first, then
+      every link, field, and button in order, each with a
+      visible ring.
+- [ ] Register and cancel can be done with the keyboard
+      alone (Tab, Enter, Space).
+- [ ] Messages say in words what happened; colour only
+      repeats it.
+- [ ] Text is readable at 200% zoom.
+
+## Then
+
+- [ ] Tag the commit: `git tag -a v0.1.0 -m &quot;...&quot;`.
+- [ ] Push the tag: `git push origin v0.1.0`.</code></pre><p class="" data-block="240">Go through it. The order check takes a few minutes:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="241" tabindex="0"><code>uv run python manage.py test --parallel --reverse</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="242" tabindex="0"><code>Found 362 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 362 tests in ...s
+
+OK</code></pre><p class="" data-block="243">Do the UI part by hand, at 390 and 1280 pixels wide; your browser’s developer tools can set the width. Then commit the checklist and push, and wait for CI to turn green for this commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="244" tabindex="0"><code>git add .
+git commit -m &quot;Add the release checklist&quot;
+git push</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="245" tabindex="0"><code>[main 36bd0f5] Add the release checklist
+ 1 file changed, 36 insertions(+)
+ create mode 100644 docs/release-checklist.md</code></pre><p class="" data-block="246">A <strong>tag</strong> is a permanent name for one commit. <code>-a</code> makes an annotated tag, which records who tagged it, when, and why. <code>v0.1.0</code> follows semantic versioning: 0 because the product is still in its first, pre-1.0 phase, and the first minor release of it. It matches the <code>version = &quot;0.1.0&quot;</code> line that <code>uv init</code> wrote into <code>pyproject.toml</code>. Tag the commit CI passed, push the tag, and list it:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="247" tabindex="0"><code>git tag -a v0.1.0 -m &quot;First release: M2, the trace holds&quot;
+git push origin v0.1.0
+git tag -n</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="248" tabindex="0"><code>v0.1.0          First release: M2, the trace holds
+36bd0f5 Add the release checklist
+346a603 Trace M2, measure coverage, and check in CI
+7704048 Move the tests into packages; share helpers
+befbc11 Lock the last place; refuse stale edits</code></pre><p class="" data-block="249">That is M2: the first release, with its evidence in <code>docs/acceptance/M2.md</code>, its limits written down, and its checks green on a machine nobody prepared by hand.</p><h3 class="" id="topic-250" data-block="250">When something goes wrong</h3><figure class="table-figure" data-block="251"><figcaption>Table 34.1 — Diagnosing test layout, coverage, and CI</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 34.1 — Diagnosing test layout, coverage, and CI"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">ImportError: Failed to import test module</th>
+<td data-label="Likely cause">A relative import in a moved file, or an import from an old tests module</td>
+<td data-label="Recovery">Name the app: from events.models import ...; shared helpers from config.helpers</td>
+</tr>
+<tr><th scope="row">Fewer tests than before the move</th>
+<td data-label="Likely cause">A tests folder without __init__.py, or a file not named test*.py</td>
+<td data-label="Recovery">Add the empty __init__.py; rename the file</td>
+</tr>
+<tr><th scope="row">Ran 0 tests in a new file</th>
+<td data-label="Likely cause">The file is named testing.py or helpers_test.py</td>
+<td data-label="Recovery">Test files start with test</td>
+</tr>
+<tr><th scope="row">coverage: a low figure under --parallel</th>
+<td data-label="Likely cause">Workers not measured</td>
+<td data-label="Recovery">parallel and concurrency in pyproject.toml; coverage combine</td>
+</tr>
+<tr><th scope="row">A test fails only in the full suite or reversed</th>
+<td data-label="Likely cause">State left by another test: cache, rows, settings</td>
+<td data-label="Recovery">Clear it in setUp; repeat with --reverse or --shuffle SEED</td>
+</tr>
+<tr><th scope="row">Race test gets [&#x27;busy&#x27;] now and then</th>
+<td data-label="Likely cause">The wait for the row passed the lock&#x27;s limit on a loaded machine</td>
+<td data-label="Recovery">meet_after_counting() raises the limit while it is in use</td>
+</tr>
+<tr><th scope="row">TypeError: cannot pickle &#x27;traceback&#x27; object</th>
+<td data-label="Likely cause">A failure in a worker, without tblib</td>
+<td data-label="Recovery">uv add --dev tblib==3.2.2; or rerun without --parallel</td>
+</tr>
+<tr><th scope="row">TraceTests lists a name</th>
+<td data-label="Likely cause">A test named in M2.md was renamed or removed</td>
+<td data-label="Recovery">Update the trace in the same commit</td>
+</tr>
+<tr><th scope="row">CI: Set DJANGO_SECRET_KEY</th>
+<td data-label="Likely cause">The key step is missing</td>
+<td data-label="Recovery">The &quot;Make a secret key&quot; step before the checks</td>
+</tr>
+<tr><th scope="row">CI: connection refused on 5432</th>
+<td data-label="Likely cause">No service, or checks started before it was ready</td>
+<td data-label="Recovery">The services block with its health options</td>
+</tr>
+<tr><th scope="row">CI: The lockfile needs to be updated</th>
+<td data-label="Likely cause">pyproject.toml changed without uv lock</td>
+<td data-label="Recovery">uv lock locally; commit uv.lock</td>
+</tr>
+<tr><th scope="row">git push asks for a password and refuses it</th>
+<td data-label="Likely cause">GitHub no longer accepts account passwords for Git</td>
+<td data-label="Recovery">Sign in through Git Credential Manager, or use a personal access token</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="252">No recovery here touches your data: tests run in their own test database, coverage writes only its own files, and a CI machine is thrown away after each run.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2034%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter34/section-34-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter34/section-34-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter34/section-34-2/">← What You Need to Know</a><a href="/chapters/chapter34/section-34-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

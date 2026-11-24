@@ -1,0 +1,17 @@
+<dl class="facts">
+  {% with format="l j F Y, H:i T" %}
+  <dt>Starts</dt>
+  <dd>{% include "events/when.html" %}</dd>
+  <dt>Ends</dt>
+  <dd>{% include "events/when.html" with at=event.ends_at %}
+  </dd>
+  {% endwith %}
+  <dt>Where</dt>
+  <dd>{{ event.location }}</dd>
+  {% if now and now < event.ends_at %}
+    {% if event.status != 'cancelled' %}
+      <dt>Places</dt>
+      <dd>{% include "events/places.html" %}</dd>
+    {% endif %}
+  {% endif %}
+</dl>

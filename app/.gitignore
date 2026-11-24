@@ -16,3 +16,8 @@ db-before-32.sqlite3
 
 # Node packages, rebuilt from package-lock.json by npm ci
 node_modules/
+
+# coverage's data files and HTML report (Chapter 34)
+.coverage
+.coverage.*
+htmlcov/

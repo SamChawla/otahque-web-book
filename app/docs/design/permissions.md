@@ -55,6 +55,9 @@ there is 403, not 404. Proved by PermissionMatrixTests.
 - Signed out: sent to sign in.
 - A signed-in refusal is recorded as a refused
   AuditEvent; an unknown number is not.
+- Since Chapter 35 the event page refuses any method but
+  GET and HEAD with 405 before it loads the event, so a
+  POST to a hidden draft is not recorded (ADR-006).
 
 ## Organizer access
 

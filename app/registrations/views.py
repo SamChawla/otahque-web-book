@@ -6,6 +6,8 @@ from django.shortcuts import (
     get_object_or_404, redirect, render,
 )
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.http import (
     require_http_methods, require_POST,
 )
@@ -53,17 +55,42 @@ def register(request, event_id):
     return take_place(request, event_for(request, event_id))
 
 
-@require_http_methods(['GET', 'POST'])
-@login_required
-def register_phone(request, event_id):
-    """Ask for the number the event needs, then register."""
-    event = event_for(request, event_id)
-    form = PhoneForm(request.POST or None)
-    if form.is_valid():
-        form.save(request.user)
-        return take_place(request, event)
-    return render(request, 'registrations/phone.html',
-                  {'event': event, 'form': form})
+@method_decorator(
+    [require_http_methods(['GET', 'POST']), login_required],
+    name='dispatch',
+)
+class RegistrationDetailsView(View):
+    """Ask for what an event needs, then register.
+
+    Today that is a phone number; Chapter 38 adds the
+    event's own questions. The list runs in order, as the
+    function's decorators did: the method check, sign-in,
+    then dispatch() loads the event.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        """Load the event, then call get() or post()."""
+        self.event = event_for(request, kwargs['event_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, event_id):
+        """Show the empty form."""
+        return self.show(PhoneForm())
+
+    def post(self, request, event_id):
+        """Keep the number and take a place, or show errors."""
+        form = PhoneForm(request.POST)
+        if form.is_valid():
+            form.save(request.user)
+            return take_place(request, self.event)
+        return self.show(form)
+
+    def show(self, form):
+        """Render the page with the form."""
+        return render(
+            self.request, 'registrations/phone.html',
+            {'event': self.event, 'form': form},
+        )
 
 
 @login_required

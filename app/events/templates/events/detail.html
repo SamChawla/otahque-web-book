@@ -14,28 +14,25 @@
       <p><span class="badge badge-error">Cancelled</span>
         This event is off.</p>
     {% endif %}
-    <h1>{{ event.title }}</h1>
-    {% if event.description %}
-      <p>{{ event.description|linebreaksbr }}</p>
-    {% endif %}
-    {% with format="l j F Y, H:i T" %}
-    <p>From {% include "events/when.html" %}</p>
-    <p>Until
-      {% include "events/when.html" with at=event.ends_at %}
-    </p>
-    {% endwith %}
-    {% if now < event.ends_at %}
-      {% if event.status != 'cancelled' %}
-        <p>{% include "events/places.html" %}</p>
-      {% endif %}
-    {% endif %}
-    <p>{{ event.location }}</p>
-    {% with names=event.organizer_names %}
-      {% if names %}
-        <p>Organized by {{ names|join:", " }}</p>
-      {% endif %}
-    {% endwith %}
-    {% include "registrations/panel.html" %}
+    <header class="space-y-1">
+      <h1>{{ event.title }}</h1>
+      {% with names=event.organizer_names %}
+        {% if names %}
+          <p class="text-sm">
+            Organized by {{ names|join:", " }}</p>
+        {% endif %}
+      {% endwith %}
+    </header>
+    <div class="grid gap-6 lg:grid-cols-[1fr_20rem]
+                lg:items-start">
+      <div class="space-y-4">
+        {% if event.description %}
+          <p>{{ event.description|linebreaksbr }}</p>
+        {% endif %}
+        {% include "events/facts.html" %}
+      </div>
+      {% include "registrations/panel.html" %}
+    </div>
     {% if can_edit %}
       <div class="space-y-3 border-t border-base-300 pt-4">
         <p class="flex flex-wrap items-center gap-4">

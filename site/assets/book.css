@@ -2740,3 +2740,41 @@ body.home-document:has(.book-cover[data-volume]) .site-footer { display: none; }
   }
 }
 @media print { .reading article p, .reading article li { text-align: justify; hyphens: auto; } }
+
+/* 21. Dark scheme on the scrolling reader (user request, 24 November 2026). The notebook card
+   stays white in both schemes, so everything inside it keeps the light palette: quiz prompts,
+   answers, callouts, tables, and code labels. The book reader already does this for .flow;
+   this applies the same colours to the scrolling layout. */
+@media screen and (prefers-color-scheme: dark) {
+  .book-shell:not(.home-shell) .reading {
+    color-scheme: light;
+    --navy: #142f48; --blue: #1859b7; --blue-dark: #12468e; --accent: #426d9a;
+    --ink: #202b36; --muted: #536273; --line: #d9e0e7;
+    --paper: #fff; --soft: #f5f7f9; --panel: #fff;
+    --inline-code-fill: #eef3f8; --inline-code-ink: #164c83; --inline-code-line: #cbd8e5;
+    --question-ink: #174b85; --question-fill: #eef4fa; --answer-ink: #17634e;
+    --answer-fill: #eff7f3; --exercise-ink: #70551d; --exercise-fill: #f8f5ed;
+    --next-ink: #4e557a; --next-fill: #f3f4f8; --draft-ink: #76500e; --draft-fill: #fbf5e8;
+    --ok-ink: #17634e; --ok-fill: #eff7f3;
+  }
+  .book-shell:not(.home-shell) .reading .callout--hood { background: #f1f5f9; border-color: #527ba4; }
+  .book-shell:not(.home-shell) .reading .callout--hood .callout__title { color: #315f8a; }
+  .book-shell:not(.home-shell) .reading .callout--error { background: #faf1f0; border-color: #a74b43; }
+  .book-shell:not(.home-shell) .reading .callout--error .callout__title { color: #8f332d; }
+  .book-shell:not(.home-shell) .reading .callout--tool { background: #f4f2f8; border-color: #6b5d88; }
+  .book-shell:not(.home-shell) .reading .callout--tool .callout__title { color: #514369; }
+  .book-shell:not(.home-shell) .reading .callout--concept { background: #f0f6f2; border-color: #39745b; }
+  .book-shell:not(.home-shell) .reading .callout--concept .callout__title { color: #285c44; }
+  .book-shell:not(.home-shell) .reading .callout--note { background: #f8f5ed; border-color: #95702f; }
+  .book-shell:not(.home-shell) .reading .callout--note .callout__title { color: #70551d; }
+  .book-shell:not(.home-shell) .reading .callout--prefer { background: #f2f3f8; border-color: #596184; }
+  .book-shell:not(.home-shell) .reading .callout--prefer .callout__title { color: #424b70; }
+  .book-shell:not(.home-shell) .reading tbody tr:nth-child(even) { background: #f5f7f9; }
+  .book-shell:not(.home-shell) .reading thead th { background: #142f48; color: #fff; }
+  .book-shell:not(.home-shell) .reading .code-label,
+  .book-shell:not(.home-shell) .reading .code-label--shell,
+  .book-shell:not(.home-shell) .reading .code-label--powershell,
+  .book-shell:not(.home-shell) .reading .code-label--output,
+  .book-shell:not(.home-shell) .reading .code-label--tree,
+  .book-shell:not(.home-shell) .reading .code-label--python { background: #e8edf2; color: #384c60; }
+}

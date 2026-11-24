@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How We Build It, Chapter 35: Class-based views and dispatch. Rewrite two pages as class-based views and prove what changed: tables of tests that pin each...">
+<link rel="canonical" href="https://otahque.tech/chapters/chapter35/section-35-3/">
+<title>How We Build It · Chapter 35 · Django from First Principles to Production</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<meta name="theme-color" content="#142f48">
+<script>document.documentElement.classList.add('js');try{var r=new URLSearchParams(location.search).get('reader-text');var s=localStorage.getItem('otahque-text');if(r||s)document.documentElement.dataset.text=r||s}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/caveat-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css?v=20261121-top-progress">
+<link rel="stylesheet" href="/assets/book.css?v=20261121-top-progress">
+
+
+
+<script src="/assets/book.js?v=20261121-top-progress" defer></script>
+
+</head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Otahque web book home">Otahque <span>DJANGO FIELD NOTES</span></a>
+<nav class="header-links" aria-label="Book"><a href="/front-matter/">Before you begin</a><a href="/contents/">Notebook Index</a><a href="/updates/">What changed</a></nav></header>
+<div class="book-shell"><details class="book-drawer" id="book-drawer"><summary><span aria-hidden="true">☰</span> <span class="drawer-open-label">Contents</span><span class="drawer-close-label">Close contents</span></summary>
+<nav class="book-navigation" aria-label="Book contents"><div class="book-nav-heading"><strong>Explore the book</strong><span>75-chapter learning path</span></div>
+<a class="book-nav-resume" href="/chapters/chapter01/" data-book-resume data-prefix="../../">Start reading →</a>
+<div class="book-nav-links"><a href="/">About this book</a><a href="/front-matter/">Before you begin</a><a href="/contents/">All chapters</a><a href="/updates/">What changed</a></div>
+<p class="book-nav-label">THE LEARNING PATH</p><details class="book-nav-stage"><summary>Requirements and first project <small>1–8</small></summary><ol><li><details class="book-nav-chapter"><summary>1. Otahque: the problem and the people <small>Available</small></summary><a class="book-nav-overview" href="/chapters/chapter01/">Chapter overview</a><ol><li><a  href="/chapters/chapter01/section-1-1/">Why This Matters</a></li><li><a  href="/chapters/chapter01/section-1-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter01/section-1-3/">How We Build It</a></li><li><a  href="/chapters/chapter01/section-1-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter01/section-1-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter01/section-1-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>2. Business requirements, product scope, and user stories <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter02/">Chapter overview</a><ol><li><a  href="/chapters/chapter02/section-2-1/">Why This Matters</a></li><li><a  href="/chapters/chapter02/section-2-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter02/section-2-3/">How We Build It</a></li><li><a  href="/chapters/chapter02/section-2-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter02/section-2-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter02/section-2-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>3. How the web works <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter03/">Chapter overview</a><ol><li><a  href="/chapters/chapter03/section-3-1/">Why This Matters</a></li><li><a  href="/chapters/chapter03/section-3-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter03/section-3-3/">How We Build It</a></li><li><a  href="/chapters/chapter03/section-3-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter03/section-3-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter03/section-3-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>4. Python readiness and development tools <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter04/">Chapter overview</a><ol><li><a  href="/chapters/chapter04/section-4-1/">Why This Matters</a></li><li><a  href="/chapters/chapter04/section-4-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter04/section-4-3/">How We Build It</a></li><li><a  href="/chapters/chapter04/section-4-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter04/section-4-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter04/section-4-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>5. Django’s role and our first architecture decision <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter05/">Chapter overview</a><ol><li><a  href="/chapters/chapter05/section-5-1/">Why This Matters</a></li><li><a  href="/chapters/chapter05/section-5-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter05/section-5-3/">How We Build It</a></li><li><a  href="/chapters/chapter05/section-5-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter05/section-5-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter05/section-5-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>6. Creating the project and understanding its files <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter06/">Chapter overview</a><ol><li><a  href="/chapters/chapter06/section-6-1/">Why This Matters</a></li><li><a  href="/chapters/chapter06/section-6-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter06/section-6-3/">How We Build It</a></li><li><a  href="/chapters/chapter06/section-6-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter06/section-6-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter06/section-6-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>7. Django apps and application boundaries <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter07/">Chapter overview</a><ol><li><a  href="/chapters/chapter07/section-7-1/">Why This Matters</a></li><li><a  href="/chapters/chapter07/section-7-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter07/section-7-3/">How We Build It</a></li><li><a  href="/chapters/chapter07/section-7-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter07/section-7-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter07/section-7-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>8. Settings, environments, dependencies, and Git <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter08/">Chapter overview</a><ol><li><a  href="/chapters/chapter08/section-8-1/">Why This Matters</a></li><li><a  href="/chapters/chapter08/section-8-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter08/section-8-3/">How We Build It</a></li><li><a  href="/chapters/chapter08/section-8-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter08/section-8-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter08/section-8-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Pages and design <small>9–14</small></summary><ol><li><details class="book-nav-chapter"><summary>9. URLs and routing <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter09/">Chapter overview</a><ol><li><a  href="/chapters/chapter09/section-9-1/">Why This Matters</a></li><li><a  href="/chapters/chapter09/section-9-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter09/section-9-3/">How We Build It</a></li><li><a  href="/chapters/chapter09/section-9-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter09/section-9-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter09/section-9-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>10. Function-based views and request/response objects <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter10/">Chapter overview</a><ol><li><a  href="/chapters/chapter10/section-10-1/">Why This Matters</a></li><li><a  href="/chapters/chapter10/section-10-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter10/section-10-3/">How We Build It</a></li><li><a  href="/chapters/chapter10/section-10-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter10/section-10-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter10/section-10-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>11. Templates, context, and escaping <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter11/">Chapter overview</a><ol><li><a  href="/chapters/chapter11/section-11-1/">Why This Matters</a></li><li><a  href="/chapters/chapter11/section-11-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter11/section-11-3/">How We Build It</a></li><li><a  href="/chapters/chapter11/section-11-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter11/section-11-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter11/section-11-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>12. Template inheritance, includes, and partials <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter12/">Chapter overview</a><ol><li><a  href="/chapters/chapter12/section-12-1/">Why This Matters</a></li><li><a  href="/chapters/chapter12/section-12-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter12/section-12-3/">How We Build It</a></li><li><a  href="/chapters/chapter12/section-12-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter12/section-12-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter12/section-12-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>13. Static files and CSS fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter13/">Chapter overview</a><ol><li><a  href="/chapters/chapter13/section-13-1/">Why This Matters</a></li><li><a  href="/chapters/chapter13/section-13-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter13/section-13-3/">How We Build It</a></li><li><a  href="/chapters/chapter13/section-13-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter13/section-13-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter13/section-13-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>14. Tailwind, daisyUI, and Otahque’s design system <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter14/">Chapter overview</a><ol><li><a  href="/chapters/chapter14/section-14-1/">Why This Matters</a></li><li><a  href="/chapters/chapter14/section-14-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter14/section-14-3/">How We Build It</a></li><li><a  href="/chapters/chapter14/section-14-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter14/section-14-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter14/section-14-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Data and the database <small>15–23</small></summary><ol><li><details class="book-nav-chapter"><summary>15. Relational databases and our first ERD <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter15/">Chapter overview</a><ol><li><a  href="/chapters/chapter15/section-15-1/">Why This Matters</a></li><li><a  href="/chapters/chapter15/section-15-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter15/section-15-3/">How We Build It</a></li><li><a  href="/chapters/chapter15/section-15-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter15/section-15-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter15/section-15-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>16. Django models and field choices <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter16/">Chapter overview</a><ol><li><a  href="/chapters/chapter16/section-16-1/">Why This Matters</a></li><li><a  href="/chapters/chapter16/section-16-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter16/section-16-3/">How We Build It</a></li><li><a  href="/chapters/chapter16/section-16-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter16/section-16-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter16/section-16-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>17. Choosing and creating our user model <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter17/">Chapter overview</a><ol><li><a  href="/chapters/chapter17/section-17-1/">Why This Matters</a></li><li><a  href="/chapters/chapter17/section-17-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter17/section-17-3/">How We Build It</a></li><li><a  href="/chapters/chapter17/section-17-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter17/section-17-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter17/section-17-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>18. Migrations and schema evolution <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter18/">Chapter overview</a><ol><li><a  href="/chapters/chapter18/section-18-1/">Why This Matters</a></li><li><a  href="/chapters/chapter18/section-18-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter18/section-18-3/">How We Build It</a></li><li><a  href="/chapters/chapter18/section-18-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter18/section-18-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter18/section-18-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>19. ORM fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter19/">Chapter overview</a><ol><li><a  href="/chapters/chapter19/section-19-1/">Why This Matters</a></li><li><a  href="/chapters/chapter19/section-19-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter19/section-19-3/">How We Build It</a></li><li><a  href="/chapters/chapter19/section-19-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter19/section-19-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter19/section-19-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>20. Relationships between models <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter20/">Chapter overview</a><ol><li><a  href="/chapters/chapter20/section-20-1/">Why This Matters</a></li><li><a  href="/chapters/chapter20/section-20-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter20/section-20-3/">How We Build It</a></li><li><a  href="/chapters/chapter20/section-20-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter20/section-20-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter20/section-20-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>21. Validation, constraints, and data integrity <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter21/">Chapter overview</a><ol><li><a  href="/chapters/chapter21/section-21-1/">Why This Matters</a></li><li><a  href="/chapters/chapter21/section-21-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter21/section-21-3/">How We Build It</a></li><li><a  href="/chapters/chapter21/section-21-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter21/section-21-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter21/section-21-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>22. QuerySets, managers, and query composition <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter22/">Chapter overview</a><ol><li><a  href="/chapters/chapter22/section-22-1/">Why This Matters</a></li><li><a  href="/chapters/chapter22/section-22-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter22/section-22-3/">How We Build It</a></li><li><a  href="/chapters/chapter22/section-22-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter22/section-22-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter22/section-22-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>23. Django admin fundamentals <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter23/">Chapter overview</a><ol><li><a  href="/chapters/chapter23/section-23-1/">Why This Matters</a></li><li><a  href="/chapters/chapter23/section-23-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter23/section-23-3/">How We Build It</a></li><li><a  href="/chapters/chapter23/section-23-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter23/section-23-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter23/section-23-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage"><summary>Accounts and first release <small>24–34</small></summary><ol><li><details class="book-nav-chapter"><summary>24. Django forms <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter24/">Chapter overview</a><ol><li><a  href="/chapters/chapter24/section-24-1/">Why This Matters</a></li><li><a  href="/chapters/chapter24/section-24-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter24/section-24-3/">How We Build It</a></li><li><a  href="/chapters/chapter24/section-24-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter24/section-24-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter24/section-24-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>25. Editing an event, and the validation lifecycle <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter25/">Chapter overview</a><ol><li><a  href="/chapters/chapter25/section-25-1/">Why This Matters</a></li><li><a  href="/chapters/chapter25/section-25-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter25/section-25-3/">How We Build It</a></li><li><a  href="/chapters/chapter25/section-25-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter25/section-25-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter25/section-25-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>26. Publishing, cancelling, and deleting an event <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter26/">Chapter overview</a><ol><li><a  href="/chapters/chapter26/section-26-1/">Why This Matters</a></li><li><a  href="/chapters/chapter26/section-26-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter26/section-26-3/">How We Build It</a></li><li><a  href="/chapters/chapter26/section-26-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter26/section-26-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter26/section-26-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>27. Authentication and account workflows <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter27/">Chapter overview</a><ol><li><a  href="/chapters/chapter27/section-27-1/">Why This Matters</a></li><li><a  href="/chapters/chapter27/section-27-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter27/section-27-3/">How We Build It</a></li><li><a  href="/chapters/chapter27/section-27-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter27/section-27-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter27/section-27-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>28. Sessions, cookies, and time zones <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter28/">Chapter overview</a><ol><li><a  href="/chapters/chapter28/section-28-1/">Why This Matters</a></li><li><a  href="/chapters/chapter28/section-28-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter28/section-28-3/">How We Build It</a></li><li><a  href="/chapters/chapter28/section-28-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter28/section-28-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter28/section-28-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>29. Account security: passwords, sign-in codes, and two factors <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter29/">Chapter overview</a><ol><li><a  href="/chapters/chapter29/section-29-1/">Why This Matters</a></li><li><a  href="/chapters/chapter29/section-29-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter29/section-29-3/">How We Build It</a></li><li><a  href="/chapters/chapter29/section-29-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter29/section-29-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter29/section-29-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>30. Permissions, ownership, and roles <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter30/">Chapter overview</a><ol><li><a  href="/chapters/chapter30/section-30-1/">Why This Matters</a></li><li><a  href="/chapters/chapter30/section-30-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter30/section-30-3/">How We Build It</a></li><li><a  href="/chapters/chapter30/section-30-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter30/section-30-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter30/section-30-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>31. Event registration and cancellation <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter31/">Chapter overview</a><ol><li><a  href="/chapters/chapter31/section-31-1/">Why This Matters</a></li><li><a  href="/chapters/chapter31/section-31-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter31/section-31-3/">How We Build It</a></li><li><a  href="/chapters/chapter31/section-31-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter31/section-31-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter31/section-31-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>32. Moving to PostgreSQL <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter32/">Chapter overview</a><ol><li><a  href="/chapters/chapter32/section-32-1/">Why This Matters</a></li><li><a  href="/chapters/chapter32/section-32-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter32/section-32-3/">How We Build It</a></li><li><a  href="/chapters/chapter32/section-32-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter32/section-32-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter32/section-32-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>33. Transactions, concurrency, and the last available seat <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter33/">Chapter overview</a><ol><li><a  href="/chapters/chapter33/section-33-1/">Why This Matters</a></li><li><a  href="/chapters/chapter33/section-33-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter33/section-33-3/">How We Build It</a></li><li><a  href="/chapters/chapter33/section-33-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter33/section-33-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter33/section-33-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li><details class="book-nav-chapter"><summary>34. Testing fundamentals and first-release acceptance <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter34/">Chapter overview</a><ol><li><a  href="/chapters/chapter34/section-34-1/">Why This Matters</a></li><li><a  href="/chapters/chapter34/section-34-2/">What You Need to Know</a></li><li><a  href="/chapters/chapter34/section-34-3/">How We Build It</a></li><li><a  href="/chapters/chapter34/section-34-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter34/section-34-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter34/section-34-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li></ol></details><details class="book-nav-stage" open><summary>Growing the application <small>35–46</small></summary><ol><li><details class="book-nav-chapter" open><summary>35. Class-based views and dispatch <small>Pre-release</small></summary><a class="book-nav-overview" href="/chapters/chapter35/">Chapter overview</a><ol><li><a  href="/chapters/chapter35/section-35-1/">Why This Matters</a></li><li><a  href="/chapters/chapter35/section-35-2/">What You Need to Know</a></li><li><a aria-current="page" href="/chapters/chapter35/section-35-3/">How We Build It</a></li><li><a  href="/chapters/chapter35/section-35-4/">Verify Your Work</a></li><li><a  href="/chapters/chapter35/section-35-5/">Checkpoint: Quiz and Challenge</a></li><li><a  href="/chapters/chapter35/section-35-6/">Test Your Knowledge: Interview Questions</a></li></ol></details></li><li class="book-nav-planned"><span>36. Generic display views and pagination</span><small>Planned</small></li><li class="book-nav-planned"><span>37. Generic editing views and access mixins</span><small>Planned</small></li><li class="book-nav-planned"><span>38. Advanced admin and formsets</span><small>Planned</small></li><li class="book-nav-planned"><span>39. Middleware and context processors</span><small>Planned</small></li><li class="book-nav-planned"><span>40. Signals, application lifecycle, and system checks</span><small>Planned</small></li><li class="book-nav-planned"><span>41. Management commands and data import/export</span><small>Planned</small></li><li class="book-nav-planned"><span>42. File uploads and storage</span><small>Planned</small></li><li class="book-nav-planned"><span>43. Email delivery and templates</span><small>Planned</small></li><li class="book-nav-planned"><span>44. Background tasks, scheduling, and retries</span><small>Planned</small></li><li class="book-nav-planned"><span>45. HTMX and progressive enhancement</span><small>Planned</small></li><li class="book-nav-planned"><span>46. Waitlists, check-in, and registration state transitions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>APIs and real-time updates <small>47–54</small></summary><ol><li class="book-nav-planned"><span>47. API design and HTTP contracts</span><small>Planned</small></li><li class="book-nav-planned"><span>48. DRF serializers and validation</span><small>Planned</small></li><li class="book-nav-planned"><span>49. API views, generic views, viewsets, and routers</span><small>Planned</small></li><li class="book-nav-planned"><span>50. API authentication and permissions</span><small>Planned</small></li><li class="book-nav-planned"><span>51. Filtering, pagination, throttling, and API documentation</span><small>Planned</small></li><li class="book-nav-planned"><span>52. Webhooks and reliable external integrations</span><small>Planned</small></li><li class="book-nav-planned"><span>53. Async Django, ASGI, and sync/async boundaries</span><small>Planned</small></li><li class="book-nav-planned"><span>54. Channels and real-time updates</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Performance, security, and deployment <small>55–66</small></summary><ol><li class="book-nav-planned"><span>55. Advanced ORM and database expressions</span><small>Planned</small></li><li class="book-nav-planned"><span>56. Search, indexes, and query plans</span><small>Planned</small></li><li class="book-nav-planned"><span>57. Caching and application performance</span><small>Planned</small></li><li class="book-nav-planned"><span>58. Advanced testing and failure scenarios</span><small>Planned</small></li><li class="book-nav-planned"><span>59. Security review, threat modelling, and hardening</span><small>Planned</small></li><li class="book-nav-planned"><span>60. Preventing web and API attacks</span><small>Planned</small></li><li class="book-nav-planned"><span>61. Accessibility, localization, timezones, and discoverability</span><small>Planned</small></li><li class="book-nav-planned"><span>62. Production architecture and Docker</span><small>Planned</small></li><li class="book-nav-planned"><span>63. Deployment, static/media delivery, and HTTPS</span><small>Planned</small></li><li class="book-nav-planned"><span>64. CI/CD, safe migrations, and rollback</span><small>Planned</small></li><li class="book-nav-planned"><span>65. Logging, monitoring, backups, and recovery</span><small>Planned</small></li><li class="book-nav-planned"><span>66. Load testing, capacity planning, and scaling decisions</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Multi-community and extensions <small>67–72</small></summary><ol><li class="book-nav-planned"><span>67. Multi-community requirements and tenancy alternatives</span><small>Planned</small></li><li class="book-nav-planned"><span>68. Implementing and testing tenant isolation</span><small>Planned</small></li><li class="book-nav-planned"><span>69. Billing, subscriptions, and entitlements</span><small>Planned</small></li><li class="book-nav-planned"><span>70. Volunteer management and organizer planning</span><small>Planned</small></li><li class="book-nav-planned"><span>71. Teams, hackathon submissions, and judging</span><small>Planned</small></li><li class="book-nav-planned"><span>72. Job board, reusable content, and moderation</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Optional AI features <small>73–74</small></summary><ol><li class="book-nav-planned"><span>73. Adding an AI feature safely</span><small>Planned</small></li><li class="book-nav-planned"><span>74. AI guardrails and adversarial testing</span><small>Planned</small></li></ol></details><details class="book-nav-stage"><summary>Final review and maintenance <small>75–75</small></summary><ol><li class="book-nav-planned"><span>75. Final product review, UI refinement, upgrades, and maintenance</span><small>Planned</small></li></ol></details></nav></details><div class="book-content"><div class="reader-layout">
+<aside class="chapter-sidebar"><a class="back-link" href="/chapters/chapter35/">← Chapter 35 overview</a>
+<details class="chapter-menu"><summary>Notebook Index</summary><nav aria-label="Notebook Index"><ol><li><a href="/chapters/chapter35/section-35-1/">Why This Matters</a></li><li><a href="/chapters/chapter35/section-35-2/">What You Need to Know</a></li><li class="is-current"><a href="#section-35-3" aria-current="location">How We Build It</a><ul class="topics"><li><a href="#topic-50">The Custom Way</a></li><li><a href="#topic-52">The Django Way</a></li><li><a href="#topic-173">When something goes wrong</a></li></ul></li><li><a href="/chapters/chapter35/section-35-4/">Verify Your Work</a></li><li><a href="/chapters/chapter35/section-35-5/">Checkpoint: Quiz and Challenge</a></li><li><a href="/chapters/chapter35/section-35-6/">Test Your Knowledge: Interview Questions</a></li></ol></nav></details>
+<p class="sidebar-note">6 sections · 7 figures · 5 tables<br>Working towards: Event-day operations (Chapter 46)</p></aside>
+<main id="main" tabindex="-1" class="reading" data-progress-key="chapter35:35.3" data-progress-title="Section 35.3" data-reader-prev="section-35-2.html" data-reader-next="section-35-4.html"><div class="reading-progress" hidden><div class="reading-progress-track" role="progressbar" aria-label="Reading progress: Section 35.3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="reading-progress-fill"></span></div><span class="reading-progress-label" aria-hidden="true">0%</span></div><div class="resume-banner" role="status" hidden><span class="resume-text"></span><span class="resume-actions"><button type="button" data-resume>Continue reading</button><button type="button" data-restart>Start from the beginning</button></span></div><div class="reader-tools"><span class="status-pill draft">Pre-release</span><span class="tool-buttons"><span class="text-size" hidden><button type="button" data-text="smaller" aria-label="Smaller text">A−</button><button type="button" data-text="larger" aria-label="Larger text">A+</button></span><button type="button" data-print hidden>Print</button></span></div>
+<div class="notebook-page-header"><a class="notebook-chip" href="/chapters/chapter35/">Chapter 35 · Class-based views and dispatch</a><span class="page-identifier">NOTE 03 / 06</span></div><nav class="section-path" aria-label="Chapter sections"><ol><li><a href="/chapters/chapter35/section-35-1/" aria-label="Part 1: Why This Matters"><span class="section-step-number">01</span><span class="section-step-title">Why</span></a></li><li><a href="/chapters/chapter35/section-35-2/" aria-label="Part 2: What You Need to Know"><span class="section-step-number">02</span><span class="section-step-title">Know</span></a></li><li class="is-current"><span aria-current="step" aria-label="Part 3: How We Build It"><span class="section-step-number">03</span><span class="section-step-title">Build</span></span></li><li><a href="/chapters/chapter35/section-35-4/" aria-label="Part 4: Verify Your Work"><span class="section-step-number">04</span><span class="section-step-title">Verify</span></a></li><li><a href="/chapters/chapter35/section-35-5/" aria-label="Part 5: Checkpoint: Quiz and Challenge"><span class="section-step-number">05</span><span class="section-step-title">Quiz</span></a></li><li><a href="/chapters/chapter35/section-35-6/" aria-label="Part 6: Test Your Knowledge: Interview Questions"><span class="section-step-number">06</span><span class="section-step-title">Review</span></a></li></ol></nav><article><h2 id="section-35-3" data-block="48">How We Build It</h2><p class="" data-block="49">Start from Chapter 34, in the folder containing <code>manage.py</code>, with Otahque on PostgreSQL 18, 362 passing tests, <code>check.py</code>, and the work committed (the last commit is “Add the release checklist”, tagged <code>v0.1.0</code>). No package, model, or migration changes. The new files are <code>events/tests/test_methods.py</code>, <code>registrations/tests/test_methods.py</code>, <code>events/templates/events/facts.html</code>, and <code>docs/adr/ADR-006-views.md</code>. <code>config/helpers.py</code>, both apps’ <code>views.py</code> and <code>urls.py</code>, one test in <code>events/tests/test_events.py</code>, three templates, the stylesheet source, and <code>docs/design/permissions.md</code> change. The visible result: the event page shows its time, place, and places as a labelled list, with registration in its own card, and the phone page shows which event you are registering for. The chapter’s commands were checked in Windows PowerShell 5.1 and Git Bash against PostgreSQL 18.</p><h3 class="" id="topic-50" data-block="50">The Custom Way</h3><p class="" data-block="51">Before you read how Django turns a class into something a URL can call, build that machinery yourself in a few lines. Step 4 does it, after Step 3 has written the tests. Your version will not be complete, and the gaps are exactly what Django’s version adds.</p><h3 class="" id="topic-52" data-block="52">The Django Way</h3><h4 data-block="53">Step 1: Check the starting point</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="54" tabindex="0"><code>uv run python manage.py test --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="55" tabindex="0"><code>Found 362 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 362 tests in ...s
+
+OK</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="56" tabindex="0"><code>git status --short
+git log --oneline -1</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="57" tabindex="0"><code>... Add the release checklist</code></pre><p class="" data-block="58">Nothing is waiting to be committed, so every change from here on is this chapter’s.</p><h4 data-block="59">Step 2: A class in Python terms</h4><p class="" data-block="60">Create a practice file beside <code>manage.py</code>, <code>practice_class.py</code>. It is plain Python, with no Django:</p><p class="code-label code-label--file" aria-hidden="true">practice_class.py</p><pre class="code-listing code-listing--file" data-block="61" tabindex="0"><code>&quot;&quot;&quot;Practice: the class ideas a Django view class needs.&quot;&quot;&quot;
+
+
+class Page:
+    &quot;&quot;&quot;A page that answers by method name.&quot;&quot;&quot;
+
+    greeting = &#x27;Hello&#x27;
+
+    def __init__(self, who):
+        self.who = who
+
+    def get(self):
+        return f&#x27;{self.greeting}, {self.who}&#x27;
+
+
+class FriendlyPage(Page):
+    &quot;&quot;&quot;A Page with its own greeting.&quot;&quot;&quot;
+
+    greeting = &#x27;Welcome&#x27;
+
+    def get(self):
+        return super().get() + &#x27;!&#x27;
+
+
+page = FriendlyPage(&#x27;Sai&#x27;)
+print(page.get())
+print(getattr(page, &#x27;get&#x27;)())
+print(hasattr(page, &#x27;post&#x27;))
+print(getattr(page, &#x27;post&#x27;, None))</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="62" tabindex="0"><code>uv run python practice_class.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="63" tabindex="0"><code>Welcome, Sai!
+Welcome, Sai!
+False
+None</code></pre><p class="" data-block="64">Read the four lines of output against the code. <code>FriendlyPage(&#x27;Sai&#x27;)</code> makes an instance; <code>__init__</code> stores <code>who</code> on it, and every method reaches that through <code>self</code>. <code>FriendlyPage</code> inherits from <code>Page</code>, replaces <code>greeting</code>, and replaces <code>get()</code>, but its <code>get()</code> still calls the parent’s through <code>super()</code>, so the result is the parent’s sentence with the child’s greeting and an exclamation mark. <code>getattr(page, &#x27;get&#x27;)</code> finds the method from the string <code>&#x27;get&#x27;</code>, and the <code>()</code> after it calls it. <code>hasattr(page, &#x27;post&#x27;)</code> is <code>False</code>, and <code>getattr()</code> with a third argument returns that default instead of failing. Delete the file; you have everything <code>dispatch()</code> needs.</p><h4 data-block="65">Step 3: Pin every answer first</h4><p class="" data-block="66">Each table needs a helper that sends one request and names the answer in the words of Table 35.1. It belongs in <code>config/helpers.py</code>, beside <code>outcome()</code>, because both apps’ tables use it. Add two imports there, <code>Client</code> and <code>AuditEvent</code>, so that its Django and project imports read:</p><p class="code-label code-label--file" aria-hidden="true">config/helpers.py</p><pre class="code-listing code-listing--file" data-block="67" tabindex="0"><code>from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.test import Client
+from django.urls import reverse
+
+from audit.models import AuditEvent
+from events.forms import EventForm</code></pre><p class="" data-block="68">Then add two functions at the end of the file:</p><p class="code-label code-label--file" aria-hidden="true">config/helpers.py</p><pre class="code-listing code-listing--file" data-block="69" tabindex="0"><code>def answer(client, method, path):
+    &quot;&quot;&quot;Name how a page answered one request, for a table.
+
+    First outcome()&#x27;s name (&#x27;sign in&#x27;, &#x27;ok&#x27;, or the status
+    code), then the Allow header if there is one, then
+    &#x27;recorded&#x27; if a refused attempt was recorded.
+    &quot;&quot;&quot;
+    refused = AuditEvent.objects.filter(
+        outcome=AuditEvent.Outcome.REFUSED
+    )
+    before = refused.count()
+    response = client.generic(method, path)
+    words = [outcome(response)]
+    if response.has_header(&#x27;Allow&#x27;):
+        words.append(response[&#x27;Allow&#x27;])
+    if refused.count() &gt; before:
+        words.append(&#x27;recorded&#x27;)
+    return &#x27; &#x27;.join(words)
+
+
+def answers(path, member, method):
+    &quot;&quot;&quot;Return a page&#x27;s answers signed out and as member.&quot;&quot;&quot;
+    signed_in = Client()
+    signed_in.force_login(member)
+    return (answer(Client(), method, path),
+            answer(signed_in, method, path))</code></pre><p class="" data-block="70"><code>client.generic()</code> sends a request with any method name, which is how the tables reach PUT, TRACE, and the rest. <code>answer()</code> counts refused-access records before and after, so a row can say whether the attempt was recorded. <code>answers()</code> asks twice, once with a fresh client that is signed out and once as the given member, and returns both.</p><p class="" data-block="71">Now the event page’s table. Create <code>events/tests/test_methods.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_methods.py</p><pre class="code-listing code-listing--file" data-block="72" tabindex="0"><code>&quot;&quot;&quot;How the event page answers every HTTP method.
+
+Written before the page became a class (Chapter 35), so
+that any change in its answers fails a test.
+&quot;&quot;&quot;
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+
+from config.helpers import answers, save_event
+from events.models import Event
+
+User = get_user_model()
+
+# A method, then the answer signed out and the answer
+# signed in as a member who organizes nothing.
+PUBLISHED = [
+    (&#x27;GET&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;HEAD&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;POST&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;PUT&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;PATCH&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;DELETE&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;OPTIONS&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;TRACE&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+]
+HIDDEN = [
+    (&#x27;GET&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;HEAD&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;POST&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;PUT&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;OPTIONS&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+]
+
+
+class EventPageMethodTests(TestCase):
+    &quot;&quot;&quot;The event page&#x27;s answer to each method, pinned.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = save_event()
+        cls.draft = save_event(status=Event.Status.DRAFT)
+        cls.sai = User.objects.create_user(
+            &#x27;sai@example.org&#x27;, display_name=&#x27;Sai&#x27;
+        )
+
+    def check(self, event, table):
+        &quot;&quot;&quot;Compare the page&#x27;s answers with each row.&quot;&quot;&quot;
+        path = event.get_absolute_url()
+        for method, signed_out, signed_in in table:
+            with self.subTest(method):
+                self.assertEqual(
+                    answers(path, self.sai, method),
+                    (signed_out, signed_in),
+                )
+
+    def test_a_published_event(self):
+        self.check(self.event, PUBLISHED)
+
+    def test_a_hidden_draft(self):
+        self.check(self.draft, HIDDEN)</code></pre><p class="" data-block="73">Each row is one method. The published event answers <code>ok</code> to everything, because <code>event_detail</code> never looks at the method: that is what the function does today, written down. The hidden draft gives 404 to everyone, and a signed-in member’s attempt is recorded, as Chapter 30 decided. <code>self.subTest(method)</code> reports each failing row separately, by method, instead of stopping at the first.</p><p class="" data-block="74">Create <code>registrations/tests/test_methods.py</code> for the phone page and Register. The phone page’s helpers, <code>soon()</code>, <code>url()</code>, and <code>verified()</code>, belong to the registrations tests, so this file imports them from its neighbour:</p><p class="code-label code-label--file" aria-hidden="true">registrations/tests/test_methods.py</p><pre class="code-listing code-listing--file" data-block="75" tabindex="0"><code>&quot;&quot;&quot;How Register and the details page answer every method.
+
+Written before the details page became a class (Chapter
+35). Register stays a function; its table pins it for the
+chapters that change how sign-in works (37 and 39).
+&quot;&quot;&quot;
+from django.test import TestCase
+
+from config.helpers import answers
+from events.models import Event
+
+from .test_registrations import soon, url, verified
+
+# A method, then the answer signed out and the answer
+# signed in as a member with no phone number yet.
+DETAILS = [
+    (&#x27;GET&#x27;, &#x27;sign in&#x27;, &#x27;ok&#x27;),
+    (&#x27;HEAD&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+    (&#x27;POST&#x27;, &#x27;sign in&#x27;, &#x27;ok&#x27;),
+    (&#x27;PUT&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+    (&#x27;PATCH&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+    (&#x27;DELETE&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+    (&#x27;OPTIONS&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+    (&#x27;TRACE&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+]
+DETAILS_HIDDEN = [
+    (&#x27;GET&#x27;, &#x27;sign in&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;POST&#x27;, &#x27;sign in&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;PUT&#x27;, &#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;),
+]
+REGISTER = [
+    (&#x27;GET&#x27;, &#x27;405 POST&#x27;, &#x27;405 POST&#x27;),
+    (&#x27;HEAD&#x27;, &#x27;405 POST&#x27;, &#x27;405 POST&#x27;),
+    (&#x27;POST&#x27;, &#x27;sign in&#x27;, &#x27;ok&#x27;),
+    (&#x27;PUT&#x27;, &#x27;405 POST&#x27;, &#x27;405 POST&#x27;),
+    (&#x27;OPTIONS&#x27;, &#x27;405 POST&#x27;, &#x27;405 POST&#x27;),
+]
+
+
+class MethodTableTests(TestCase):
+    &quot;&quot;&quot;Each page&#x27;s answer to each method, pinned.&quot;&quot;&quot;
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.event = soon(phone_required=True)
+        cls.draft = soon(phone_required=True,
+                         status=Event.Status.DRAFT)
+        cls.open = soon()
+        cls.sai = verified(&#x27;sai@example.org&#x27;)
+
+    def check(self, path, table):
+        &quot;&quot;&quot;Compare the page&#x27;s answers with each row.&quot;&quot;&quot;
+        for method, signed_out, signed_in in table:
+            with self.subTest(method):
+                self.assertEqual(
+                    answers(path, self.sai, method),
+                    (signed_out, signed_in),
+                )
+
+    def test_the_details_page(self):
+        self.check(url(&#x27;phone&#x27;, self.event.pk), DETAILS)
+
+    def test_the_details_page_of_a_hidden_draft(self):
+        self.check(url(&#x27;phone&#x27;, self.draft.pk),
+                   DETAILS_HIDDEN)
+
+    def test_register(self):
+        self.check(url(&#x27;register&#x27;, self.open.pk), REGISTER)</code></pre><p class="" data-block="76">The phone page’s rows show its two decorators at work. <code>require_http_methods</code> is outside, so a wrong method gets 405 with <code>Allow: GET, POST</code> before sign-in is even considered, signed in or not. Then <code>login_required</code> sends a signed-out GET or POST to sign in. Register’s rows show <code>require_POST</code> working the same way. Run both apps’ tests:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="77" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="78" tabindex="0"><code>Found 262 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 262 tests in ...s
+
+OK</code></pre><p class="" data-block="79">All green on the functions, which is the point. The five new tests are a record of today.</p><div class="callout callout--error"><p class="callout__title" data-block="80">Common Error: a table that is green for the wrong reason</p><p class="" data-block="81">If a row is wrong, say you wrote <code>&#x27;405 POST&#x27;</code> where the page answers <code>&#x27;405 GET, POST&#x27;</code>, the test fails now, before any change, and you correct the row. But a table can also pass while testing nothing, if <code>check()</code> loops over an empty list or the path is wrong for every row. Read each table once against Table 35.1, and break one row on purpose to see it fail.</p></div><h4 data-block="82">Step 4: The Custom Way: a hand-made as_view()</h4><p class="" data-block="83">A URL pattern needs something it can call with a request, and a class is not that. Write the bridge yourself. Create <code>custom_as_view.py</code> beside <code>manage.py</code>. It is illustration only: it sets Django up so it can make requests, then throws everything away:</p><p class="code-label code-label--file" aria-hidden="true">custom_as_view.py</p><pre class="code-listing code-listing--file" data-block="84" tabindex="0"><code>&quot;&quot;&quot;Practice: a hand-made as_view(), to compare with Django&#x27;s.
+
+Illustration only: run it once, then delete it.
+&quot;&quot;&quot;
+import os
+
+import django
+
+os.environ.setdefault(&#x27;DJANGO_SETTINGS_MODULE&#x27;,
+                      &#x27;config.settings&#x27;)
+django.setup()
+
+from django.http import (  # noqa: E402
+    HttpResponse, HttpResponseNotAllowed,
+)
+from django.test import RequestFactory  # noqa: E402
+
+
+def as_view(cls):
+    &quot;&quot;&quot;Return a function that answers with cls&#x27;s handlers.&quot;&quot;&quot;
+    def view(request, *args, **kwargs):
+        instance = cls()
+        instance.request = request
+        name = request.method.lower()
+        handler = getattr(instance, name, None)
+        if handler is None:
+            allowed = [m.upper() for m in (&#x27;get&#x27;, &#x27;post&#x27;)
+                       if hasattr(instance, m)]
+            return HttpResponseNotAllowed(allowed)
+        return handler(request, *args, **kwargs)
+    view.view_class = cls
+    return view
+
+
+class Hello:
+    &quot;&quot;&quot;A view class with one handler.&quot;&quot;&quot;
+
+    def get(self, request, name):
+        return HttpResponse(f&#x27;Hello, {name}&#x27;)
+
+
+view = as_view(Hello)
+factory = RequestFactory()
+for method in (&#x27;get&#x27;, &#x27;post&#x27;, &#x27;delete&#x27;):
+    request = getattr(factory, method)(&#x27;/hello/&#x27;)
+    response = view(request, name=&#x27;Sai&#x27;)
+    print(method.upper(), response.status_code,
+          response.get(&#x27;Allow&#x27;, response.content.decode()))
+print(view.view_class.__name__)</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="85" tabindex="0"><code>uv run python custom_as_view.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="86" tabindex="0"><code>GET 200 Hello, Sai
+POST 405 GET
+DELETE 405 GET
+Hello</code></pre><p class="" data-block="87"><code>as_view(Hello)</code> returns a new function, <code>view</code>, that remembers <code>cls</code> (a <strong>closure</strong>, a function that keeps the variables of the function that made it). Each call makes a fresh instance, so two requests never share <code>self</code>. <code>getattr(instance, name, None)</code> finds <code>get</code> for a GET; there is no <code>post</code> or <code>delete</code>, so those get 405, with an Allow header built from the handlers that exist. <code>view.view_class</code> lets a test ask which class is behind a URL. <code>RequestFactory</code>, from Chapters 10 and 34, builds the requests without a server.</p><p class="" data-block="88">Notice what your version lacks. It answers 405 to OPTIONS and to HEAD. It has no way to pass settings to the class. It checks only <code>get</code> and <code>post</code>. And there is no place to put code that must run before every handler. Delete the file, then read how Django fills each gap.</p><h4 data-block="89">Step 5: Read Django’s View</h4><p class="" data-block="90">Django’s <code>View</code> lives in your virtual environment. Ask Python where:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="91" tabindex="0"><code>uv run python -c &quot;import django.views as v; print(v.__file__)&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="92" tabindex="0"><code>...\.venv\Lib\site-packages\django\views\__init__.py</code></pre><p class="" data-block="93">Open the folder it names, then <code>generic/base.py</code> inside it, and find <code>class View</code>. Here is the part this chapter uses, from Django 6.1.2, shortened where the <code>...</code> marks are, and with one line rewrapped to fit the page:</p><p class="code-label code-label--file" aria-hidden="true">django/views/generic/base.py (excerpt)</p><pre class="code-listing code-listing--file" data-block="94" tabindex="0"><code>class View:
+    http_method_names = [
+        &quot;get&quot;, &quot;post&quot;, &quot;put&quot;, &quot;patch&quot;,
+        &quot;delete&quot;, &quot;head&quot;, &quot;options&quot;, &quot;trace&quot;,
+    ]
+
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        ...
+        def view(request, *args, **kwargs):
+            self = cls(**initkwargs)
+            self.setup(request, *args, **kwargs)
+            ...
+            return self.dispatch(request, *args, **kwargs)
+
+        view.view_class = cls
+        ...
+        return view
+
+    def setup(self, request, *args, **kwargs):
+        if hasattr(self, &quot;get&quot;) and not hasattr(self, &quot;head&quot;):
+            self.head = self.get
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+    def dispatch(self, request, *args, **kwargs):
+        method = request.method.lower()
+        if method in self.http_method_names:
+            handler = getattr(
+                self, method, self.http_method_not_allowed
+            )
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)</code></pre><p class="" data-block="95">The shape is yours: <code>as_view()</code> returns a function that makes a new instance for each request and hands the request on. Three things are added. <code>setup()</code> runs first and stores the request and the URL’s values on the instance, so every method can use <code>self.request</code> and <code>self.kwargs</code>; it also makes <code>head</code> the same as <code>get</code>. <code>dispatch()</code> then picks the handler by name, as yours did, but from the full list <code>http_method_names</code>, and calls <code>http_method_not_allowed()</code> for anything missing, which answers 405 with an Allow header listing every name in that list the instance has. And because <code>View</code> itself defines <code>options()</code>, <code>options</code> is always on that list. Figure 35.1 draws the path.</p><figure data-block="96"><a href="/assets/chapter35/figure-35-1-dispatch.png" aria-label="Open Figure 35.1 at full size"><img src="/assets/chapter35/figure-35-1-dispatch.png" alt="A numbered vertical flow. 1, Request: PUT /events/6/, from a browser or a tool. 2, URLconf: calls the function that as_view() returned. 3, view(): makes a new instance of the class for this request. 4, setup(): keeps request and kwargs, makes head the same as get, and runs before any decorator. Below, a dashed zone labelled “Decorators from method_decorator, in list order” holds step 5, dispatch(), which asks whether the class has a method of that name, and branches to three outcomes: get() or post(), where your code answers; options(), 200 and Allow; and not allowed, 405 and Allow." width="1500" height="1150" loading="lazy"></a><figcaption data-block="97">Figure 35.1 — From a URL to a handler in a class-based view.</figcaption></figure><p class="" data-block="98">The dashed zone matters in Step 9. Decorators for a class are applied to <code>dispatch()</code>, so they run after <code>setup()</code>, never before it.</p><h4 data-block="99">Step 6: Convert the event page</h4><p class="" data-block="100">Open <code>events/views.py</code>. Change the module’s docstring, since its views will no longer all be functions:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py</p><pre class="code-listing code-listing--file" data-block="101" tabindex="0"><code>&quot;&quot;&quot;The events app&#x27;s views: a function or a class per page.&quot;&quot;&quot;</code></pre><p class="" data-block="102">Import <code>View</code> beside the other Django imports:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py</p><pre class="code-listing code-listing--file" data-block="103" tabindex="0"><code>from django.utils import timezone
+from django.views import View
+from django.views.decorators.http import (
+    require_http_methods, require_POST,
+)
+
+from audit.models import AuditEvent, record</code></pre><p class="" data-block="104">Replace the whole <code>event_detail</code> function with a class:</p><p class="code-label code-label--file" aria-hidden="true">events/views.py</p><pre class="code-listing code-listing--file" data-block="105" tabindex="0"><code>class EventDetailView(View):
+    &quot;&quot;&quot;Show an event its viewer may see, or 404.
+
+    Only get() is written. Django answers HEAD with it,
+    answers OPTIONS itself, and refuses any other method
+    with 405 (D35.4).
+    &quot;&quot;&quot;
+
+    def get(self, request, event_id):
+        &quot;&quot;&quot;Return the event page, or 404 if it is hidden.&quot;&quot;&quot;
+        event = get_object_or_404(
+            Event.objects.with_places(), pk=event_id
+        )
+        if not event.is_visible_to(request.user):
+            deny(request, Action.VIEW_EVENT, event,
+                 hidden=True)
+        now = timezone.now()
+        return render(request, &#x27;events/detail.html&#x27;, {
+            &#x27;event&#x27;: event,
+            &#x27;now&#x27;: now,
+            &#x27;can_edit&#x27;: event.can_be_edited_by(request.user),
+        } | registration_panel(event, request.user, now))</code></pre><p class="" data-block="106">The body of <code>get()</code> is the function’s body, moved one level in; <code>request</code> and <code>event_id</code> arrive as before, because <code>dispatch()</code> passes them on. In <code>events/urls.py</code>, a URL needs the function that <code>as_view()</code> returns, not the class:</p><p class="code-label code-label--file" aria-hidden="true">events/urls.py</p><pre class="code-listing code-listing--file" data-block="107" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/&#x27;,
+         views.EventDetailView.as_view(), name=&#x27;detail&#x27;),</code></pre><p class="" data-block="108">Run both apps’ tests. Do not change any test yet:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="109" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="110" tabindex="0"><code>Found 262 test(s).
+Creating test database for alias &#x27;default&#x27;...
+ERROR: test_missing_event
+AttributeError: module &#x27;events.views&#x27; has no attribute
+    &#x27;event_detail&#x27;
+FAIL: test_a_hidden_draft [POST]
+AssertionError: (&#x27;405 GET, HEAD, OPTIONS&#x27;, &#x27;405 GET, HEAD,
+    OPTIONS&#x27;) != (&#x27;404&#x27;, &#x27;404 recorded&#x27;)
+FAIL: test_a_hidden_draft [PUT]
+AssertionError: (&#x27;405 GET, HEAD, OPTIONS&#x27;, &#x27;405 GET, HEAD,
+    OPTIONS&#x27;) != (&#x27;404&#x27;, &#x27;404 recorded&#x27;)
+FAIL: test_a_hidden_draft [OPTIONS]
+AssertionError: (&#x27;ok GET, HEAD, OPTIONS&#x27;, &#x27;ok GET, HEAD,
+    OPTIONS&#x27;) != (&#x27;404&#x27;, &#x27;404 recorded&#x27;)
+... (6 more like these)
+Ran 262 tests in ...s
+
+FAILED (failures=9, errors=1)</code></pre><p class="" data-block="111">This is the moment the chapter was built for. The error is the one test the plan once said needed no change: <code>test_missing_event</code> checks that the address resolves to <code>views.event_detail</code>, which no longer exists. The nine failures are the event page’s table. A published event now answers 405 to POST, PUT, PATCH, DELETE, and TRACE, and 200 with an Allow header to OPTIONS. A POST to a hidden draft gets 405 instead of 404, and it is no longer recorded, because the method is refused before <code>get()</code> loads the event. The other 259 tests pass.</p><div class="callout callout--error"><p class="callout__title" data-block="112">Common Error: TypeError: View.__init__() takes 1 positional argument but 2 were given</p><p class="" data-block="113">The URL names the class, <code>views.EventDetailView</code>, instead of <code>views.EventDetailView.as_view()</code>. Django calls whatever the pattern holds with the request, and calling a class makes an instance, which is not a response. Add <code>.as_view()</code>.</p></div><h4 data-block="114">Step 7: Decide, then declare</h4><p class="" data-block="115">The function never chose its answers to PUT or DELETE; it gave the full page to anything. Answering 405 is what HTTP expects, and it is what every generic view in Chapters 36 and 37 will do. So Otahque accepts the class’s answers (decision D35.4). The lost record is acceptable too: a 405 is the same for every event number, existing or not, so the refused method reveals nothing, and the attempt never reaches the event. Declaring a change means the tests say so. In <code>events/tests/test_methods.py</code>, replace the comment and both lists:</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_methods.py</p><pre class="code-listing code-listing--file" data-block="116" tabindex="0"><code># A method, then the answer signed out and the answer
+# signed in as a member who organizes nothing. Since
+# Chapter 35, Django refuses methods the page does not
+# handle, and answers OPTIONS itself (D35.4).
+ALLOW = &#x27;GET, HEAD, OPTIONS&#x27;
+PUBLISHED = [
+    (&#x27;GET&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;HEAD&#x27;, &#x27;ok&#x27;, &#x27;ok&#x27;),
+    (&#x27;POST&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+    (&#x27;PUT&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+    (&#x27;PATCH&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+    (&#x27;DELETE&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+    (&#x27;OPTIONS&#x27;, f&#x27;ok {ALLOW}&#x27;, f&#x27;ok {ALLOW}&#x27;),
+    (&#x27;TRACE&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+]
+HIDDEN = [
+    (&#x27;GET&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;HEAD&#x27;, &#x27;404&#x27;, &#x27;404 recorded&#x27;),
+    (&#x27;POST&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+    (&#x27;PUT&#x27;, f&#x27;405 {ALLOW}&#x27;, f&#x27;405 {ALLOW}&#x27;),
+    (&#x27;OPTIONS&#x27;, f&#x27;ok {ALLOW}&#x27;, f&#x27;ok {ALLOW}&#x27;),
+]</code></pre><p class="" data-block="117"><code>ALLOW</code> names the header once, so each row stays readable. In <code>events/tests/test_events.py</code>, <code>test_missing_event</code> asks which view answers the address. The function returned by <code>as_view()</code> carries the class as <code>view_class</code>, so ask for that:</p><p class="code-label code-label--file" aria-hidden="true">events/tests/test_events.py</p><pre class="code-listing code-listing--file" data-block="118" tabindex="0"><code>        self.assertIs(
+            resolve(&#x27;/events/999/&#x27;).func.view_class,
+            views.EventDetailView,
+        )</code></pre><p class="" data-block="119">This is the chapter’s one edit to an existing test, and it says what the test always meant: this address is answered by the event page.</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="120" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="121" tabindex="0"><code>Found 262 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 262 tests in ...s
+
+OK</code></pre><h4 data-block="122">Step 8: The details page, first try</h4><p class="" data-block="123">Now the phone page, which becomes <code>RegistrationDetailsView</code>. Its two handlers, GET and POST, look like a perfect fit: <code>get()</code> and <code>post()</code> will declare the methods, so <code>require_http_methods</code> seems unnecessary, and <code>login_required</code> can go on <code>dispatch()</code>. To decorate a method of a class, Django provides <code>method_decorator</code>, which adapts a function decorator to a method; with <code>name=&#x27;dispatch&#x27;</code> it can sit above the class. In <code>registrations/views.py</code>, add two imports:</p><p class="code-label code-label--file" aria-hidden="true">registrations/views.py</p><pre class="code-listing code-listing--file" data-block="124" tabindex="0"><code>from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.http import (
+    require_http_methods, require_POST,
+)</code></pre><p class="" data-block="125">Replace the whole <code>register_phone</code> function with:</p><p class="code-label code-label--file" aria-hidden="true">registrations/views.py</p><pre class="code-listing code-listing--file" data-block="126" tabindex="0"><code>@method_decorator(login_required, name=&#x27;dispatch&#x27;)
+class RegistrationDetailsView(View):
+    &quot;&quot;&quot;Ask for what an event needs, then register.
+
+    Today that is a phone number; Chapter 38 adds the
+    event&#x27;s own questions.
+    &quot;&quot;&quot;
+
+    def dispatch(self, request, *args, **kwargs):
+        &quot;&quot;&quot;Load the event, then call get() or post().&quot;&quot;&quot;
+        self.event = event_for(request, kwargs[&#x27;event_id&#x27;])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, event_id):
+        &quot;&quot;&quot;Show the empty form.&quot;&quot;&quot;
+        return self.show(PhoneForm())
+
+    def post(self, request, event_id):
+        &quot;&quot;&quot;Keep the number and take a place, or show errors.&quot;&quot;&quot;
+        form = PhoneForm(request.POST)
+        if form.is_valid():
+            form.save(request.user)
+            return take_place(request, self.event)
+        return self.show(form)
+
+    def show(self, form):
+        &quot;&quot;&quot;Render the page with the form.&quot;&quot;&quot;
+        return render(
+            self.request, &#x27;registrations/phone.html&#x27;,
+            {&#x27;event&#x27;: self.event, &#x27;form&#x27;: form},
+        )</code></pre><p class="" data-block="127"><code>dispatch()</code> loads the event once, before either handler, so both use <code>self.event</code>, then calls the parent’s <code>dispatch()</code> to pick the handler. <code>show()</code> is an ordinary helper method; Django never calls it. One small difference from the function: <code>PhoneForm(request.POST)</code> is always bound in <code>post()</code>, so a POST with no fields at all shows “This field is required” where the function showed an empty form. A browser always sends the field, so only a hand-made request sees it; the tables cannot, because both answers are 200. In <code>registrations/urls.py</code>:</p><p class="code-label code-label--file" aria-hidden="true">registrations/urls.py</p><pre class="code-listing code-listing--file" data-block="128" tabindex="0"><code>    path(&#x27;events/&lt;int:event_id&gt;/register/phone/&#x27;,
+         views.RegistrationDetailsView.as_view(),
+         name=&#x27;phone&#x27;),</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="129" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="130" tabindex="0"><code>Found 262 test(s).
+Creating test database for alias &#x27;default&#x27;...
+FAIL: test_the_details_page [HEAD]
+AssertionError: (&#x27;sign in&#x27;, &#x27;ok&#x27;) != (&#x27;405 GET, POST&#x27;, &#x27;405
+    GET, POST&#x27;)
+FAIL: test_the_details_page [PUT]
+AssertionError: (&#x27;sign in&#x27;, &#x27;405 GET, POST, HEAD, OPTIONS&#x27;)
+    != (&#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;)
+FAIL: test_the_details_page [PATCH]
+AssertionError: (&#x27;sign in&#x27;, &#x27;405 GET, POST, HEAD, OPTIONS&#x27;)
+    != (&#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;)
+FAIL: test_the_details_page [DELETE]
+AssertionError: (&#x27;sign in&#x27;, &#x27;405 GET, POST, HEAD, OPTIONS&#x27;)
+    != (&#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;)
+FAIL: test_the_details_page [OPTIONS]
+AssertionError: (&#x27;sign in&#x27;, &#x27;ok GET, POST, HEAD, OPTIONS&#x27;) !=
+    (&#x27;405 GET, POST&#x27;, &#x27;405 GET, POST&#x27;)
+... (2 more like these)
+Ran 262 tests in ...s
+
+FAILED (failures=7)</code></pre><p class="" data-block="131">Seven rows changed. Signed out, a PUT now goes to sign in instead of 405. Signed in, the Allow header lists four methods instead of two, HEAD gets the form, and OPTIONS gets 200. And a PUT to a hidden draft is now a recorded 404 instead of a 405. Look at the first change closely. In the function, <code>require_http_methods</code> sat outside <code>login_required</code>, so the method was checked first. The class has only <code>login_required</code> around <code>dispatch()</code>, and the method check happens inside <code>dispatch()</code>, after sign-in and after the event is loaded. The order of the checks has turned inside out, as the middle column of Figure 35.2 shows.</p><h4 data-block="132">Step 9: Keep the function’s order</h4><p class="" data-block="133">The fix is to give the class the same decorators as the function, in the same order. <code>method_decorator</code> accepts a list and applies it in list order, the first decorator outermost, exactly as stacked decorators read from the top. Replace the decorator and the docstring above the class:</p><p class="code-label code-label--file" aria-hidden="true">registrations/views.py</p><pre class="code-listing code-listing--file" data-block="134" tabindex="0"><code>@method_decorator(
+    [require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;]), login_required],
+    name=&#x27;dispatch&#x27;,
+)
+class RegistrationDetailsView(View):
+    &quot;&quot;&quot;Ask for what an event needs, then register.
+
+    Today that is a phone number; Chapter 38 adds the
+    event&#x27;s own questions. The list runs in order, as the
+    function&#x27;s decorators did: the method check, sign-in,
+    then dispatch() loads the event.
+    &quot;&quot;&quot;</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="135" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="136" tabindex="0"><code>Found 262 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 262 tests in ...s
+
+OK</code></pre><p class="" data-block="137">Every row is green again: the class answers exactly as the function did. Figure 35.2 sets the three orders side by side.</p><figure data-block="138"><a href="/assets/chapter35/figure-35-2-order.png" aria-label="Open Figure 35.2 at full size"><img src="/assets/chapter35/figure-35-2-order.png" alt="Three columns of four numbered cards, each linked by arrows. The function: 1 require_http_methods, PUT gets 405 here; 2 login_required, signed out goes to sign in; 3 event_for(), hidden gives 404, recorded; 4 the page, form or a place. Step 8, first try, marked with a red cross: 1 login_required, every method signs in first, in red; 2 dispatch() loads the event, hidden gives 404, recorded; 3 method check, PUT gets 405 only now, in red; 4 get() or post(). Step 9, the list: the same order as the function, with dispatch() loading the event third." width="1500" height="900" loading="lazy"></a><figcaption data-block="139">Figure 35.2 — The function’s order, the first class, and the kept order.</figcaption></figure><p class="" data-block="140">Why keep the old answers here, when Step 7 accepted new ones? Because this page’s answers were chosen. Someone wrote <code>require_http_methods([&#x27;GET&#x27;, &#x27;POST&#x27;])</code> above <code>login_required</code> on purpose, in Chapter 31, and a refactor is not the place to undo a decision silently. The event page’s answers were never chosen, so the class’s defaults filled a gap. That distinction becomes rule 2 and rule 3 of ADR-006 in Step 11.</p><div class="callout callout--error"><p class="callout__title" data-block="141">Common Error: loading the object in setup()</p><p class="" data-block="142"><code>setup()</code> looks like the natural place to load the event: it runs before every handler and already stores <code>self.kwargs</code>. But it runs before <code>dispatch()</code>, so before every decorator on <code>dispatch()</code>. Load the event there and a signed-out visitor asking for a hidden draft gets 404 instead of the sign-in page, and a PUT to it gets 404 instead of 405. The table catches it: three rows of the hidden-draft test turn red. Load anything that depends on who is asking in <code>dispatch()</code> or in the handlers. Interview question L4 shows the failing run.</p></div><h4 data-block="143">Step 10: The event page’s facts, and a registration card</h4><p class="" data-block="144">Chapter 35 touches the event page, so the page improves too. Today it stacks the start, both “Your time” lines, the end, the places, the location, and the organizer as loose lines, then the registration panel below a rule. On a wide screen, half the card is empty. Two changes fix that: the facts become a labelled list, and the registration panel becomes a card beside them on wide screens and below them on phones.</p><p class="" data-block="145">A labelled list in HTML is a <strong>description list</strong>: <code>&lt;dl&gt;</code> holds pairs of a term, <code>&lt;dt&gt;</code>, and its description, <code>&lt;dd&gt;</code>. Screen readers announce the pairs together, so “Starts” and its time are read as one fact. Create <code>events/templates/events/facts.html</code>, a piece both the event page and the phone page include:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/facts.html</p><pre class="code-listing code-listing--file" data-block="146" tabindex="0"><code>&lt;dl class=&quot;facts&quot;&gt;
+  {% with format=&quot;l j F Y, H:i T&quot; %}
+  &lt;dt&gt;Starts&lt;/dt&gt;
+  &lt;dd&gt;{% include &quot;events/when.html&quot; %}&lt;/dd&gt;
+  &lt;dt&gt;Ends&lt;/dt&gt;
+  &lt;dd&gt;{% include &quot;events/when.html&quot; with at=event.ends_at %}
+  &lt;/dd&gt;
+  {% endwith %}
+  &lt;dt&gt;Where&lt;/dt&gt;
+  &lt;dd&gt;{{ event.location }}&lt;/dd&gt;
+  {% if now and now &lt; event.ends_at %}
+    {% if event.status != &#x27;cancelled&#x27; %}
+      &lt;dt&gt;Places&lt;/dt&gt;
+      &lt;dd&gt;{% include &quot;events/places.html&quot; %}&lt;/dd&gt;
+    {% endif %}
+  {% endif %}
+&lt;/dl&gt;</code></pre><p class="" data-block="147">The places row appears only when the template has <code>now</code>, the event has not ended, and it is not cancelled, the same conditions as before. The phone page has no <code>now</code>, so it shows time and place only. In <code>events/templates/events/detail.html</code>, replace everything from <code>&lt;h1&gt;</code> down to the panel’s <code>include</code> with:</p><p class="code-label code-label--file" aria-hidden="true">events/templates/events/detail.html</p><pre class="code-listing code-listing--file" data-block="148" tabindex="0"><code>    &lt;header class=&quot;space-y-1&quot;&gt;
+      &lt;h1&gt;{{ event.title }}&lt;/h1&gt;
+      {% with names=event.organizer_names %}
+        {% if names %}
+          &lt;p class=&quot;text-sm&quot;&gt;
+            Organized by {{ names|join:&quot;, &quot; }}&lt;/p&gt;
+        {% endif %}
+      {% endwith %}
+    &lt;/header&gt;
+    &lt;div class=&quot;grid gap-6 lg:grid-cols-[1fr_20rem]
+                lg:items-start&quot;&gt;
+      &lt;div class=&quot;space-y-4&quot;&gt;
+        {% if event.description %}
+          &lt;p&gt;{{ event.description|linebreaksbr }}&lt;/p&gt;
+        {% endif %}
+        {% include &quot;events/facts.html&quot; %}
+      &lt;/div&gt;
+      {% include &quot;registrations/panel.html&quot; %}
+    &lt;/div&gt;</code></pre><p class="" data-block="149">The organizer’s name moves under the title. <code>lg:grid-cols-[1fr_20rem]</code> is a Tailwind class that gives wide screens two columns, the details and a 20rem card; below Tailwind’s <code>lg</code> width, 64rem, they stack. In <code>registrations/templates/registrations/panel.html</code>, the panel gets a visible heading and a card’s border and background instead of the rule above it. Replace its first two lines with:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/panel.html</p><pre class="code-listing code-listing--file" data-block="150" tabindex="0"><code>&lt;section class=&quot;space-y-3 rounded-box border border-base-300
+                bg-base-200 p-4&quot; aria-labelledby=&quot;register&quot;&gt;
+  &lt;h2 id=&quot;register&quot; class=&quot;text-lg font-semibold&quot;&gt;
+    Registration&lt;/h2&gt;</code></pre><p class="" data-block="151"><code>aria-labelledby</code> names the section by its heading, so assistive technology announces “Registration” as before. In <code>registrations/templates/registrations/phone.html</code>, show which event this is, and stop the form stretching across a wide screen. Replace everything from <code>&lt;h1&gt;</code> to the form’s opening tag with:</p><p class="code-label code-label--file" aria-hidden="true">registrations/templates/registrations/phone.html</p><pre class="code-listing code-listing--file" data-block="152" tabindex="0"><code>  &lt;h1&gt;{{ event.title }} asks for a phone number&lt;/h1&gt;
+  {% include &quot;events/facts.html&quot; %}
+  &lt;p&gt;Otahque keeps it on your profile, so you are asked
+     only once. You can change it there.&lt;/p&gt;
+  {% include &quot;registrations/sharing.html&quot; %}
+  &lt;form method=&quot;post&quot; class=&quot;card max-w-xl space-y-4 border
+        border-base-300 bg-base-100 p-6&quot;&gt;</code></pre><p class="" data-block="153">The shared part is the <code>.facts</code> component. In <code>static/otahque/source.css</code>, inside <code>@layer components</code>, add it just before <code>.form-actions</code>:</p><p class="code-label code-label--file" aria-hidden="true">static/otahque/source.css</p><pre class="code-listing code-listing--file" data-block="154" tabindex="0"><code>  /* Labelled facts, such as an event&#x27;s time and place
+     (Chapter 35): one column on phones, label and value
+     side by side from 40rem. */
+  .facts {
+    display: grid;
+    gap: 0.25rem 1.5rem;
+  }
+  .facts dt {
+    padding-top: 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .facts dd {
+    margin: 0 0 0.75rem;
+  }
+  @media (width &gt;= 40rem) {
+    .facts {
+      grid-template-columns: max-content 1fr;
+    }
+    .facts dd {
+      margin: 0;
+    }
+  }
+  .form-actions {</code></pre><p class="" data-block="155">On a phone, each label sits above its value; from 40rem the labels form a column of their own. Build the stylesheet as in Chapter 14:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="156" tabindex="0"><code>npm run build</code></pre><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="157" tabindex="0"><code>uv run python manage.py test events registrations --parallel</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="158" tabindex="0"><code>Found 262 test(s).
+Creating test database for alias &#x27;default&#x27;...
+...
+Ran 262 tests in ...s
+
+OK</code></pre><p class="" data-block="159">Run the server and open an event at your browser’s narrowest and widest. Figure 35.3 shows the Online Django clinic, signed in as Sai, before and after.</p><figure data-block="160"><a href="/assets/chapter35/figure-35-3-ui.png" aria-label="Open Figure 35.3 at full size"><img src="/assets/chapter35/figure-35-3-ui.png" alt="Three screenshots of the Online Django clinic’s page, signed in as Sai. Top left, before, desktop: the title, the description, then From, Your time, Until, Your time, a places bar, Online, and Organized by Sam as separate lines, with a Register button below a rule, and the right half of the card empty. Bottom left, after, desktop: Organized by Sam under the title; on the left the description and a labelled list, Starts, Ends, Where, and Places, each with its value; on the right a grey card headed Registration with the Register button and the sharing note. Right, after, on a phone: the same labelled list with each label above its value, and the Registration card below it." width="1235" height="844" loading="lazy"></a><figcaption data-block="161">Figure 35.3 — The event page before (top) and after (bottom), and after on a phone.</figcaption></figure><h4 data-block="162">Step 11: Write the house rule</h4><p class="" data-block="163">Two pages converted, seventeen to go, or not. Before Chapters 36 and 37 convert more, write down which views become classes, and the rules any conversion follows. Create <code>docs/adr/ADR-006-views.md</code>:</p><p class="code-label code-label--file" aria-hidden="true">docs/adr/ADR-006-views.md</p><pre class="code-listing code-listing--file" data-block="164" tabindex="0"><code># ADR-006: Function views and class views
+
+## Status
+
+Proposed, November 2026 (Chapter 35). The choices follow
+the user&#x27;s decisions of 24 November 2026 (Chapter 35
+D35.1-D35.4); this record is not yet reviewed or accepted.
+
+## Context
+
+For 34 chapters every Otahque view was a function. Many
+of them repeat one shape: load an event the viewer may
+see, refuse with 404 or 403, render. Django&#x27;s generic
+views (Chapters 36 and 37) remove that repetition, but
+they are classes, and a class answers some requests on
+its own: HEAD, OPTIONS, and 405 with an Allow header.
+Converting a view can change what it answers, and the
+existing tests did not notice (Chapter 35, Step 3).
+
+## Options
+
+- A: convert every view to a class.
+- B: keep every view a function.
+- C: classes where a generic view fits or a page has
+  several handlers; small functions for one-off actions.
+
+## Decision
+
+C, with four rules.
+
+1. Before a view is converted, a method table pins its
+   answer to every method, signed in and signed out.
+2. A conversion keeps every answer the function chose.
+   The function&#x27;s decorators move, in the same order, to
+   one method_decorator list on dispatch().
+3. Where the function chose nothing, Django&#x27;s defaults
+   are accepted and the table says so (D35.4: the event
+   page answers 405 to methods other than GET and HEAD,
+   and OPTIONS itself).
+4. Nothing that needs sign-in or visibility goes in
+   setup(): it runs before the decorators. Load objects
+   in dispatch() or in the handlers.
+
+## Inventory (19 views)
+
+Kind now, then where each view goes and why.
+
+events
+- home: function, stays (one template, nothing shared).
+- event_list: function, ListView in 36.
+- EventDetailView: View class since 35; DetailView in 36.
+- event_create: function, CreateView in 37.
+- event_edit: function, UpdateView in 37.
+- event_manage (My events): function, ListView in 36.
+- event_publish: function, stays (one-off POST action).
+- event_cancel: function, stays (one-off POST action).
+- event_delete: function, DeleteView in 37.
+- event_copy: function, FormView in 37.
+- organizer_events: function, stays until Chapter 67
+  makes organizer roles per community.
+- event_organizers: function, stays until Chapter 67
+  (add-by-email form behind re-authentication).
+- remove_organizer: function, stays (one-off POST).
+
+registrations
+- register: function, stays (one-off POST action).
+- RegistrationDetailsView: View class since 35; gains
+  the event&#x27;s questions in 38.
+- my_registrations: function, ListView in 36.
+- cancel_registration: function, a class in 37.
+- attendees: function, stays until Chapter 41 adds the
+  download (a report, not a list of one model).
+
+accounts
+- profile: function, FormView in 37 (proposed; not yet
+  in Chapter 37&#x27;s plan).
+
+## Consequences
+
+- Eleven views become classes by Chapter 37; eight stay
+  functions, each with a reason above.
+- Each converted page&#x27;s table shows any change in its
+  answers, so a change is a decision, not an accident.
+- The event page no longer records a refused POST to a
+  hidden draft: the method is refused (405) before the
+  event is loaded. 405 is the same for every number.
+- Chapter 37&#x27;s LoginRequiredMixin and Chapter 39&#x27;s
+  LoginRequiredMiddleware put sign-in before the method
+  check; the tables will show it, and those chapters say
+  so.
+
+## Revisit
+
+Chapter 49 (the API), where OPTIONS matters for browsers&#x27;
+cross-origin checks, and whenever a page in the &quot;stays&quot;
+list gains a second handler.</code></pre><p class="" data-block="165">Read the inventory as a plan, not a promise: each line gives the view’s destination and the reason. The “stays” lines are as deliberate as the conversions. Publish, cancel, Register, and remove-organizer are one-off actions with one method each; a class would add answers to keep and nothing to share. Chapter 30’s permissions note also needs the one behaviour that changed on purpose. In <code>docs/design/permissions.md</code>, under “Refusals”, add the last bullet:</p><p class="code-label code-label--file" aria-hidden="true">docs/design/permissions.md</p><pre class="code-listing code-listing--file" data-block="166" tabindex="0"><code>- A signed-in refusal is recorded as a refused
+  AuditEvent; an unknown number is not.
+- Since Chapter 35 the event page refuses any method but
+  GET and HEAD with 405 before it loads the event, so a
+  POST to a hidden draft is not recorded (ADR-006).</code></pre><h4 data-block="167">Step 12: Check everything, then commit</h4><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="168" tabindex="0"><code>uv run python check.py</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="169" tabindex="0"><code>== python manage.py check
+System check identified no issues (0 silenced).
+== python manage.py makemigrations --check --dry-run
+== python manage.py test --parallel
+Found 367 test(s).
+System check identified no issues (0 silenced).
+Ran 367 tests in ...s
+OK
+== all checks passed</code></pre><p class="" data-block="170">Three hundred and sixty-two tests, plus five tables. Commit:</p><p class="code-label code-label--shell" aria-hidden="true">Terminal</p><pre class="code-listing code-listing--shell" data-block="171" tabindex="0"><code>git add .
+git status --short
+git commit -m &quot;Convert the event and details pages to classes&quot;</code></pre><p class="code-label code-label--output" aria-hidden="true">Output</p><pre class="code-listing code-listing--output" data-block="172" tabindex="0"><code>M  config/helpers.py
+A  docs/adr/ADR-006-views.md
+M  docs/design/permissions.md
+M  events/templates/events/detail.html
+A  events/templates/events/facts.html
+M  events/tests/test_events.py
+A  events/tests/test_methods.py
+M  events/urls.py
+M  events/views.py
+M  registrations/templates/registrations/panel.html
+M  registrations/templates/registrations/phone.html
+A  registrations/tests/test_methods.py
+M  registrations/urls.py
+M  registrations/views.py
+M  static/otahque/site.css
+M  static/otahque/source.css
+[main 1a2b3c4] Convert the event and details pages to classes
+ 16 files changed, 432 insertions(+), 55 deletions(-)
+ create mode 100644 docs/adr/ADR-006-views.md
+ create mode 100644 events/templates/events/facts.html
+ create mode 100644 events/tests/test_methods.py
+ create mode 100644 registrations/tests/test_methods.py</code></pre><h3 class="" id="topic-173" data-block="173">When something goes wrong</h3><figure class="table-figure" data-block="174"><figcaption>Table 35.2 — Diagnosing class-based views</figcaption>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Table 35.2 — Diagnosing class-based views"><table><thead><tr><th scope="col">Symptom</th>
+<th scope="col">Likely cause</th>
+<th scope="col">Recovery</th>
+</tr></thead><tbody><tr><th scope="row">TypeError: View.__init__() takes 1 positional argument but 2 were given</th>
+<td data-label="Likely cause">The URL names the class without .as_view()</td>
+<td data-label="Recovery">path(..., views.EventDetailView.as_view(), ...)</td>
+</tr>
+<tr><th scope="row">AttributeError: module &#x27;events.views&#x27; has no attribute &#x27;event_detail&#x27;</th>
+<td data-label="Likely cause">A test or URL still names the old function</td>
+<td data-label="Recovery">Use .func.view_class in tests; the class in URLs</td>
+</tr>
+<tr><th scope="row">TypeError: EventDetailView.get() got an unexpected keyword argument &#x27;event_id&#x27;</th>
+<td data-label="Likely cause">The handler&#x27;s arguments do not match the URL&#x27;s names</td>
+<td data-label="Recovery">def get(self, request, event_id)</td>
+</tr>
+<tr><th scope="row">Every method gets 405</th>
+<td data-label="Likely cause">Handlers named in capitals, such as Get</td>
+<td data-label="Recovery">Lower case: get, post</td>
+</tr>
+<tr><th scope="row">Signed out: sign in, where the table says 405</th>
+<td data-label="Likely cause">login_required alone on dispatch(); the method check runs inside dispatch()</td>
+<td data-label="Recovery">method_decorator([require_http_methods([...]), login_required], name=&#x27;dispatch&#x27;)</td>
+</tr>
+<tr><th scope="row">Signed out: 404 for a hidden draft, where the table says sign in</th>
+<td data-label="Likely cause">The object is loaded in setup()</td>
+<td data-label="Recovery">Load it in dispatch() or in the handler</td>
+</tr>
+<tr><th scope="row">A table row fails before any change</th>
+<td data-label="Likely cause">The row is wrong, not the page</td>
+<td data-label="Recovery">Correct the row from what the function does; then change the code</td>
+</tr>
+<tr><th scope="row">AttributeError: ... has no attribute &#x27;request&#x27;</th>
+<td data-label="Likely cause">setup() was overridden without calling super().setup()</td>
+<td data-label="Recovery">Call super().setup(request, *args, **kwargs) first</td>
+</tr>
+</tbody></table></div></figure><p class="" data-block="175">No recovery here touches your data. The tables run in the test database, and if a conversion goes wrong you can compare it with the committed function: <code>git diff events/views.py</code> shows every change since Chapter 34, and <code>git restore events/views.py</code> puts back the committed file when you would rather start the step again.</p></article>
+<p class="feedback-cta">Found an error or something unclear? <a href="https://github.com/SamChawla/otahque-web-book/issues/new?template=chapter-feedback.yml&amp;chapter=Chapter%2035%2C%20How%20We%20Build%20It" rel="noopener noreferrer" target="_blank">Report an issue with this chapter</a> <span>(GitHub, opens in a new tab)</span></p><span class="page-number">PAGE 003</span><nav class="edge-nav" aria-label="Page navigation"><a class="page-thumb page-thumb-prev" href="/chapters/chapter35/section-35-2/" aria-label="Previous note: What You Need to Know"><span class="thumb-arrow" aria-hidden="true">←</span><span class="thumb-label">Previous</span></a><a class="page-thumb page-thumb-next" href="/chapters/chapter35/section-35-4/" aria-label="Next note: Verify Your Work"><span class="thumb-arrow" aria-hidden="true">→</span><span class="thumb-label">Next</span></a></nav><nav class="chapter-end" aria-label="Section navigation"><a href="/chapters/chapter35/section-35-2/">← What You Need to Know</a><a href="/chapters/chapter35/section-35-4/">Verify Your Work →</a></nav></main></div></div></div>
+<footer class="site-footer"><span>Otahque · <a href="https://www.linkedin.com/in/sumit-s-chawla/" rel="author noopener noreferrer" target="_blank" aria-label="Sumit S Chawla on LinkedIn (opens in a new tab)">Sumit S Chawla</a></span><span class="footer-links"><a href="https://github.com/SamChawla/otahque-web-book/issues/new/choose" rel="noopener noreferrer" target="_blank" aria-label="Give feedback on GitHub (opens in a new tab)">Give feedback</a><a href="#main">Back to top ↑</a></span></footer>
+</body></html>

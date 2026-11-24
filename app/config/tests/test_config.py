@@ -12,7 +12,7 @@ from audit.models import AuditEvent
 from events.models import (
     ORGANIZERS, Event, OrganizerAssignment,
 )
-from events.tests import (
+from config.helpers import (
     admin_url, event_form, remove_selected, save_event,
 )
 

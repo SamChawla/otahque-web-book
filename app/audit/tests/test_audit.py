@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from accounts.models import User
 
-from .models import AuditEvent, record
+from audit.models import AuditEvent, record
 
 Action = AuditEvent.Action
 

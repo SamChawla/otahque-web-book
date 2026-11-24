@@ -1,4 +1,4 @@
-"""The events app's views: one function per page."""
+"""The events app's views: a function or a class per page."""
 from functools import wraps
 
 from allauth.account.decorators import (
@@ -18,6 +18,7 @@ from django.shortcuts import (
     get_object_or_404, redirect, render,
 )
 from django.utils import timezone
+from django.views import View
 from django.views.decorators.http import (
     require_http_methods, require_POST,
 )
@@ -72,19 +73,28 @@ def event_list(request):
     })
 
 
-def event_detail(request, event_id):
-    """Show an event its viewer may see, or 404."""
-    event = get_object_or_404(
-        Event.objects.with_places(), pk=event_id
-    )
-    if not event.is_visible_to(request.user):
-        deny(request, Action.VIEW_EVENT, event, hidden=True)
-    now = timezone.now()
-    return render(request, 'events/detail.html', {
-        'event': event,
-        'now': now,
-        'can_edit': event.can_be_edited_by(request.user),
-    } | registration_panel(event, request.user, now))
+class EventDetailView(View):
+    """Show an event its viewer may see, or 404.
+
+    Only get() is written. Django answers HEAD with it,
+    answers OPTIONS itself, and refuses any other method
+    with 405 (D35.4).
+    """
+
+    def get(self, request, event_id):
+        """Return the event page, or 404 if it is hidden."""
+        event = get_object_or_404(
+            Event.objects.with_places(), pk=event_id
+        )
+        if not event.is_visible_to(request.user):
+            deny(request, Action.VIEW_EVENT, event,
+                 hidden=True)
+        now = timezone.now()
+        return render(request, 'events/detail.html', {
+            'event': event,
+            'now': now,
+            'can_edit': event.can_be_edited_by(request.user),
+        } | registration_panel(event, request.user, now))
 
 
 def registration_panel(event, user, now):

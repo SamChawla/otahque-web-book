@@ -44,10 +44,12 @@ from django.test import (
 from django.urls import reverse
 
 from events.models import Event
-from events.tests import admin_url, event_form, save_event
-from .adapter import DISPOSABLE
-from .models import Profile, User
-from .timezones import (
+from config.helpers import (
+    admin_url, event_form, save_event,
+)
+from accounts.adapter import DISPOSABLE
+from accounts.models import Profile, User
+from accounts.timezones import (
     COOKIE, resolve_timezone, to_user_time,
 )
 
@@ -361,6 +363,12 @@ class SignUpTests(TestCase):
     """Signing up: what is asked, and what is saved."""
 
     url = '/accounts/signup/'
+
+    def setUp(self):
+        # allauth sends one confirmation email per address
+        # every three minutes, counted in the cache: start
+        # each test with an empty cache, as others do.
+        cache.clear()
 
     def test_the_page_asks_for_name_and_zone(self):
         response = self.client.get(self.url)
